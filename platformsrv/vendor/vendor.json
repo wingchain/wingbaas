@@ -1,0 +1,97 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "blOHP3HPYU+IeV6yWCalQuuM+zE=",
+			"path": "github.com/dgrijalva/jwt-go",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "9JisNRMnDUV44uWZspK0CIPhB7Y=",
+			"path": "github.com/labstack/echo/v4",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "SYRQSzL9qU2kMziIPIfAKCxQP0c=",
+			"path": "github.com/labstack/echo/v4/middleware",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "rN+p4nPdKiIwqMSvdOiNW0hscuA=",
+			"path": "github.com/labstack/gommon/bytes",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "R6DzcBLEP0BONPpsyr+11N7xh5w=",
+			"path": "github.com/labstack/gommon/color",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "NRXvF1Wn6fF9wcPOOv9MNSdDRaE=",
+			"path": "github.com/labstack/gommon/log",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "iPlSnDjuur4cK1G/7mJM/7frIm4=",
+			"path": "github.com/labstack/gommon/random",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "LUojcf52QZiIHAkHLOOi5+0riIY=",
+			"path": "github.com/mattn/go-colorable",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "Aakfib+iaKGAAHp7A9lTbzXrj4s=",
+			"path": "github.com/mattn/go-isatty",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "BoXdUBWB8UnSlFlbnuTQaPqfCGk=",
+			"path": "github.com/op/go-logging",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "LTOa3BADhwvT0wFCknPueQALm8I=",
+			"path": "github.com/valyala/bytebufferpool",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "ZPzQrdcrJx7RQ6DMTkh3hIyyOoY=",
+			"path": "github.com/valyala/fasttemplate",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "bOEbw4woJ+NVrixDwpl5ClB+IaY=",
+			"path": "github.com/wingbaas/platformsrv",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "S50IhJGfCNZqm5tB8vVKNFcMEcs=",
+			"path": "github.com/wingbaas/platformsrv/api",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "yNuGmrr982K9G3eTDi78Jr9gAxI=",
+			"path": "github.com/wingbaas/platformsrv/k8s",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "ErNX5a6FYwaGPuKuxAXS1twZrs4=",
+			"path": "github.com/wingbaas/platformsrv/logger",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "XxHbFWSRp8O9+850Yaus8EII0pE=",
+			"path": "github.com/wingbaas/platformsrv/utils",
+			"revision": ""
+		},
+		{
+			"checksumSHA1": "CIkqNgrWiMPe6F2pXY8ED3A3a2M=",
+			"path": "golang.org/x/sys/unix",
+			"revision": ""
+		}
+	],
+	"rootPath": "github.com/wingbaas/platformsrv"
+}
