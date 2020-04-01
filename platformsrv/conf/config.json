@@ -3,5 +3,6 @@
     "SrvPort": "9001",
     "ClusterCfgPath": "./conf/cluster/",
     "ClusterPkiBasePath": "./conf/pki",
-    "BlockNetCfgBasePath": "./conf/net/"
+    "BlockNetCfgBasePath": "./conf/net/",
+    "BlockChainVersionCfg": "./settings/version.json"
 }

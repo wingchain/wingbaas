@@ -8,6 +8,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/wingbaas/platformsrv/logger"
 	"github.com/wingbaas/platformsrv/k8s"
+	"github.com/goinggo/mapstructure"
+	"github.com/wingbaas/platformsrv/settings/fabric"
 )
 
 const (
@@ -18,6 +20,12 @@ const (
 	MSG_SUCCESS              string = "success"
 	MSG_ERROR                string = "error"
 )
+
+type Deploy struct {
+	BlockChainName      string        `json:"BlockChainName"`
+	BlockChainType      string        `json:"BlockChainType"`
+	DeployCfg     		interface{}   `json:"DeployCfg"`
+}
 
 /* All interface of platformSrv return struct */
 type ApiRet struct {
@@ -37,7 +45,7 @@ func getApiRet (code int, msg string, data interface{}) ApiRet {
 func addCluster(c echo.Context) error {
 	logger.Debug("addCluster")
 	var cluster k8s.Cluster
-	result, err := ioutil.ReadAll(c.Request().Body)
+	result, err := ioutil.ReadAll(c.Request().Body) 
     if err != nil {
 		msg := "read request body error"
 		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
@@ -78,3 +86,58 @@ func getNamespaces(c echo.Context) error {
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,obj)
 	return c.JSON(http.StatusOK,ret)
 }  
+
+func deployBlockChain(c echo.Context) error { 
+	logger.Debug("deployBlockChain")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	var d Deploy
+    err = json.Unmarshal(result, &d)
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	var blockId string
+	if d.BlockChainType == "fabric" {
+		cfgMap, ok := d.DeployCfg.(map[string]interface{}) 
+		if !ok {
+			msg := "blockchain fabric deploy parameter error"
+        	ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+			return c.JSON(http.StatusOK,ret)
+		}
+		var cfg fabric.DeployPara
+		err = mapstructure.Decode(cfgMap,&cfg); 
+		if err != nil {
+			msg := "blockchain fabric decode config map error"
+        	ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+			return c.JSON(http.StatusOK,ret)
+		}
+		blockId,err = fabric.DeployFabric(cfg)
+		if err != nil {
+			ret := getApiRet(CODE_ERROR_BODY,err.Error(),nil)
+			return c.JSON(http.StatusOK,ret)
+		}
+	}else if d.BlockChainType == "wingchain" {
+		msg := "wingchain unsupported temporary!"
+        ret := getApiRet(CODE_SUCCESS,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}else {
+		msg := "unsupported blockchain type!"
+        ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	type res struct {
+		BlockChainId 	string `json:"BlockChainId"`
+		BlockChainName  string `json:"BlockChainName"`
+	}
+	var r res
+	r.BlockChainId = blockId
+	r.BlockChainName = d.BlockChainName
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,r)
+	return c.JSON(http.StatusOK,ret) 
+}

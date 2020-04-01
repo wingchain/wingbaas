@@ -13,7 +13,9 @@ func Start(port string) {
 	r.Use(middleware.Recover())
 	r.POST("/api/v1/addcluster",addCluster) 
 	r.GET("/api/v1/clusters",getClusters)
+	r.POST("/api/v1/deploy",deployBlockChain)
 	r.GET("/api/v1/:clusterid/namespaces",getNamespaces)
+
 	// Start server
 	logger.Debug("start wing baas api server")
 	r.Logger.Fatal(r.Start(":"+port))

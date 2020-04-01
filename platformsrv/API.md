@@ -19,7 +19,7 @@ request:http://localhost:9001/api/v1/addcluster
 request parameter:       
 ```json
 {
-	"ClusterId": "kubernetes-cluster1",    
+  "ClusterId": "kubernetes-cluster1",    
   "Addr": "https://kubernetes:6443/api/v1/",      
   "Cert": "./conf/pki/cluster1/apiserver-kubelet-client.crt",      
   "Key": "./conf/pki/cluster1/apiserver-kubelet-client.key"       
@@ -86,75 +86,85 @@ API RETURN：
             "status": {
                 "phase": "Active"
             }
-        },
-        {
-            "metadata": {
-                "name": "kube-node-lease",
-                "selfLink": "/api/v1/namespaces/kube-node-lease",
-                "uid": "d3747e6f-455f-47ad-abb9-ecbc67f8746f",
-                "resourceVersion": "7",
-                "creationTimestamp": "2020-03-26T09:07:01Z"
-            },
-            "spec": {
-                "finalizers": [
-                    "kubernetes"
-                ]
-            },
-            "status": {
-                "phase": "Active"
-            }
-        },
-        {
-            "metadata": {
-                "name": "kube-public",
-                "selfLink": "/api/v1/namespaces/kube-public",
-                "uid": "ce324640-f2a4-4d2f-8638-b102f9a15b96",
-                "resourceVersion": "6",
-                "creationTimestamp": "2020-03-26T09:07:01Z"
-            },
-            "spec": {
-                "finalizers": [
-                    "kubernetes"
-                ]
-            },
-            "status": {
-                "phase": "Active"
-            }
-        },
-        {
-            "metadata": {
-                "name": "kube-system",
-                "selfLink": "/api/v1/namespaces/kube-system",
-                "uid": "7d013cdd-cc98-4a0b-a180-7cd227653dd4",
-                "resourceVersion": "5",
-                "creationTimestamp": "2020-03-26T09:07:01Z"
-            },
-            "spec": {
-                "finalizers": [
-                    "kubernetes"
-                ]
-            },
-            "status": {
-                "phase": "Active"
-            }
-        },
-        {
-            "metadata": {
-                "name": "kubernetes-dashboard",
-                "selfLink": "/api/v1/namespaces/kubernetes-dashboard",
-                "uid": "8ff22b3c-655b-4d09-92dc-ec00da60d7d8",
-                "resourceVersion": "28389",
-                "creationTimestamp": "2020-03-26T12:30:35Z"
-            },
-            "spec": {
-                "finalizers": [
-                    "kubernetes"
-                ]
-            },
-            "status": {
-                "phase": "Active"
-            }
         }
     ]
 }
-```           
+```         
+## deploy blockchain network                 
+URL：http://ip:port//api/v1/deploy      
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/deploy           
+request parameter:       
+```json
+{
+	"BlockChainName": "chainnetwork1",
+	"BlockChainType": "fabric",
+	"DeployCfg":{ 
+		"DeployNetCfg": {
+			"OrdererOrgs": [
+			{
+				"Name": "Orderer",
+				"Domain": "orderer.baas.xyz",
+				"Specs": [
+					{
+						"Hostname": "orderer0"
+					},
+					{
+						"Hostname": "orderer1"
+					}
+				]
+			}
+		],
+			"PeerOrgs": [
+			{
+				"Name": "Org1",
+				"Domain": "Org1.fabric.baas.xyz",
+				"Specs": [
+					{
+						"Hostname": "peer0"
+					},
+					{
+						"Hostname": "peer1"
+					}
+				],
+				"Users": {
+					"Count": 1
+				}
+			},
+			{
+				"Name": "Org2",
+				"Domain": "Org2.fabric.baas.xyz",
+				"Specs": [
+					{
+						"Hostname": "peer0"
+					},
+					{
+						"Hostname": "peer1"
+					}
+				],
+				"Users": {
+					"Count": 1
+				}
+			}
+		]
+		},
+		"DeployType": "KAFKA_FABRIC",
+		"Version": "1.3.0",
+		"CryptoType": "ECDSA",
+		"ClusterId": "cluster1"
+	}
+}
+``` 
+API RETURN:                  
+```json     
+{
+    "code": 0,       
+    "message": "success",              
+    "data": {
+        "BlockChainId": "Ys55rfOqDUJpU5QAAN9xvk18JpP0gmpY", //blockchain id      
+        "BlockChainName": "chainnetwork1"      
+    }         
+}
+```      
