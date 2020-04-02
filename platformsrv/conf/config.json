@@ -1,8 +1,8 @@
 {
     "SrvAddr": "localhost",
     "SrvPort": "9001",
-    "ClusterCfgPath": "./conf/cluster/",
-    "ClusterPkiBasePath": "./conf/pki",
-    "BlockNetCfgBasePath": "./conf/net/",
-    "BlockChainVersionCfg": "./settings/version.json"
+    "ClusterCfgPath": "conf/cluster/",
+    "ClusterPkiBasePath": "conf/pki/",
+    "BlockNetCfgBasePath": "conf/net/",
+    "BlockChainVersionCfg": "settings/version.json"
 }

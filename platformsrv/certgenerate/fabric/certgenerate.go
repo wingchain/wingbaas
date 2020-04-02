@@ -131,7 +131,7 @@ func getConfig(configData string) (*Config, error) {
 func Generate(jsonConfig string,outDir string,cryptoType string) bool{
 	bl,configData := JsonToYaml(jsonConfig)
 	if !bl {
-		logger.Error("certgenerate generate JsonToYaml error")
+		logger.Errorf("certgenerate generate JsonToYaml error")
 		return false
 	}
 	//configData = defaultConfig

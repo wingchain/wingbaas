@@ -4,6 +4,8 @@ package utils
 import (
 	"fmt"
 	"encoding/json"
+	"path/filepath"
+	"os"
 	"github.com/wingbaas/platformsrv/logger"
 )
 
@@ -22,7 +24,16 @@ type BaasCfg struct {
 }
 
 var BAAS_CFG *BaasCfg = nil
-var BLOCK_CFG_MAP map[string]interface{} 
+var BLOCK_CFG_MAP map[string]interface{}
+
+func GetProcessRunRoot() (string,error) {
+	root,err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		logger.Errorf("GetProcessRunRoot: get process run root dir error,%v",err)
+		return "",fmt.Errorf("GetProcessRunRoot: get process run root dir error,%v",err)
+	}
+	return root,nil
+}
 
 func (cfg *BaasCfg) CfgInit(cfgFile string) error {
 	bytes,err := LoadFile(cfgFile)
@@ -39,7 +50,17 @@ func (cfg *BaasCfg) CfgInit(cfgFile string) error {
 }
 
 func (cfg *BaasCfg) CfgPathInit() error {
-	err := DirCheck(cfg.ClusterCfgPath)
+
+	root,err := GetProcessRunRoot()
+	if err != nil {
+		logger.Errorf("CfgPathInit: %v",err)
+		return fmt.Errorf("CfgPathInit: %v",err)
+	}
+	cfg.ClusterCfgPath = root + "/" + cfg.ClusterCfgPath
+	cfg.ClusterPkiBasePath = root + "/" + cfg.ClusterPkiBasePath
+	cfg.BlockNetCfgBasePath = root + "/" + cfg.BlockNetCfgBasePath
+
+	err = DirCheck(cfg.ClusterCfgPath)
 	if err != nil {
 		logger.Errorf("CfgPathInit: ClusterCfgPath init error")
 		return fmt.Errorf("%v", err)

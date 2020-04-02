@@ -9,6 +9,7 @@ import (
 	"github.com/wingbaas/platformsrv/logger"
 	"github.com/wingbaas/platformsrv/k8s"
 	"github.com/goinggo/mapstructure"
+	"github.com/wingbaas/platformsrv/utils"
 	"github.com/wingbaas/platformsrv/settings/fabric"
 )
 
@@ -17,6 +18,7 @@ const (
 	CODE_ERROR_BODY          int = 101
 	CODE_ERROR_MASHAL        int = 102
 	CODE_ERROR_EXE           int = 103
+	CODE_ERROR_CONFIG        int = 103
 	MSG_SUCCESS              string = "success"
 	MSG_ERROR                string = "error"
 )
@@ -24,7 +26,7 @@ const (
 type Deploy struct {
 	BlockChainName      string        `json:"BlockChainName"`
 	BlockChainType      string        `json:"BlockChainType"`
-	DeployCfg     		interface{}   `json:"DeployCfg"`
+	DeployCfg     		interface{}   `json:"DeployCfg"`       
 }
 
 /* All interface of platformSrv return struct */
@@ -103,6 +105,7 @@ func deployBlockChain(c echo.Context) error {
 		return c.JSON(http.StatusOK,ret)
 	}
 	var blockId string
+	var clusterId string
 	if d.BlockChainType == "fabric" {
 		cfgMap, ok := d.DeployCfg.(map[string]interface{}) 
 		if !ok {
@@ -118,6 +121,7 @@ func deployBlockChain(c echo.Context) error {
 			return c.JSON(http.StatusOK,ret)
 		}
 		blockId,err = fabric.DeployFabric(cfg)
+		clusterId = cfg.ClusterId
 		if err != nil {
 			ret := getApiRet(CODE_ERROR_BODY,err.Error(),nil)
 			return c.JSON(http.StatusOK,ret)
@@ -131,13 +135,40 @@ func deployBlockChain(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_EXE,msg,nil)
 		return c.JSON(http.StatusOK,ret)
 	}
-	type res struct {
-		BlockChainId 	string `json:"BlockChainId"`
-		BlockChainName  string `json:"BlockChainName"`
+	var chain k8s.Chain
+	chain.BlockChainId = blockId
+	chain.BlockChainName = d.BlockChainName
+	chain.BlockChainType = d.BlockChainType
+	chain.ClusterId = clusterId
+	err = k8s.AddChain(chain)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
 	}
-	var r res
-	r.BlockChainId = blockId
-	r.BlockChainName = d.BlockChainName
-	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,r)
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,chain)
 	return c.JSON(http.StatusOK,ret) 
+}
+
+func getChains(c echo.Context) error {
+	logger.Debug("getChains")
+	clusterId := c.Param("clusterid")
+	obj,err := k8s.GetChains(clusterId)
+	if err!= nil {
+		msg := err.Error()
+        ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,obj)
+	return c.JSON(http.StatusOK,ret)
+}
+
+func getBlockChainTypes(c echo.Context) error {
+	logger.Debug("getBlockChainTypes")
+	if utils.BLOCK_CFG_MAP == nil {
+		msg := "blockchain type config not find"
+        ret := getApiRet(CODE_ERROR_CONFIG,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,utils.BLOCK_CFG_MAP)
+	return c.JSON(http.StatusOK,ret)
 }

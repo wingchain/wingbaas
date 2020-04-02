@@ -38,8 +38,8 @@ func AddCluster(cluster Cluster) error {
 	}
 	for _,c := range clusters {
 		if c.ClusterId == cluster.ClusterId {
-			logger.Errorf("AddCluster: cluster id already exsist")
-			return fmt.Errorf("%s", "cluster id already exsist")
+			logger.Errorf("%s%s","AddCluster: cluster id already exsist ",cluster.ClusterId)
+			return fmt.Errorf("%s%s","AddCluster: cluster id already exsist ",cluster.ClusterId)
 		}
 	}
 	clusters = append(clusters,cluster)

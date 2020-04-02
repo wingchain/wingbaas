@@ -44,7 +44,7 @@ type DeployPara struct {
 	DeployType       	string          	`json:"DeployType"`
 	Version    		 	string          	`json:"Version"`
 	CryptoType       	string          	`json:"CryptoType"`
-	ClusterId        	string          	`json:"ClusterId"`
+	ClusterId        	string          	`json:"ClusterId"` 
 }
 
 func DeployFabric(p DeployPara)(string,error) {
@@ -57,28 +57,39 @@ func DeployFabric(p DeployPara)(string,error) {
 		return "",fmt.Errorf("DeployFabric: unsupported crypto type")
 	}
 	blockId := utils.GenerateRandomString(32)
-	bytes, err := json.Marshal(p)
+	bytes, err := json.Marshal(p.DeployNetCfg)
 	if err != nil {
-		logger.Errorf("DeployFabric: Marshal deploy para error")
-		return "",fmt.Errorf("DeployFabric: Marshal deploy para error")
+		logger.Errorf("DeployFabric: Marshal deploy net config error")
+		return "",fmt.Errorf("DeployFabric: Marshal deploy net config error")
 	}
-	blockCfgPath := utils.BAAS_CFG.BlockNetCfgBasePath + blockId
+	blockCfgPath := utils.BAAS_CFG.BlockNetCfgBasePath + blockId 
 	err = utils.DirCheck(blockCfgPath)
 	if err != nil {
 		logger.Errorf("DeployFabric: create block config path error")
 		return "",fmt.Errorf("DeployFabric: create block config path error")
 	}
-	blockCfgFile := blockCfgPath + "/" + blockId + ".json"
+	bl := fabric.Generate(string(bytes),blockCfgPath + "/crypto-config",p.CryptoType) 
+	if !bl {
+		logger.Errorf("DeployFabric: generate block certification error")
+		return "",fmt.Errorf("DeployFabric: generate block certification error")
+	}
+	// err = GenerateGenesisBlock(blockCfgPath,p.DeployNetCfg,p.DeployType)
+	// if err != nil {
+	// 	logger.Errorf("DeployFabric: GenerateGenesisBlock error")
+	// 	return "",fmt.Errorf("DeployFabric: GenerateGenesisBlock error")
+	// }
+	bytes, err = json.Marshal(p)
+	if err != nil {
+		logger.Errorf("DeployFabric: Marshal deploy all config error") 
+		return "",fmt.Errorf("DeployFabric: Marshal deploy all config error")
+	}
+	blockCfgFile := blockCfgPath + "/" + blockId + ".json" 
 	err = utils.WriteFile(blockCfgFile,string(bytes))
 	if err != nil {
 		logger.Errorf("DeployFabric: write block config error")
 		return "",fmt.Errorf("DeployFabric: write block config error")
 	}
-	bl := fabric.Generate(string(bytes),blockCfgPath,p.CryptoType)
-	if !bl {
-		logger.Errorf("DeployFabric: generate block certification error")
-		return "",fmt.Errorf("DeployFabric: generate block certification error")
-	}
+	
 	return blockId,nil 
 }
 

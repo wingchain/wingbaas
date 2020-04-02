@@ -57,6 +57,41 @@ API RETURN：
 }    
 ```    
 
+## get blockchain type support deploy                                         
+URL：http://ip:port/api/v1/blockchaintypes                                                
+METHOD：GET    
+INPUT PARA:                          
+RETURN：json obj       
+example:        
+request:http://localhost:9001/api/v1/blockchaintypes                                                    
+API RETURN：                         
+```json     
+{
+    "code": 0,
+    "message": "success",
+    "data": {
+        "fabric": {
+            "version": {
+                "1.3.0": {
+                    "baseos": "registry.wingbaas.cn:5000/fabric-baseos:amd64-0.4.13",
+                    "ca": "registry.wingbaas.cn:5000/fabric-ca:1.3.0",
+                    "ccenv": "registry.wingbaas.cn:5000/fabric-ccenv:1.3.0",
+                    "kafka": "registry.wingbaas.cn:5000/fabric-kafka:0.4.10",
+                    "orderer": "registry.wingbaas.cn:5000/fabric-orderer:1.3.0",
+                    "peer": "registry.wingbaas.cn:5000/fabric-peer:1.3.0",
+                    "zookeeper": "registry.wingbaas.cn:5000/fabric-zookeeper:0.4.10"
+                }
+            }
+        },
+        "wingchain": {
+            "version": {
+                "1.0.0": {}
+            }
+        }
+    }
+}
+```         
+
 ## get namespaces in kubernetes cluster                               
 URL：http://ip:port/api/v1/:clusterid/namespaces                             
 METHOD：GET    
@@ -164,7 +199,31 @@ API RETURN:
     "message": "success",              
     "data": {
         "BlockChainId": "Ys55rfOqDUJpU5QAAN9xvk18JpP0gmpY", //blockchain id      
-        "BlockChainName": "chainnetwork1"      
+		"BlockChainName": "chainnetwork1",         
+		"ClusterId": "cluster1"         
     }         
 }
 ```      
+
+## get blockchains deploy in kubernetes cluster                                 
+URL：http://ip:port/api/v1/:clusterid/blockchains                                       
+METHOD：GET    
+INPUT PARA: clusterid                   
+RETURN：json obj       
+example:        
+request:http://localhost:9001/api/v1/cluster1/blockchains                                           
+API RETURN：                         
+```json     
+{
+    "code": 0,      
+    "message": "success",       
+    "data": [       
+        {
+            "BlockChainId": "GAZrm1ppCH7oZqRsRlPDZjSVoF9cvbbH",       
+            "BlockChainName": "chainnetwork2",          
+            "BlockChainType": "fabric",          
+            "ClusterId": "cluster1"       
+        }      
+    ]      
+}      
+```         
