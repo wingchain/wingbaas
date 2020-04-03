@@ -24,8 +24,8 @@ import (
 	"github.com/labstack/gommon/log"
 	//"golang.org/x/crypto/acme"
 	"golang.org/x/crypto/acme/autocert"
-	"golang.org/x/net/http2"
-	"golang.org/x/net/http2/h2c"
+	//"golang.org/x/net/http2"
+	//"golang.org/x/net/http2/h2c"
 )
 
 type (
@@ -684,6 +684,7 @@ func (e *Echo) StartServer(s *http.Server) (err error) {
 }
 
 // StartH2CServer starts a custom http/2 server with h2c (HTTP/2 Cleartext).
+/*
 func (e *Echo) StartH2CServer(address string, h2s *http2.Server) (err error) {
 	// Setup
 	s := e.Server
@@ -710,6 +711,7 @@ func (e *Echo) StartH2CServer(address string, h2s *http2.Server) (err error) {
 	}
 	return s.Serve(e.Listener)
 }
+*/
 
 // Close immediately stops the server.
 // It internally calls `http.Server#Close()`.
