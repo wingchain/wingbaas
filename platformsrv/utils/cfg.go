@@ -3,10 +3,12 @@ package utils
 
 import (
 	"fmt"
+	"bytes"
+	"os"
+	"os/exec"
 	"encoding/json"
 	"path/filepath"
-	"os"
-	"github.com/wingbaas/platformsrv/logger"
+	"github.com/wingbaas/platformsrv/logger" 
 )
 
 type Config interface {
@@ -21,6 +23,8 @@ type BaasCfg struct {
 	ClusterPkiBasePath      string 		`json:"ClusterPkiBasePath"`
 	BlockNetCfgBasePath     string 		`json:"BlockNetCfgBasePath"`
 	BlockChainVersionCfg    string		`json:"BlockChainVersionCfg"`
+	NfsServerAddr           string      `json:"NfsServerAddr"`
+	NfsRootDir              string      `json:"NfsRootDir"`
 }
 
 var BAAS_CFG *BaasCfg = nil
@@ -33,6 +37,17 @@ func GetProcessRunRoot() (string,error) {
 		return "",fmt.Errorf("GetProcessRunRoot: get process run root dir error,%v",err)
 	}
 	return root,nil
+}
+
+func ExecShell(s string) (string, error) {
+    cmd := exec.Command("/bin/bash", "-c", s)
+    var out bytes.Buffer
+    cmd.Stdout = &out
+	err := cmd.Run()
+	if err != nil {
+		return "",fmt.Errorf("execShell: exec cmd=%s   err=%v",s,err)
+	}
+    return out.String(),err
 }
 
 func (cfg *BaasCfg) CfgInit(cfgFile string) error {
@@ -50,7 +65,6 @@ func (cfg *BaasCfg) CfgInit(cfgFile string) error {
 }
 
 func (cfg *BaasCfg) CfgPathInit() error {
-
 	root,err := GetProcessRunRoot()
 	if err != nil {
 		logger.Errorf("CfgPathInit: %v",err)
@@ -59,6 +73,8 @@ func (cfg *BaasCfg) CfgPathInit() error {
 	cfg.ClusterCfgPath = root + "/" + cfg.ClusterCfgPath
 	cfg.ClusterPkiBasePath = root + "/" + cfg.ClusterPkiBasePath
 	cfg.BlockNetCfgBasePath = root + "/" + cfg.BlockNetCfgBasePath
+	cfg.BlockChainVersionCfg = root + "/" + cfg.BlockChainVersionCfg
+	cfg.NfsRootDir = root + "/" + cfg.NfsRootDir
 
 	err = DirCheck(cfg.ClusterCfgPath)
 	if err != nil {
@@ -75,8 +91,20 @@ func (cfg *BaasCfg) CfgPathInit() error {
 		logger.Errorf("CfgPathInit: BlockNetCfgBasePath init error")
 		return fmt.Errorf("%v", err)
 	}
-	return nil
-} 
+	err = DirCheck(cfg.NfsRootDir)
+	if err != nil {
+		logger.Errorf("CfgPathInit: NfsRootDir init error")
+		return fmt.Errorf("%v", err)
+	}
+	cmd := "sudo mount -t nfs -o resvport " + cfg.NfsServerAddr + " " + cfg.NfsRootDir
+	//cmd := "mount -t nfs " + cfg.NfsServerAddr + " " + cfg.NfsRootDir
+	_,err = ExecShell(cmd)
+	if err != nil {
+		logger.Errorf("CfgPathInit: mount nfs error, %v",err)
+		return fmt.Errorf("CfgPathInit: mount nfs error, %v",err)
+	}
+	return nil 
+}
 
 func (cfg *BaasCfg) CfgBlockCfgInit() error {
 	bytes,err := LoadFile(cfg.BlockChainVersionCfg) 
@@ -91,6 +119,6 @@ func (cfg *BaasCfg) CfgBlockCfgInit() error {
 		return fmt.Errorf("%v", err)
 	}
 	return nil 
-} 
+}
 
 

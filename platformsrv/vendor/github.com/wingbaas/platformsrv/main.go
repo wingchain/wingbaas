@@ -15,7 +15,7 @@ func main() {
 	if len(os.Args) >= 2 {
 		cfgFile = os.Args[1]
 	}else {
-		logger.Debug("wingbaas start with ./conf/config.json")
+		logger.Debug("wingbaas start with default config file conf/config.json")
 		cfgFile = "./conf/config.json"
 	}
 	utils.BAAS_CFG = new(utils.BaasCfg)

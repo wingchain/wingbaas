@@ -851,118 +851,118 @@
 			"revision": ""
 		},
 		{
-			"checksumSHA1": "Q5bU2ytBsz1wML4tcQvzRce2OWA=",
+			"checksumSHA1": "Xgsd8/24XBgymppHYsfvbVahiIA=",
 			"path": "github.com/wingbaas/platformsrv",
-			"revision": "4a53561a8161c271d221835b4bf967f9d382127d",
-			"revisionTime": "2020-04-01T10:23:03Z"
+			"revision": "4abb66aebab44af28f8cf8c8acbfabf16ccf6c47",
+			"revisionTime": "2020-04-02T10:40:04Z"
 		},
 		{
 			"checksumSHA1": "3A4BqmUMqhX4rl8/WHWPjjzNTmE=",
 			"path": "github.com/wingbaas/platformsrv/api",
-			"revision": "4a53561a8161c271d221835b4bf967f9d382127d",
-			"revisionTime": "2020-04-01T10:23:03Z"
+			"revision": "4abb66aebab44af28f8cf8c8acbfabf16ccf6c47",
+			"revisionTime": "2020-04-02T10:40:04Z"
 		},
 		{
 			"checksumSHA1": "omdDJNSdvodZOtqw/ocTtD9To18=",
 			"path": "github.com/wingbaas/platformsrv/certgenerate/fabric",
-			"revision": "4a53561a8161c271d221835b4bf967f9d382127d",
-			"revisionTime": "2020-04-01T10:23:03Z"
+			"revision": "4abb66aebab44af28f8cf8c8acbfabf16ccf6c47",
+			"revisionTime": "2020-04-02T10:40:04Z"
 		},
 		{
 			"checksumSHA1": "9T4rUnfMxGNksb+18PmX0gzk/QA=",
 			"path": "github.com/wingbaas/platformsrv/certgenerate/fabric/ca",
-			"revision": "4a53561a8161c271d221835b4bf967f9d382127d",
-			"revisionTime": "2020-04-01T10:23:03Z"
+			"revision": "4abb66aebab44af28f8cf8c8acbfabf16ccf6c47",
+			"revisionTime": "2020-04-02T10:40:04Z"
 		},
 		{
 			"checksumSHA1": "cjQhDbo6BJ/SyG3iJaMcLfPxLq8=",
 			"path": "github.com/wingbaas/platformsrv/certgenerate/fabric/csp",
-			"revision": "4a53561a8161c271d221835b4bf967f9d382127d",
-			"revisionTime": "2020-04-01T10:23:03Z"
+			"revision": "4abb66aebab44af28f8cf8c8acbfabf16ccf6c47",
+			"revisionTime": "2020-04-02T10:40:04Z"
 		},
 		{
 			"checksumSHA1": "DcM71e213gRUYwUnG5hq3NfhFSw=",
 			"path": "github.com/wingbaas/platformsrv/certgenerate/fabric/gopkg.in/alecthomas/kingpin.v2",
-			"revision": "4a53561a8161c271d221835b4bf967f9d382127d",
-			"revisionTime": "2020-04-01T10:23:03Z"
+			"revision": "4abb66aebab44af28f8cf8c8acbfabf16ccf6c47",
+			"revisionTime": "2020-04-02T10:40:04Z"
 		},
 		{
 			"checksumSHA1": "2geQKV9SfY7K+lq4faCEReP7QGs=",
 			"path": "github.com/wingbaas/platformsrv/certgenerate/fabric/gopkg.in/alecthomas/template",
-			"revision": "4a53561a8161c271d221835b4bf967f9d382127d",
-			"revisionTime": "2020-04-01T10:23:03Z"
+			"revision": "4abb66aebab44af28f8cf8c8acbfabf16ccf6c47",
+			"revisionTime": "2020-04-02T10:40:04Z"
 		},
 		{
 			"checksumSHA1": "UuUTl/r4JLxTscGGb8kyEjwwAT0=",
 			"path": "github.com/wingbaas/platformsrv/certgenerate/fabric/gopkg.in/alecthomas/template/parse",
-			"revision": "4a53561a8161c271d221835b4bf967f9d382127d",
-			"revisionTime": "2020-04-01T10:23:03Z"
+			"revision": "4abb66aebab44af28f8cf8c8acbfabf16ccf6c47",
+			"revisionTime": "2020-04-02T10:40:04Z"
 		},
 		{
 			"checksumSHA1": "93RaKa6Mpxzswq5wS7Qdqn6uwMg=",
 			"path": "github.com/wingbaas/platformsrv/certgenerate/fabric/gopkg.in/alecthomas/units",
-			"revision": "4a53561a8161c271d221835b4bf967f9d382127d",
-			"revisionTime": "2020-04-01T10:23:03Z"
+			"revision": "4abb66aebab44af28f8cf8c8acbfabf16ccf6c47",
+			"revisionTime": "2020-04-02T10:40:04Z"
 		},
 		{
 			"checksumSHA1": "ns+TgaZD9rkwwinJS2Yg3kF3Zgk=",
 			"path": "github.com/wingbaas/platformsrv/certgenerate/fabric/gopkg.in/yaml.v2",
-			"revision": "4a53561a8161c271d221835b4bf967f9d382127d",
-			"revisionTime": "2020-04-01T10:23:03Z"
+			"revision": "4abb66aebab44af28f8cf8c8acbfabf16ccf6c47",
+			"revisionTime": "2020-04-02T10:40:04Z"
 		},
 		{
 			"checksumSHA1": "Y83Gv9widL8Dcf9PLNwFRYYQxLY=",
 			"path": "github.com/wingbaas/platformsrv/certgenerate/fabric/metadata",
-			"revision": "4a53561a8161c271d221835b4bf967f9d382127d",
-			"revisionTime": "2020-04-01T10:23:03Z"
+			"revision": "4abb66aebab44af28f8cf8c8acbfabf16ccf6c47",
+			"revisionTime": "2020-04-02T10:40:04Z"
 		},
 		{
 			"checksumSHA1": "hgIM1kaVVOgLtlnSGJ0sSg3T/qk=",
 			"path": "github.com/wingbaas/platformsrv/certgenerate/fabric/msp",
-			"revision": "4a53561a8161c271d221835b4bf967f9d382127d",
-			"revisionTime": "2020-04-01T10:23:03Z"
+			"revision": "4abb66aebab44af28f8cf8c8acbfabf16ccf6c47",
+			"revisionTime": "2020-04-02T10:40:04Z"
 		},
 		{
 			"checksumSHA1": "MpDIBbpWcModJ+S7hSBH4gJ18kc=",
 			"path": "github.com/wingbaas/platformsrv/k8s",
-			"revision": "4a53561a8161c271d221835b4bf967f9d382127d",
-			"revisionTime": "2020-04-01T10:23:03Z"
+			"revision": "4abb66aebab44af28f8cf8c8acbfabf16ccf6c47",
+			"revisionTime": "2020-04-02T10:40:04Z"
 		},
 		{
 			"checksumSHA1": "ErNX5a6FYwaGPuKuxAXS1twZrs4=",
 			"path": "github.com/wingbaas/platformsrv/logger",
-			"revision": "4a53561a8161c271d221835b4bf967f9d382127d",
-			"revisionTime": "2020-04-01T10:23:03Z"
+			"revision": "4abb66aebab44af28f8cf8c8acbfabf16ccf6c47",
+			"revisionTime": "2020-04-02T10:40:04Z"
 		},
 		{
-			"checksumSHA1": "fPA4RzbbubSQPia5D7TmXZhh+/k=",
+			"checksumSHA1": "fdG2USTiKiv/4fcaSWYxaffXfHw=",
 			"path": "github.com/wingbaas/platformsrv/settings/fabric",
-			"revision": "4a53561a8161c271d221835b4bf967f9d382127d",
-			"revisionTime": "2020-04-01T10:23:03Z"
+			"revision": "4abb66aebab44af28f8cf8c8acbfabf16ccf6c47",
+			"revisionTime": "2020-04-02T10:40:04Z"
 		},
 		{
 			"checksumSHA1": "fdIAz9Myx26/Bg14x33iveqFboU=",
 			"path": "github.com/wingbaas/platformsrv/settings/fabric/txgenerate",
-			"revision": "4a53561a8161c271d221835b4bf967f9d382127d",
-			"revisionTime": "2020-04-01T10:23:03Z"
+			"revision": "4abb66aebab44af28f8cf8c8acbfabf16ccf6c47",
+			"revisionTime": "2020-04-02T10:40:04Z"
 		},
 		{
 			"checksumSHA1": "ZRA8AeXmEWvqSlNRu4q9SB8l9Q0=",
 			"path": "github.com/wingbaas/platformsrv/settings/fabric/txgenerate/encoder",
-			"revision": "4a53561a8161c271d221835b4bf967f9d382127d",
-			"revisionTime": "2020-04-01T10:23:03Z"
+			"revision": "4abb66aebab44af28f8cf8c8acbfabf16ccf6c47",
+			"revisionTime": "2020-04-02T10:40:04Z"
 		},
 		{
 			"checksumSHA1": "jqXdeZjunK6iz+etaLjydP0Y5BU=",
 			"path": "github.com/wingbaas/platformsrv/settings/fabric/txgenerate/pkg/errors",
-			"revision": "4a53561a8161c271d221835b4bf967f9d382127d",
-			"revisionTime": "2020-04-01T10:23:03Z"
+			"revision": "4abb66aebab44af28f8cf8c8acbfabf16ccf6c47",
+			"revisionTime": "2020-04-02T10:40:04Z"
 		},
 		{
-			"checksumSHA1": "xCrGkEvf66FINSRIRV0QsaTj6Qw=",
+			"checksumSHA1": "Y3jID4gDrJjpPI3Rlujix6OcgCo=",
 			"path": "github.com/wingbaas/platformsrv/utils",
-			"revision": "4a53561a8161c271d221835b4bf967f9d382127d",
-			"revisionTime": "2020-04-01T10:23:03Z"
+			"revision": "4abb66aebab44af28f8cf8c8acbfabf16ccf6c47",
+			"revisionTime": "2020-04-02T10:40:04Z"
 		},
 		{
 			"checksumSHA1": "4JeqOqxJwpFPYXjYy6PCfUb+Flg=",
