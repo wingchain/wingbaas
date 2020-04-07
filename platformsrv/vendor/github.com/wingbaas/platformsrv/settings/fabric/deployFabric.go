@@ -7,6 +7,7 @@ import (
 	"github.com/wingbaas/platformsrv/logger"
 	"github.com/wingbaas/platformsrv/utils"
 	"github.com/wingbaas/platformsrv/certgenerate/fabric"
+	"github.com/wingbaas/platformsrv/k8s/deployfabric"
 )
 
 const (
@@ -47,7 +48,7 @@ type DeployPara struct {
 	ClusterId        	string          	`json:"ClusterId"` 
 }
 
-func DeployFabric(p DeployPara)(string,error) {
+func DeployFabric(p DeployPara,chainName string)(string,error) {
 	if p.DeployType != SOLO_FABRIC && p.DeployType != KAFKA_FABRIC && p.DeployType != RAFT_FABRIC {
 		logger.Errorf("DeployFabric: unsupported deploy type")
 		return "",fmt.Errorf("DeployFabric: unsupported deploy type")
@@ -89,11 +90,19 @@ func DeployFabric(p DeployPara)(string,error) {
 		logger.Errorf("DeployFabric: create nfs cert dir=%s, err=%v",dstNfsPath,err)
 		return "",fmt.Errorf("DeployFabric: create nfs cert dir=%s, err=%v",dstNfsPath,err)
 	}
-	_,err = utils.CopyDir(blockCertPath,dstNfsPath)
+	// _,err = utils.CopyDir(blockCertPath,dstNfsPath)
+	// if err != nil {
+	// 	logger.Errorf("DeployFabric: copy blockchain cert to nfs error,blockchain id=%s",blockId) 
+	// 	return "",fmt.Errorf("DeployFabric: copy blockchain cert to nfs error,blockchain id=%s",blockId)
+	// }
+
+	res,err := deployfabric.CreateNamespace(p.ClusterId,chainName) 
 	if err != nil {
-		logger.Errorf("DeployFabric: copy blockchain cert to nfs error,blockchain id=%s",blockId) 
-		return "",fmt.Errorf("DeployFabric: copy blockchain cert to nfs error,blockchain id=%s",blockId)
-	}
+		logger.Errorf("DeployFabric: CreateNamespace error") 
+		return "",fmt.Errorf("DeployFabric: CreateNamespace error")
+	} 
+	logger.Debug("DeployFabric:CreateNamespace res=%s",string(res))
+
 	bytes, err = json.Marshal(p)
 	if err != nil {
 		logger.Errorf("DeployFabric: Marshal deploy all config error") 
@@ -103,7 +112,7 @@ func DeployFabric(p DeployPara)(string,error) {
 	err = utils.WriteFile(blockCfgFile,string(bytes))
 	if err != nil {
 		logger.Errorf("DeployFabric: write block config error")
-		return "",fmt.Errorf("DeployFabric: write block config error")
+		return "",fmt.Errorf("DeployFabric: write block config error") 
 	}
 	return blockId,nil 
 }

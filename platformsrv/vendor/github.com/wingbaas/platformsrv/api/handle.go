@@ -81,6 +81,19 @@ func getClusters(c echo.Context) error {
 	return c.JSON(http.StatusOK,ret)
 }
 
+func getHosts(c echo.Context) error {
+	logger.Debug("getHosts")
+	clusterId := c.Param("clusterid")
+	obj,err := k8s.GetHostList(clusterId)
+	if err!= nil {
+		msg := err.Error()
+        ret := getApiRet(CODE_ERROR_EXE,msg,nil) 
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,obj)
+	return c.JSON(http.StatusOK,ret)
+}
+
 func getNamespaces(c echo.Context) error {
 	logger.Debug("getNamespaces")
 	clusterId := c.Param("clusterid")
@@ -120,7 +133,7 @@ func deployBlockChain(c echo.Context) error {
         	ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 			return c.JSON(http.StatusOK,ret)
 		}
-		blockId,err = fabric.DeployFabric(cfg)
+		blockId,err = fabric.DeployFabric(cfg,d.BlockChainName)
 		clusterId = cfg.ClusterId
 		if err != nil {
 			ret := getApiRet(CODE_ERROR_BODY,err.Error(),nil)

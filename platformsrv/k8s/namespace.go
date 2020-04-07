@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	NAMESPACES    string = "namespaces"
+	NAMESPACES    string = "namespaces" 
 )
 
 type Namespace struct {
@@ -41,9 +41,8 @@ type Namespaces struct {
 func GetClusterNamespaces(cluserId string) ([]Namespace,error) {
 	cluster,_ := GetCluster(cluserId)
 	if cluster == nil {
-		logger.Debug("GetClusterNamespaces: cluser nil,cluser id = ")
-		logger.Debug(cluserId)
-		return nil,nil
+		logger.Errorf("GetClusterNamespaces: cluser nil,cluser id =%s",cluserId)
+		return nil,fmt.Errorf("GetClusterNamespaces: cluser nil,cluser id =%s",cluserId)
 	}
 	bytes,err := utils.RequestWithCert(cluster.Addr + NAMESPACES,utils.REQ_GET,cluster.Cert,cluster.Key)
 	if err != nil { 
@@ -54,7 +53,7 @@ func GetClusterNamespaces(cluserId string) ([]Namespace,error) {
 	err = json.Unmarshal(bytes, &namespaces)
 	if err != nil {
 		logger.Errorf("GetClusterNamespaces: unmarshal namespaces err,%v", err)
-		return nil,fmt.Errorf("%s","GetClusterNamespaces: unmarshal namespaces error")
+		return nil,fmt.Errorf("GetClusterNamespaces: unmarshal namespaces err,%v", err)
 	}
 	return namespaces.Items,nil
 }

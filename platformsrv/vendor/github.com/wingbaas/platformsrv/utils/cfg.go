@@ -96,13 +96,13 @@ func (cfg *BaasCfg) CfgPathInit() error {
 		logger.Errorf("CfgPathInit: NfsRootDir init error")
 		return fmt.Errorf("%v", err)
 	}
-	cmd := "sudo mount -t nfs -o resvport " + cfg.NfsServerAddr + " " + cfg.NfsRootDir
-	//cmd := "mount -t nfs " + cfg.NfsServerAddr + " " + cfg.NfsRootDir
-	_,err = ExecShell(cmd)
-	if err != nil {
-		logger.Errorf("CfgPathInit: mount nfs error, %v",err)
-		return fmt.Errorf("CfgPathInit: mount nfs error, %v",err)
-	}
+	// cmd := "sudo mount -t nfs -o resvport " + cfg.NfsServerAddr + " " + cfg.NfsRootDir
+	// //cmd := "mount -t nfs " + cfg.NfsServerAddr + " " + cfg.NfsRootDir
+	// _,err = ExecShell(cmd)
+	// if err != nil {
+	// 	logger.Errorf("CfgPathInit: mount nfs error, %v",err)
+	// 	return fmt.Errorf("CfgPathInit: mount nfs error, %v",err)
+	// }
 	return nil 
 }
 
