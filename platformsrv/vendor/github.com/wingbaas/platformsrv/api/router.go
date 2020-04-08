@@ -17,7 +17,8 @@ func Start(port string) {
 	r.GET("/api/v1/:clusterid/namespaces",getNamespaces)
 	r.GET("/api/v1/blockchaintypes",getBlockChainTypes)
 	r.POST("/api/v1/deploy",deployBlockChain)
-	r.GET("/api/v1/:clusterid/blockchains",getChains) 
+	r.GET("/api/v1/:clusterid/blockchains",getChains)
+	r.POST("/api/v1/delete",deleteBlockChain)
 
 	// Start server
 	logger.Debug("start wing baas api server")

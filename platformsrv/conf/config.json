@@ -5,6 +5,8 @@
     "ClusterPkiBasePath": "conf/pki/",
     "BlockNetCfgBasePath": "conf/net/",
     "BlockChainVersionCfg": "settings/version.json",
-    "NfsServerAddr": "106.75.51.138:/home/nfs",
-    "NfsRootDir": "nfs/" 
+    "NfsExternalAddr": "106.75.51.138",
+    "NfsInternalAddr": "172.16.254.33",
+    "NfsBasePath": "/home/nfs",
+    "NfsLocalRootDir": "nfs/"
 }

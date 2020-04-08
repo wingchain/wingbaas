@@ -168,3 +168,24 @@ func GenerateRandomString(length int) string {
 	}
 	return string(result) 
 }
+
+func GetCaPrivateKey(chainId string,orgDomain string)(string,error) {
+	priKey := ""
+	certDir := BAAS_CFG.BlockNetCfgBasePath + chainId + "/crypto-config/peerOrganizations/" + orgDomain + "/ca/"
+	files, err := ioutil.ReadDir(certDir)
+	if err != nil {
+		logger.Errorf("GetCaPrivateKey: err=%v",err)
+		return priKey,fmt.Errorf("GetCaPrivateKey: err=%v",err)
+	}
+	for _, f := range files {
+    	if strings.Contains(f.Name(),"_sk") {
+			priKey = f.Name()
+			return priKey,nil
+    	}
+	}
+	if priKey == "" {
+		logger.Errorf("GetCaPrivateKey: not find private key")
+		return priKey,fmt.Errorf("GetCaPrivateKey: not find private key")
+	}
+	return priKey,nil 
+}

@@ -4,6 +4,7 @@ package fabric
 import (
 	"fmt"
 	"encoding/json"
+	"time"
 	"github.com/wingbaas/platformsrv/logger"
 	"github.com/wingbaas/platformsrv/utils"
 	"github.com/wingbaas/platformsrv/certgenerate/fabric"
@@ -48,7 +49,7 @@ type DeployPara struct {
 	ClusterId        	string          	`json:"ClusterId"` 
 }
 
-func DeployFabric(p DeployPara,chainName string)(string,error) {
+func DeployFabric(p DeployPara,chainName string,chainType string)(string,error) {
 	if p.DeployType != SOLO_FABRIC && p.DeployType != KAFKA_FABRIC && p.DeployType != RAFT_FABRIC {
 		logger.Errorf("DeployFabric: unsupported deploy type")
 		return "",fmt.Errorf("DeployFabric: unsupported deploy type")
@@ -84,25 +85,26 @@ func DeployFabric(p DeployPara,chainName string)(string,error) {
 		logger.Errorf("DeployFabric: GenerateChannelTx error: %v",err)
 		return "",fmt.Errorf("DeployFabric: GenerateChannelTx error: %v",err)
 	}
-	dstNfsPath := utils.BAAS_CFG.NfsRootDir + blockId
+	dstNfsPath := utils.BAAS_CFG.NfsLocalRootDir + blockId
 	err = utils.DirCheck(dstNfsPath)
 	if err != nil {
 		logger.Errorf("DeployFabric: create nfs cert dir=%s, err=%v",dstNfsPath,err)
 		return "",fmt.Errorf("DeployFabric: create nfs cert dir=%s, err=%v",dstNfsPath,err)
 	}
-	// _,err = utils.CopyDir(blockCertPath,dstNfsPath)
-	// if err != nil {
-	// 	logger.Errorf("DeployFabric: copy blockchain cert to nfs error,blockchain id=%s",blockId) 
-	// 	return "",fmt.Errorf("DeployFabric: copy blockchain cert to nfs error,blockchain id=%s",blockId)
-	// }
-
-	res,err := deployfabric.CreateNamespace(p.ClusterId,chainName) 
+	_,err = utils.CopyDir(blockCertPath,dstNfsPath)
 	if err != nil {
-		logger.Errorf("DeployFabric: CreateNamespace error") 
-		return "",fmt.Errorf("DeployFabric: CreateNamespace error")
-	} 
-	logger.Debug("DeployFabric:CreateNamespace res=%s",string(res))
+		logger.Errorf("DeployFabric: copy blockchain cert to nfs error,blockchain id=%s",blockId) 
+		return "",fmt.Errorf("DeployFabric: copy blockchain cert to nfs error,blockchain id=%s",blockId) 
+	}
 
+	if p.DeployType == KAFKA_FABRIC {
+		_,err = DeployComponetsKafka(p,chainName,blockId,chainType)
+		if err != nil {
+			logger.Errorf("DeployFabric: DeployComponets error=%s",err.Error()) 
+			return "",fmt.Errorf("DeployFabric: DeployComponets error=%s",err.Error())
+		} 
+	}
+	
 	bytes, err = json.Marshal(p)
 	if err != nil {
 		logger.Errorf("DeployFabric: Marshal deploy all config error") 
@@ -115,6 +117,39 @@ func DeployFabric(p DeployPara,chainName string)(string,error) {
 		return "",fmt.Errorf("DeployFabric: write block config error") 
 	}
 	return blockId,nil 
+}
+
+func DeployComponetsKafka(p DeployPara,chainName string,chainId string,chainType string)(string,error) {
+	_,err := deployfabric.CreateNamespace(p.ClusterId,chainName) 
+	if err != nil {
+		logger.Errorf("DeployComponets: CreateNamespace error") 
+		return "",fmt.Errorf("DeployComponets: CreateNamespace error")
+	}
+	time.Sleep(10 * time.Second)
+	for _,org := range p.DeployNetCfg.PeerOrgs {
+		caName := "ca-" + org.Name
+		caImage,err := utils.GetBlockImage(chainType,p.Version,"ca")
+		if err != nil {
+			logger.Errorf("DeployComponets: GetBlockImage ca error,chainType=%s version=%s",chainType,p.Version)
+			return "",fmt.Errorf("DeployComponets: GetBlockImage ca error,chainType=%s version=%s",chainType,p.Version)
+		}
+		priKey,err := utils.GetCaPrivateKey(chainId,org.Domain)
+		if err != nil {
+			logger.Errorf("DeployComponets: GetCaPrivateKey error=%s caName=%s",err.Error(),caName) 
+			return "",fmt.Errorf("DeployComponets: GetCaPrivateKey error=%s caName=%s",err.Error(),caName)
+		}
+		_,err = deployfabric.CreateCaDeployment(p.ClusterId,chainName,chainId,caImage,caName,org.Domain,priKey)
+		if err != nil {
+			logger.Errorf("DeployComponets: CreateCaDeployment error=%s caName=%s",err.Error(),caName)
+			return "",fmt.Errorf("DeployComponets: CreateCaDeployment error=%s caName=%s",err.Error(),caName)
+		}
+		_,err = deployfabric.CreateCaService(p.ClusterId,chainName,caName)
+		if err != nil {
+			logger.Errorf("DeployComponets: CreateCaService error=%s caName=%s",err.Error(),caName) 
+			return "",fmt.Errorf("DeployComponets: CreateCaService error=%s caName=%s",err.Error(),caName)
+		} 
+	}
+	return "",nil  
 }
 
 

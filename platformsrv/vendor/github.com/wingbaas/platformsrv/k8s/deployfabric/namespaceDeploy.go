@@ -52,8 +52,8 @@ type NamespaceDeployResultError struct {
 func CreateNamespace(clusterId string,namespaceId string)([]byte,error) {
 	cluster,_ := k8s.GetCluster(clusterId)
 	if cluster == nil {
-		logger.Errorf("CreateNamespace: cluser nil,cluser id =%s",clusterId)
-		return nil,fmt.Errorf("CreateNamespace: cluser nil,cluser id =%s",clusterId)
+		logger.Errorf("CreateNamespace: cluster nil,cluster id =%s",clusterId)
+		return nil,fmt.Errorf("CreateNamespace: cluster nil,cluster id =%s",clusterId)
 	}
 	var obj NamespaceDeploy
 	obj.ApiVersion = "v1"
@@ -64,7 +64,7 @@ func CreateNamespace(clusterId string,namespaceId string)([]byte,error) {
 		logger.Errorf("CreateNamespace: YAML obj marshal, err: %v", err)
 		return nil,fmt.Errorf("CreateNamespace: YAML obj marshal, err: %v", err)
 	}
-	reqUrl := cluster.Addr + k8s.NAMESPACES
+	reqUrl := cluster.Addr + k8s.API_V1 + k8s.NAMESPACES
 	bytes,err = utils.RequestWithCertAndBody(reqUrl,utils.REQ_POST,cluster.Cert,cluster.Key,string(bytes))
 	if err != nil { 
 		logger.Errorf("CreateNamespace: RequestWithCertAndBody err,%v", err)
@@ -76,7 +76,28 @@ func CreateNamespace(clusterId string,namespaceId string)([]byte,error) {
 		logger.Errorf("CreateNamespace: create result err,%v", err)
 		return nil,fmt.Errorf("CreateNamespace: create result err,%v", err)
 	}
-	return bytes,nil
+	return nil,nil
+}
+
+func DeleteNamespace(clusterId string,namespaceId string)([]byte,error) {
+	cluster,_ := k8s.GetCluster(clusterId)
+	if cluster == nil {
+		logger.Errorf("DeleteNamespace: cluser nil,cluser id =%s",clusterId)
+		return nil,fmt.Errorf("DeleteNamespace: cluster nil,cluster id =%s",clusterId)
+	}
+	reqUrl := cluster.Addr + k8s.API_V1 + k8s.NAMESPACES + "/" + namespaceId
+	bytes,err := utils.RequestWithCert(reqUrl,utils.REQ_DELETE,cluster.Cert,cluster.Key)
+	if err != nil { 
+		logger.Errorf("DeleteNamespace: RequestWithCertAndBody err,%v", err)
+		return nil,fmt.Errorf("DeleteNamespace: RequestWithCertAndBody err,%v", err)
+	}
+	var result NamespaceDeployResult 
+	err = json.Unmarshal(bytes, &result)
+	if err != nil { 
+		logger.Errorf("DeleteNamespace: delete result err,%v", err)
+		return nil,fmt.Errorf("DeleteNamespace: delete result err,%v", err)
+	}
+	return nil,nil
 }
 
 

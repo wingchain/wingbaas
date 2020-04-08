@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"path/filepath"
 	"github.com/wingbaas/platformsrv/logger" 
+	"github.com/goinggo/mapstructure"
 )
 
 type Config interface {
@@ -23,8 +24,10 @@ type BaasCfg struct {
 	ClusterPkiBasePath      string 		`json:"ClusterPkiBasePath"`
 	BlockNetCfgBasePath     string 		`json:"BlockNetCfgBasePath"`
 	BlockChainVersionCfg    string		`json:"BlockChainVersionCfg"`
-	NfsServerAddr           string      `json:"NfsServerAddr"`
-	NfsRootDir              string      `json:"NfsRootDir"`
+	NfsExternalAddr         string      `json:"NfsExternalAddr"`
+	NfsInternalAddr         string		`json:"NfsInternalAddr"`
+	NfsBasePath				string		`json:"NfsBasePath"`
+	NfsLocalRootDir         string      `json:"NfsLocalRootDir"`
 }
 
 var BAAS_CFG *BaasCfg = nil
@@ -74,7 +77,7 @@ func (cfg *BaasCfg) CfgPathInit() error {
 	cfg.ClusterPkiBasePath = root + "/" + cfg.ClusterPkiBasePath
 	cfg.BlockNetCfgBasePath = root + "/" + cfg.BlockNetCfgBasePath
 	cfg.BlockChainVersionCfg = root + "/" + cfg.BlockChainVersionCfg
-	cfg.NfsRootDir = root + "/" + cfg.NfsRootDir
+	cfg.NfsLocalRootDir = root + "/" + cfg.NfsLocalRootDir
 
 	err = DirCheck(cfg.ClusterCfgPath)
 	if err != nil {
@@ -91,18 +94,20 @@ func (cfg *BaasCfg) CfgPathInit() error {
 		logger.Errorf("CfgPathInit: BlockNetCfgBasePath init error")
 		return fmt.Errorf("%v", err)
 	}
-	err = DirCheck(cfg.NfsRootDir)
+	err = DirCheck(cfg.NfsLocalRootDir)
 	if err != nil {
 		logger.Errorf("CfgPathInit: NfsRootDir init error")
 		return fmt.Errorf("%v", err)
 	}
-	// cmd := "sudo mount -t nfs -o resvport " + cfg.NfsServerAddr + " " + cfg.NfsRootDir
-	// //cmd := "mount -t nfs " + cfg.NfsServerAddr + " " + cfg.NfsRootDir
+
+	// cmd := "sudo mount -t nfs -o resvport " + cfg.NfsExternalAddr + ":" + cfg.NfsBasePath + " " + cfg.NfsLocalRootDir
+	// //cmd := "mount -t nfs " + cfg.NfsInternalAddr + ":" + cfg.NfsBasePath + " " + cfg.NfsLocalRootDir
 	// _,err = ExecShell(cmd)
 	// if err != nil {
 	// 	logger.Errorf("CfgPathInit: mount nfs error, %v",err)
 	// 	return fmt.Errorf("CfgPathInit: mount nfs error, %v",err)
 	// }
+
 	return nil 
 }
 
@@ -119,6 +124,26 @@ func (cfg *BaasCfg) CfgBlockCfgInit() error {
 		return fmt.Errorf("%v", err)
 	}
 	return nil 
+}
+
+func GetBlockImage(blockType string,version string,imageKey string)(string,error) {
+	obj := BLOCK_CFG_MAP[blockType]
+	if obj == nil {
+		logger.Errorf("GetBlockImage: not find block type=%s",blockType)
+		return "",fmt.Errorf("GetBlockImage: not find block type=%s",blockType)
+	}
+	m1 := make(map[string]map[string]string)
+	err := mapstructure.Decode(obj,&m1); 
+	if err != nil {
+		logger.Errorf("GetBlockImage: unmarshal block type=%s",blockType)
+		return "",fmt.Errorf("GetBlockImage: unmarshal block type=%s",blockType)
+	}
+	image := m1[version][imageKey]
+	if image == ""{
+		logger.Errorf("GetBlockImage: not find image type=%s version=%s imageKey=%s",blockType,version,imageKey)
+		return "",fmt.Errorf("GetBlockImage: not find image type=%s version=%s imageKey=%s",blockType,version,imageKey)
+	}
+	return image,nil
 }
 
 

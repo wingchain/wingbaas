@@ -14,6 +14,7 @@ import (
 const (
     REQ_GET    string = "GET" 
     REQ_POST   string = "POST"
+    REQ_DELETE string = "DELETE"
 ) 
 
 var keyPairLocker sync.Mutex //cert and key file locker

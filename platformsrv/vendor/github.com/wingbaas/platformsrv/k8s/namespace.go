@@ -9,7 +9,11 @@ import (
 )
 
 const (
-	NAMESPACES    string = "namespaces" 
+	NAMESPACES    string = "namespaces"
+	DEPLOYMENTS   string = "deployments"
+	SERVICES      string = "services"
+	API_V1        string = "/api/v1/" 
+	API_APP       string = "/apis/apps/v1/"   
 )
 
 type Namespace struct {
@@ -44,7 +48,7 @@ func GetClusterNamespaces(cluserId string) ([]Namespace,error) {
 		logger.Errorf("GetClusterNamespaces: cluser nil,cluser id =%s",cluserId)
 		return nil,fmt.Errorf("GetClusterNamespaces: cluser nil,cluser id =%s",cluserId)
 	}
-	bytes,err := utils.RequestWithCert(cluster.Addr + NAMESPACES,utils.REQ_GET,cluster.Cert,cluster.Key)
+	bytes,err := utils.RequestWithCert(cluster.Addr + API_V1 + NAMESPACES,utils.REQ_GET,cluster.Cert,cluster.Key)
 	if err != nil { 
 		logger.Errorf("GetClusterNamespaces: RequestWithCert err,%v", err)
 		return nil,nil

@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/wingbaas/platformsrv/logger"
 	"github.com/wingbaas/platformsrv/k8s"
+	"github.com/wingbaas/platformsrv/k8s/deployfabric"
 	"github.com/goinggo/mapstructure"
 	"github.com/wingbaas/platformsrv/utils"
 	"github.com/wingbaas/platformsrv/settings/fabric"
@@ -27,6 +28,11 @@ type Deploy struct {
 	BlockChainName      string        `json:"BlockChainName"`
 	BlockChainType      string        `json:"BlockChainType"`
 	DeployCfg     		interface{}   `json:"DeployCfg"`       
+}
+
+type Delete struct{
+	ClusterId 		string  `json:"ClusterId"`
+	BlockChainName	string  `json:"BlockChainName"`
 }
 
 /* All interface of platformSrv return struct */
@@ -133,7 +139,7 @@ func deployBlockChain(c echo.Context) error {
         	ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 			return c.JSON(http.StatusOK,ret)
 		}
-		blockId,err = fabric.DeployFabric(cfg,d.BlockChainName)
+		blockId,err = fabric.DeployFabric(cfg,d.BlockChainName,d.BlockChainType)
 		clusterId = cfg.ClusterId
 		if err != nil {
 			ret := getApiRet(CODE_ERROR_BODY,err.Error(),nil)
@@ -183,5 +189,29 @@ func getBlockChainTypes(c echo.Context) error {
 		return c.JSON(http.StatusOK,ret)
 	}
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,utils.BLOCK_CFG_MAP)
+	return c.JSON(http.StatusOK,ret)
+}
+
+func deleteBlockChain(c echo.Context) error { 
+	logger.Debug("deleteBlockChain")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	var d Delete
+    err = json.Unmarshal(result, &d)
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	_,err = deployfabric.DeleteNamespace(d.ClusterId,d.BlockChainName)
+	if err != nil {
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil)
 	return c.JSON(http.StatusOK,ret)
 }
