@@ -20,7 +20,7 @@ type PortSpecCaService struct {
 }
 
 type SelectorSpecCaService struct {
-	HyperledgerFabricService string `json:"hyperledger.fabric.service"`
+	App string `json:"app"`
 }
 
 type SpecCaService struct {
@@ -53,7 +53,7 @@ func CreateCaService(clusterId string,namespaceId string,caName string)([]byte,e
 				},
 			},
 			Selector: SelectorSpecCaService{
-				HyperledgerFabricService: caName,
+				App: caName,
 			},
 		},
 	}
@@ -85,6 +85,8 @@ func CreateCaService(clusterId string,namespaceId string,caName string)([]byte,e
 		return nil,fmt.Errorf("CreateCaService: create result err,%v", err)
 	}
 	logger.Debug("CreateCaService: create success,result=,%v", result) 
+	logger.Debug("CreateCaService: create success,yamlstr=")
+	logger.Debug(yamlStr)  
 	return nil,nil
 }
 

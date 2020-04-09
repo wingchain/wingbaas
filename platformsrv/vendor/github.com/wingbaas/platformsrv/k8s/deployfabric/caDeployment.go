@@ -87,7 +87,7 @@ import (
 // }
 
 type LabelsSt struct {
-	HyperledgerFabricService string `json:"hyperledger.fabric.service"`
+	App string `json:"app"`
 }
 
 type StrategySt struct {
@@ -170,7 +170,7 @@ type EmptyDirVolumeSpecTemplateSt struct {
 
 type VolumeSpecTemplateSt struct {
 	Name string `json:"name"`
-	EmptyDir EmptyDirVolumeSpecTemplateSt `json:"emptyDir,omitempty"`
+	//EmptyDir EmptyDirVolumeSpecTemplateSt `json:"emptyDir,omitempty"`
 	Nfs NfsVolumeSpecTemplateSt `json:"nfs,omitempty"`
 }
 
@@ -186,36 +186,45 @@ type TemplateSt struct {
 	Metadata MetadataTemplateSt `json:"metadata"`
 	Spec SpecTemplateSt `json:"spec"`
 } 
+type MatchLabelSt struct {
+	App	string `json:"app"`
+}
+
+type SelectorSt struct {
+	MatchLabels MatchLabelSt `json:"matchLabels"`
+}
 
 type SpecSt struct {
+	Selector SelectorSt `json:"selector"`
 	Replicas int `json:"replicas"`
 	Strategy StrategySt `json:"strategy"`
 	Template TemplateSt `json:"template"`
 }
 
+type MetadataCaDeployMent struct {
+	Name string `json:"name"`
+}
 
 type CaDeployMent struct {
 	APIVersion string `json:"apiVersion"`
 	Kind string `json:"kind"`
-	Metadata struct {
-		Labels LabelsSt `json:"labels"`
-		Name string `json:"name"`
-	} `json:"metadata"`
+	Metadata MetadataCaDeployMent `json:"metadata"`
 	Spec SpecSt `json:"spec"`
 }
 
 func CreateCaDeployment(clusterId string,namespaceId string,chainId string,image string,caName string,orgDomain string,caPriKey string)([]byte,error) {
 	caDeployMent :=  CaDeployMent {
-		APIVersion: "v1",
+		APIVersion: "apps/v1",
 		Kind: "Deployment",
-		Metadata: struct{
-			Labels LabelsSt `json:"labels"`
-			Name string `json:"name"`
-		}{
-			Labels: LabelsSt{HyperledgerFabricService: caName}, 
+		Metadata: MetadataCaDeployMent{
 			Name: caName,
 		},
 		Spec: SpecSt{
+			Selector: SelectorSt{
+				MatchLabels: MatchLabelSt{
+					App: caName,
+				},
+			},
 			Replicas: 1,
 			Strategy: StrategySt{
 				Type: "Recreate",
@@ -223,7 +232,7 @@ func CreateCaDeployment(clusterId string,namespaceId string,chainId string,image
 			Template: TemplateSt{
 				Metadata: MetadataTemplateSt{
 					Labels: LabelsSt{
-						HyperledgerFabricService: caName,
+						App: caName,
 					},
 				},
 				Spec: SpecTemplateSt{
@@ -296,11 +305,6 @@ func CreateCaDeployment(clusterId string,namespaceId string,chainId string,image
 								{
 									MountPath: "/var/data/",
 									Name: "ca-data-store",
-									SubPath: clusterId,
-								},
-								{
-									MountPath: "/cert",
-									Name: "pod-cert",
 								},
 							},
 						},
@@ -314,16 +318,12 @@ func CreateCaDeployment(clusterId string,namespaceId string,chainId string,image
 								Path: utils.BAAS_CFG.NfsBasePath,
 							},
 						},
-						{
-							Name: "pod-cert",
-							EmptyDir: EmptyDirVolumeSpecTemplateSt{}, 
-						},
-					},
+					 },
 				},
 			},
 		},
 	}
-	bytes, err := json.Marshal(caDeployMent)
+	bytes, err := json.Marshal(caDeployMent) 
 	if err != nil {
 		logger.Errorf("CreateCaDeployment: Marshal deployment error,%v",err) 
 		return nil,fmt.Errorf("CreateCaDeployment: Marshal deployment error,%v",err)
@@ -350,7 +350,9 @@ func CreateCaDeployment(clusterId string,namespaceId string,chainId string,image
 		logger.Errorf("CreateCaDeployment: create result err,%v", err)
 		return nil,fmt.Errorf("CreateCaDeployment: create result err,%v", err)
 	}
-	logger.Debug("CreateCaDeployment: create success,result=,%v", result) 
+	logger.Debug("CreateCaDeployment: create success,result=,%v", result)
+	logger.Debug("CreateCaDeployment: create success,yamlstr=")
+	logger.Debug(yamlStr)
 	return nil,nil
 }
 

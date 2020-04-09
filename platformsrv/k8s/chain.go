@@ -99,3 +99,18 @@ func GetChain(chainId string,clusterId string) (*Chain,error) {
 	logger.Debug("GetChain: chain id not exsist") 
 	return nil,nil
 }
+
+func GetChainByName(chainName string,clusterId string) (*Chain,error) { 
+	chains,err := GetChains(clusterId)
+	if err != nil {
+		logger.Errorf("GetChainByName: get chains error,%v", err)
+		return nil,fmt.Errorf("%v", err)
+	}
+	for _,c := range chains {
+		if c.BlockChainName == chainName {
+			return &c,nil
+		}
+	}
+	logger.Debug("GetChainByName: chain name not exsist %s",chainName)
+	return nil,nil
+}

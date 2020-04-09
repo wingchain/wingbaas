@@ -3,6 +3,7 @@ package fabric
 
 import (
 	"fmt"
+	"strings"
 	"encoding/json"
 	"time"
 	"github.com/wingbaas/platformsrv/logger"
@@ -127,7 +128,7 @@ func DeployComponetsKafka(p DeployPara,chainName string,chainId string,chainType
 	}
 	time.Sleep(10 * time.Second)
 	for _,org := range p.DeployNetCfg.PeerOrgs {
-		caName := "ca-" + org.Name
+		caName := strings.ToLower(org.Name + "-ca")
 		caImage,err := utils.GetBlockImage(chainType,p.Version,"ca")
 		if err != nil {
 			logger.Errorf("DeployComponets: GetBlockImage ca error,chainType=%s version=%s",chainType,p.Version)
@@ -147,9 +148,10 @@ func DeployComponetsKafka(p DeployPara,chainName string,chainId string,chainType
 		if err != nil {
 			logger.Errorf("DeployComponets: CreateCaService error=%s caName=%s",err.Error(),caName) 
 			return "",fmt.Errorf("DeployComponets: CreateCaService error=%s caName=%s",err.Error(),caName)
-		} 
+		}
+		//return "",nil
 	}
-	return "",nil  
+	return "",nil
 }
 
 

@@ -139,6 +139,12 @@ func deployBlockChain(c echo.Context) error {
         	ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 			return c.JSON(http.StatusOK,ret)
 		}
+		cn,_ := k8s.GetChainByName(d.BlockChainName,cfg.ClusterId)
+		if cn != nil {
+			msg := "blockchainName already exsist: " + d.BlockChainName
+        	ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+			return c.JSON(http.StatusOK,ret)
+		}
 		blockId,err = fabric.DeployFabric(cfg,d.BlockChainName,d.BlockChainType)
 		clusterId = cfg.ClusterId
 		if err != nil {
