@@ -2,6 +2,7 @@
 package api
 
 import (
+	"os"
 	"encoding/json"
 	"net/http"
 	"io/ioutil"
@@ -217,6 +218,13 @@ func deleteBlockChain(c echo.Context) error {
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
 		return c.JSON(http.StatusOK,ret)
+	}
+	ch,_ := k8s.GetChainByName(d.BlockChainName,d.ClusterId) 
+	if ch != nil {
+		certPath := utils.BAAS_CFG.BlockNetCfgBasePath + ch.BlockChainId
+		nfsPath :=  utils.BAAS_CFG.NfsLocalRootDir + ch.BlockChainId
+		os.RemoveAll(certPath)
+		os.RemoveAll(nfsPath)
 	}
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil)
 	return c.JSON(http.StatusOK,ret)

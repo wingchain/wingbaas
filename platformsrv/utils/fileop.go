@@ -189,3 +189,4 @@ func GetCaPrivateKey(chainId string,orgDomain string)(string,error) {
 	}
 	return priKey,nil 
 }
+

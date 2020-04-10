@@ -4,6 +4,7 @@ package fabric
 import (
 	"fmt"
 	"strings"
+	"strconv"
 	"encoding/json"
 	"time"
 	"github.com/wingbaas/platformsrv/logger"
@@ -16,6 +17,8 @@ const (
 	SOLO_FABRIC     string = "SOLO_FABRIC"
 	KAFKA_FABRIC    string = "KAFKA_FABRIC"
 	RAFT_FABRIC     string = "RAFT_FABRIC"
+	ZOOK_COUNT      int    = 3
+	KAFKA_COUNT     int   = 3
 )
 
 type NodeSpec struct {
@@ -127,6 +130,7 @@ func DeployComponetsKafka(p DeployPara,chainName string,chainId string,chainType
 		return "",fmt.Errorf("DeployComponets: CreateNamespace error")
 	}
 	time.Sleep(10 * time.Second)
+	//deploy ca
 	for _,org := range p.DeployNetCfg.PeerOrgs {
 		caName := strings.ToLower(org.Name + "-ca")
 		caImage,err := utils.GetBlockImage(chainType,p.Version,"ca")
@@ -144,14 +148,32 @@ func DeployComponetsKafka(p DeployPara,chainName string,chainId string,chainType
 			logger.Errorf("DeployComponets: CreateCaDeployment error=%s caName=%s",err.Error(),caName)
 			return "",fmt.Errorf("DeployComponets: CreateCaDeployment error=%s caName=%s",err.Error(),caName)
 		}
-		_,err = deployfabric.CreateCaService(p.ClusterId,chainName,caName)
+		_,err = deployfabric.CreateCaService(p.ClusterId,chainName,chainId,caName)
 		if err != nil {
 			logger.Errorf("DeployComponets: CreateCaService error=%s caName=%s",err.Error(),caName) 
 			return "",fmt.Errorf("DeployComponets: CreateCaService error=%s caName=%s",err.Error(),caName)
-		}
-		//return "",nil
+		}	
 	}
-	return "",nil
+	//deploy zookeeper
+	zkImage,err := utils.GetBlockImage(chainType,p.Version,"zookeeper") 
+	if err != nil {
+		logger.Errorf("DeployComponets: GetBlockImage zookeeper error,chainType=%s version=%s",chainType,p.Version)
+		return "",fmt.Errorf("DeployComponets: GetBlockImage zookeeper error,chainType=%s version=%s",chainType,p.Version)
+	}
+	for i:=1; i<=ZOOK_COUNT; i++ {
+		zkName := "zookeeper" + strconv.Itoa(i)
+		_,err = deployfabric.CreateZookeeperDeployment(p.ClusterId,chainName,chainId,strconv.Itoa(i),zkImage,zkName)
+		if err != nil {
+			logger.Errorf("DeployComponets: CreateZkDeployment error=%s caName=%s",err.Error(),zkName)
+			return "",fmt.Errorf("DeployComponets: CreateZkDeployment error=%s caName=%s",err.Error(),zkName)
+		}
+		_,err = deployfabric.CreateZookeeperService(p.ClusterId,chainName,chainId,zkName)
+		if err != nil {
+			logger.Errorf("DeployComponets: CreateZookeeperService error=%s caName=%s",err.Error(),zkName) 
+			return "",fmt.Errorf("DeployComponets: CreateZookeeperService error=%s caName=%s",err.Error(),zkName)
+		}
+	}
+	return "",nil 
 }
 
 
