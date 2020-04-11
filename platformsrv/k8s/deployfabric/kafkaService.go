@@ -6,45 +6,34 @@ import (
 	"github.com/wingbaas/platformsrv/utils"
 )
 
-type ZookeeperService struct {
+type KafkaService struct {
 	APIVersion string `json:"apiVersion"`
 	Kind string `json:"kind"`
 	Metadata MetadataService `json:"metadata"`
 	Spec SpecService `json:"spec"`
 }
 
-func CreateZookeeperService(clusterId string,namespaceId string,chainId string,zkName string)([]byte,error) {
-	zkService := ZookeeperService{
+func CreateKafkaService(clusterId string,namespaceId string,chainId string,kafkaName string)([]byte,error) {
+	kafkaService := ZookeeperService{
 		APIVersion: "v1",
-		Kind: "Service",
+		Kind: "Service",   
 		Metadata: MetadataService{
-			Name: zkName,
+			Name: kafkaName,
 		},
 		Spec: SpecService{
-			//Type: "NodePort",    
 			Ports: []PortSpecService{
 				{
-					Name: "client",
-					Port: 2181,
-					TargetPort: 2181,
-				},
-				{
-					Name: "follower",
-					Port: 2888,
-					TargetPort: 2888,
-				},
-				{
-					Name: "election",
-					Port: 3888,
-					TargetPort: 3888,
+					Name: kafkaName,
+					Port: 9092,
+					TargetPort: 9092,
 				},
 			},
 			Selector: SelectorSpecService{
-				App: zkName,
+				App: kafkaName,
 			},
 		},
 	}
-	bytes, err := CreateService(clusterId,namespaceId,zkService)
+	bytes, err := CreateService(clusterId,namespaceId,kafkaService)
 	if err != nil {
 		certPath := utils.BAAS_CFG.BlockNetCfgBasePath + chainId
 		nfsPath :=  utils.BAAS_CFG.NfsLocalRootDir + chainId

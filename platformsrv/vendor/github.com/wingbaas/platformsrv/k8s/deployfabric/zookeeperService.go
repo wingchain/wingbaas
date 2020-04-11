@@ -21,7 +21,7 @@ func CreateZookeeperService(clusterId string,namespaceId string,chainId string,z
 			Name: zkName,
 		},
 		Spec: SpecService{
-			Type: "NodePort",
+			//Type: "NodePort",    
 			Ports: []PortSpecService{
 				{
 					Name: "client",

@@ -18,7 +18,7 @@ const (
 	KAFKA_FABRIC    string = "KAFKA_FABRIC"
 	RAFT_FABRIC     string = "RAFT_FABRIC"
 	ZOOK_COUNT      int    = 3
-	KAFKA_COUNT     int   = 3
+	KAFKA_COUNT     int   = 4
 )
 
 type NodeSpec struct {
@@ -164,13 +164,32 @@ func DeployComponetsKafka(p DeployPara,chainName string,chainId string,chainType
 		zkName := "zookeeper" + strconv.Itoa(i)
 		_,err = deployfabric.CreateZookeeperDeployment(p.ClusterId,chainName,chainId,strconv.Itoa(i),zkImage,zkName)
 		if err != nil {
-			logger.Errorf("DeployComponets: CreateZkDeployment error=%s caName=%s",err.Error(),zkName)
-			return "",fmt.Errorf("DeployComponets: CreateZkDeployment error=%s caName=%s",err.Error(),zkName)
+			logger.Errorf("DeployComponets: CreateZkDeployment error=%s zkName=%s",err.Error(),zkName)
+			return "",fmt.Errorf("DeployComponets: CreateZkDeployment error=%s zkName=%s",err.Error(),zkName)
 		}
 		_,err = deployfabric.CreateZookeeperService(p.ClusterId,chainName,chainId,zkName)
 		if err != nil {
-			logger.Errorf("DeployComponets: CreateZookeeperService error=%s caName=%s",err.Error(),zkName) 
-			return "",fmt.Errorf("DeployComponets: CreateZookeeperService error=%s caName=%s",err.Error(),zkName)
+			logger.Errorf("DeployComponets: CreateZookeeperService error=%s zkName=%s",err.Error(),zkName) 
+			return "",fmt.Errorf("DeployComponets: CreateZookeeperService error=%s zkName=%s",err.Error(),zkName)
+		}
+	}
+	//deploy kafka
+	kafkaImage,err := utils.GetBlockImage(chainType,p.Version,"kafka")
+	if err != nil {
+		logger.Errorf("DeployComponets: GetBlockImage kafka error,chainType=%s version=%s",chainType,p.Version)
+		return "",fmt.Errorf("DeployComponets: GetBlockImage kafka error,chainType=%s version=%s",chainType,p.Version)
+	}
+	for i:=1; i<=KAFKA_COUNT; i++ {
+		kafkaName := "kafka" + strconv.Itoa(i)
+		_,err = deployfabric.CreateKafkaDeployment(p.ClusterId,chainName,chainId,strconv.Itoa(i),kafkaImage,kafkaName)
+		if err != nil {
+			logger.Errorf("DeployComponets: CreateKafkaDeployment error=%s kafkaName=%s",err.Error(),kafkaName)
+			return "",fmt.Errorf("DeployComponets: CreateKafkaDeployment error=%s kafkaName=%s",err.Error(),kafkaName)
+		}
+		_,err = deployfabric.CreateKafkaService(p.ClusterId,chainName,chainId,kafkaName)
+		if err != nil {
+			logger.Errorf("DeployComponets: CreateKafkaService error=%s kafkaName=%s",err.Error(),kafkaName) 
+			return "",fmt.Errorf("DeployComponets: CreateKafkaService error=%s kafkaName=%s",err.Error(),kafkaName)
 		}
 	}
 	return "",nil 
