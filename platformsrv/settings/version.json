@@ -2,7 +2,7 @@
     "fabric":{
         "1.3.0":{
             "ca": "registry.wingbaas.cn:5000/fabric-ca:1.3.0",
-            "ccenv": "registry.wingbaas.cn:5000/fabric-ccenv:1.3.0",
+            "ccenv": "registry.wingbaas.cn:5000/fabric-ccenv:1.3.0", 
             "orderer": "registry.wingbaas.cn:5000/fabric-orderer:1.3.0",
             "peer": "registry.wingbaas.cn:5000/fabric-peer:1.3.0",
             "zookeeper": "registry.wingbaas.cn:5000/fabric-zookeeper:0.4.10",

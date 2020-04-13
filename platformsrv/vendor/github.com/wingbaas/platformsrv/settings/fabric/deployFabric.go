@@ -18,7 +18,7 @@ const (
 	KAFKA_FABRIC    string = "KAFKA_FABRIC"
 	RAFT_FABRIC     string = "RAFT_FABRIC"
 	ZOOK_COUNT      int    = 3
-	KAFKA_COUNT     int   = 4
+	KAFKA_COUNT     int    = 4
 )
 
 type NodeSpec struct {
@@ -104,7 +104,7 @@ func DeployFabric(p DeployPara,chainName string,chainType string)(string,error) 
 	if p.DeployType == KAFKA_FABRIC {
 		_,err = DeployComponetsKafka(p,chainName,blockId,chainType)
 		if err != nil {
-			logger.Errorf("DeployFabric: DeployComponets error=%s",err.Error()) 
+			logger.Errorf("DeployFabric: DeployComponets error=%s",err.Error())
 			return "",fmt.Errorf("DeployFabric: DeployComponets error=%s",err.Error())
 		} 
 	}
@@ -190,6 +190,28 @@ func DeployComponetsKafka(p DeployPara,chainName string,chainId string,chainType
 		if err != nil {
 			logger.Errorf("DeployComponets: CreateKafkaService error=%s kafkaName=%s",err.Error(),kafkaName) 
 			return "",fmt.Errorf("DeployComponets: CreateKafkaService error=%s kafkaName=%s",err.Error(),kafkaName)
+		}
+	}
+	//deploy order
+	orderImage,err := utils.GetBlockImage(chainType,p.Version,"orderer")
+	if err != nil {
+		logger.Errorf("DeployComponets: GetBlockImage orderer error,chainType=%s version=%s",chainType,p.Version)
+		return "",fmt.Errorf("DeployComponets: GetBlockImage orderer error,chainType=%s version=%s",chainType,p.Version)
+	}
+	for i:=0; i<=len(p.DeployNetCfg.OrdererOrgs); i++ {
+		domain := p.DeployNetCfg.OrdererOrgs[i].Domain
+		for j:=0; j<len(p.DeployNetCfg.OrdererOrgs[i].Specs); j++ {
+			orderName := p.DeployNetCfg.OrdererOrgs[i].Specs[j].Hostname
+			_,err = deployfabric.CreateOrderKafkaDeployment(p.ClusterId,chainName,chainId,orderImage,orderName,domain)
+			if err != nil {
+				logger.Errorf("DeployComponets: CreateOrderKafkaDeployment error=%s orderName=%s",err.Error(),orderName)
+				return "",fmt.Errorf("DeployComponets: CreateOrderKafkaDeployment error=%s orderName=%s",err.Error(),orderName)
+			}
+			_,err = deployfabric.CreateOrderService(p.ClusterId,chainName,chainId,orderName)
+			if err != nil {
+				logger.Errorf("DeployComponets: CreateOrderService error=%s orderName=%s",err.Error(),orderName) 
+				return "",fmt.Errorf("DeployComponets: CreateOrderService error=%s orderName=%s",err.Error(),orderName)
+			}
 		}
 	}
 	return "",nil 

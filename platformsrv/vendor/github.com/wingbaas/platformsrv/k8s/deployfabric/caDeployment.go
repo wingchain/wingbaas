@@ -60,7 +60,7 @@ func CreateCaDeployment(clusterId string,namespaceId string,chainId string,image
 							Image: image,
 							ImagePullPolicy: "IfNotPresent",
 							Resources: ResourceContainerSpecTemplateSt{
-								Requests: RequestsResourceContainerSpecTemplateSt{
+								Requests: RequestsResourceContainerSpecTemplateSt{ 
 									Memory: "256Mi",
 									CPU: "128m",
 								},
@@ -68,7 +68,7 @@ func CreateCaDeployment(clusterId string,namespaceId string,chainId string,image
 							Args: []string{"sh","-c","cp -a /var/data/. " + "/cert; exec fabric-ca-server start -b admin:adminpw -d"},
 							Env: []EnvContainerSpecTemplateSt{
 								{
-									Name: "FABRIC_CA_SERVER_CA_NAME",
+									Name: "FABRIC_CA_SERVER_CA_NAME", 
 									Value: caName,
 								},
 								{

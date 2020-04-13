@@ -181,9 +181,11 @@ type ContainerSpecTemplateSt struct {
 	Env []EnvContainerSpecTemplateSt `json:"env"`
 	Ports []PortContainerSpecTemplateSt `json:"ports"`
 	VolumeMounts []VolumeContainerSpecTemplateSt `json:"volumeMounts"`
+	WorkingDir string `json:"workingDir,omitempty"` 
+	Command []string `json:"command,omitempty"`
 } 
 
-type ImagePullSecretSpecTemplateSt struct {
+type ImagePullSecretSpecTemplateSt struct { 
 	Name string `json:"name"`
 }
 
@@ -198,7 +200,11 @@ type EmptyDirVolumeSpecTemplateSt struct {
 type VolumeSpecTemplateSt struct {
 	Name string `json:"name"`
 	//EmptyDir EmptyDirVolumeSpecTemplateSt `json:"emptyDir,omitempty"`
-	Nfs NfsVolumeSpecTemplateSt `json:"nfs,omitempty"`
+	Nfs NfsVolumeSpecTemplateSt `json:"nfs,omitempty"` 
+}
+
+type NodeSelectorSpecTemplateSt struct {
+	KubernetesIoHostname string `json:"kubernetes.io/hostname"`
 }
 
 type SpecTemplateSt struct {
@@ -281,7 +287,7 @@ func CreateDeployment(clusterId string,namespaceId string,deployObj interface{})
 		if status == KUBERNETES_DEPLOY_FAILED {
 			logger.Errorf("CreateDeployment: create failed,result=%s",string(bytes))
 			logger.Errorf("CreateDeployment: create failed,yamlstr=%s",yamlStr)
-			return nil,fmt.Errorf("CreateDeployment: create failed,result=%s",string(bytes))
+			return nil,fmt.Errorf("CreateDeployment: create failed")
 		}
 	}
 	logger.Debug("CreateDeployment: create success,result str=")
@@ -337,14 +343,14 @@ func CreateService(clusterId string,namespaceId string,serviceObj interface{})([
 	err = json.Unmarshal(bytes, &result)
 	if err != nil { 
 		logger.Errorf("CreateService: create result err,%v", err)
-		return nil,fmt.Errorf("CreateService: create result err,%v", err)
+		return nil,fmt.Errorf("CreateService: create result err")
 	}
 	status,ok := (result.Status).(string)
 	if ok {
 		if status == KUBERNETES_DEPLOY_FAILED { 
 			logger.Errorf("CreateService: create failed,result=%s",string(bytes))
 			logger.Errorf("CreateService: create failed,yamlstr=%s",yamlStr)
-			return nil,fmt.Errorf("CreateService: create failed,result=%s",string(bytes))
+			return nil,fmt.Errorf("CreateService: create failed")
 		}
 	}
 	logger.Debug("CreateService: create success,result str=")
