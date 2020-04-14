@@ -198,10 +198,10 @@ func DeployComponetsKafka(p DeployPara,chainName string,chainId string,chainType
 		logger.Errorf("DeployComponets: GetBlockImage orderer error,chainType=%s version=%s",chainType,p.Version)
 		return "",fmt.Errorf("DeployComponets: GetBlockImage orderer error,chainType=%s version=%s",chainType,p.Version)
 	}
-	for i:=0; i<=len(p.DeployNetCfg.OrdererOrgs); i++ {
-		domain := p.DeployNetCfg.OrdererOrgs[i].Domain
-		for j:=0; j<len(p.DeployNetCfg.OrdererOrgs[i].Specs); j++ {
-			orderName := p.DeployNetCfg.OrdererOrgs[i].Specs[j].Hostname
+	for _,org := range p.DeployNetCfg.OrdererOrgs {
+		domain := org.Domain
+		for _,spec := range org.Specs {
+			orderName := spec.Hostname
 			_,err = deployfabric.CreateOrderKafkaDeployment(p.ClusterId,chainName,chainId,orderImage,orderName,domain)
 			if err != nil {
 				logger.Errorf("DeployComponets: CreateOrderKafkaDeployment error=%s orderName=%s",err.Error(),orderName)
@@ -211,6 +211,49 @@ func DeployComponetsKafka(p DeployPara,chainName string,chainId string,chainType
 			if err != nil {
 				logger.Errorf("DeployComponets: CreateOrderService error=%s orderName=%s",err.Error(),orderName) 
 				return "",fmt.Errorf("DeployComponets: CreateOrderService error=%s orderName=%s",err.Error(),orderName)
+			}
+		}
+	}
+	//deploy peer
+	peerImage,err := utils.GetBlockImage(chainType,p.Version,"peer")
+	if err != nil {
+		logger.Errorf("DeployComponets: GetBlockImage peer error,chainType=%s version=%s",chainType,p.Version)
+		return "",fmt.Errorf("DeployComponets: GetBlockImage peer error,chainType=%s version=%s",chainType,p.Version)
+	}
+	ccenvImage,err := utils.GetBlockImage(chainType,p.Version,"ccenv")
+	if err != nil {
+		logger.Errorf("DeployComponets: GetBlockImage ccenv error,chainType=%s version=%s",chainType,p.Version)
+		return "",fmt.Errorf("DeployComponets: GetBlockImage ccenv error,chainType=%s version=%s",chainType,p.Version)
+	}
+	baseosImage,err := utils.GetBlockImage(chainType,p.Version,"baseos")
+	if err != nil {
+		logger.Errorf("DeployComponets: GetBlockImage baseos error,chainType=%s version=%s",chainType,p.Version)
+		return "",fmt.Errorf("DeployComponets: GetBlockImage baseos error,chainType=%s version=%s",chainType,p.Version)
+	}
+	var dp deployfabric.PeerDeploymentPara
+	dp.PeerImage = peerImage
+	dp.CcenvImage = ccenvImage
+	dp.BaseosImage = baseosImage
+	for _,org := range p.DeployNetCfg.PeerOrgs {
+		dp.PeerDomain = org.Domain 
+		dp.OrgName = org.Name
+		for _,spec := range org.Specs {
+			dp.AnchorPeer = spec.Hostname
+			break
+		}
+		for _,spec :=  range org.Specs { 
+			dp.RawPeerName = spec.Hostname
+			//dp.PeerName = strings.ToLower(spec.Hostname + "-" + dp.OrgName + "-org") 
+			dp.PeerName = spec.Hostname
+			_,err = deployfabric.CreatePeerDeployment(p.ClusterId,chainName,chainId,dp)
+			if err != nil {
+				logger.Errorf("DeployComponets: CreatePeerDeployment error=%s",err.Error())
+				return "",fmt.Errorf("DeployComponets: CreatePeerDeployment error=%s",err.Error())
+			}
+			_,err = deployfabric.CreatePeerService(p.ClusterId,chainName,chainId,dp.PeerName)
+			if err != nil {
+				logger.Errorf("DeployComponets: CreatePeerService error=%s",err.Error())
+				return "",fmt.Errorf("DeployComponets: CreatePeerService error=%s",err.Error())
 			}
 		}
 	}

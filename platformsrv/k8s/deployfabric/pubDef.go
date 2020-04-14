@@ -282,7 +282,7 @@ func CreateDeployment(clusterId string,namespaceId string,deployObj interface{})
 		logger.Errorf("CreateDeployment: create result err,%v", err)
 		return nil,fmt.Errorf("CreateDeployment: create result err,%v", err)
 	}
-	status,ok := (result.Status).(string)
+	status,ok := (result.Status).(string) 
 	if ok {
 		if status == KUBERNETES_DEPLOY_FAILED {
 			logger.Errorf("CreateDeployment: create failed,result=%s",string(bytes))
