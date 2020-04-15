@@ -90,7 +90,7 @@ func CreateZookeeperDeployment(clusterId string,namespaceId string,chainId strin
 								{
 									MountPath: "/data",
 									Name: "zk-data-store",
-									SubPath: clusterId + "/" + chainId + "/DataStore/" + zookeeperName + "/data",
+									//SubPath: clusterId + "/" + chainId + "/DataStore/" + zookeeperName + "/data",
 								}, 
 							},
 						},

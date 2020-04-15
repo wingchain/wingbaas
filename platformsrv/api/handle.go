@@ -212,7 +212,7 @@ func deleteBlockChain(c echo.Context) error {
     if err != nil {
         msg := "body json Unmarshal err"
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
-		return c.JSON(http.StatusOK,ret)
+		return c.JSON(http.StatusOK,ret) 
 	}
 	_,err = deployfabric.DeleteNamespace(d.ClusterId,d.BlockChainName)
 	if err != nil {
@@ -221,10 +221,13 @@ func deleteBlockChain(c echo.Context) error {
 	}
 	ch,_ := k8s.GetChainByName(d.BlockChainName,d.ClusterId) 
 	if ch != nil {
+		k8s.DeleteChain(*ch)
 		certPath := utils.BAAS_CFG.BlockNetCfgBasePath + ch.BlockChainId
 		nfsPath :=  utils.BAAS_CFG.NfsLocalRootDir + ch.BlockChainId
+		cfgFile := utils.BAAS_CFG.BlockNetCfgBasePath + "/" + ch.BlockChainId + ".json"
 		os.RemoveAll(certPath)
 		os.RemoveAll(nfsPath)
+		os.Remove(cfgFile)
 	}
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil)
 	return c.JSON(http.StatusOK,ret)

@@ -108,7 +108,7 @@ func CreateKafkaDeployment(clusterId string,namespaceId string,chainId string,ka
 								{
 									MountPath: "/data",
 									Name: "kafka-data-store",
-									SubPath: clusterId + "/" + chainId + "/DataStore/" + kafkaName + "/data",
+									//SubPath: clusterId + "/" + chainId + "/DataStore/" + kafkaName + "/data",
 								}, 
 							},    
 						},

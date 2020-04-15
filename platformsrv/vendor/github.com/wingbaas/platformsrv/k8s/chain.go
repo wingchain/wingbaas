@@ -114,3 +114,39 @@ func GetChainByName(chainName string,clusterId string) (*Chain,error) {
 	logger.Debug("GetChainByName: chain name not exsist %s",chainName)
 	return nil,nil
 }
+
+func DeleteChain(chain Chain) error {
+	cfgPath := utils.BAAS_CFG.BlockNetCfgBasePath + CHAIN_FILE
+	exsist,_ := utils.PathExists(cfgPath)
+	var chains []Chain
+	var newChains []Chain
+	if exsist {
+		bytes,err := utils.LoadFile(cfgPath)
+		if err == nil {
+			err = json.Unmarshal(bytes,&chains)
+			if err != nil {
+				logger.Errorf("DeleteChain: unmarshal chains error,%v", err)
+				return fmt.Errorf("%v", err)
+			}
+		}else {
+			logger.Errorf("DeleteChain: load chain list file error,%v", err)
+			return fmt.Errorf("%v", err)
+		}
+	}
+	for _,c := range chains {
+		if c.BlockChainName != chain.BlockChainName {
+			newChains = append(newChains,c)  
+		}
+	}
+	bytes, err := json.Marshal(newChains)
+	if err != nil {
+		logger.Errorf("DeleteChain: marshal chains error,%v", err)
+		return fmt.Errorf("%v", err)
+	}
+	err = utils.WriteFile(cfgPath,string(bytes))
+	if err != nil {
+		logger.Errorf("DeleteChain: Write chain list file error,%v", err)
+		return fmt.Errorf("%v", err)
+	}
+	return nil
+}

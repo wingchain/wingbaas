@@ -211,7 +211,7 @@ func DeployComponetsKafka(p DeployPara,chainName string,chainId string,chainType
 			if err != nil {
 				logger.Errorf("DeployComponets: CreateOrderService error=%s orderName=%s",err.Error(),orderName) 
 				return "",fmt.Errorf("DeployComponets: CreateOrderService error=%s orderName=%s",err.Error(),orderName)
-			}
+			} 
 		}
 	}
 	//deploy peer
@@ -243,7 +243,6 @@ func DeployComponetsKafka(p DeployPara,chainName string,chainId string,chainType
 		}
 		for _,spec :=  range org.Specs { 
 			dp.RawPeerName = spec.Hostname
-			//dp.PeerName = strings.ToLower(spec.Hostname + "-" + dp.OrgName + "-org") 
 			dp.PeerName = spec.Hostname
 			_,err = deployfabric.CreatePeerDeployment(p.ClusterId,chainName,chainId,dp)
 			if err != nil {
