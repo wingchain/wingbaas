@@ -36,7 +36,7 @@ type OrgSpec struct {
     Users         UsersSpec    `json:"Users"`
 }
   
-type DeployNetConfig struct {
+type DeployNetConfig struct {  
     OrdererOrgs []OrgSpec `json:"OrdererOrgs"`
     PeerOrgs    []OrgSpec `json:"PeerOrgs"`
 }

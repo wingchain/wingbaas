@@ -424,4 +424,26 @@ API RETURN：
         ]
     }
 }
-```         
+```       
+
+## delete blockchain network                     
+URL：http://ip:port//api/v1/delete                 
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/delete                  
+request parameter:            
+```json    
+{    
+	"BlockChainName": "test-chainnetwork11",         
+	"ClusterId": "test-cluster1"     
+}
+``` 
+API RETURN:                  
+```json     
+{
+    "code": 0,
+    "message": "success",    
+    "data": null    
+}
+```        
