@@ -82,8 +82,11 @@ func DeployFabric(p public.DeployPara,chainName string,chainType string)(string,
 		logger.Errorf("DeployFabric: write block config error")
 		return "",fmt.Errorf("DeployFabric: write block config error") 
 	}
-	//var sdkCfg sdkfabric.GenerateParaSt
-	//sdkfabric.GenerateCfg(p.DeployNetCfg,sdkCfg)
+	var sdkCfg sdkfabric.GenerateParaSt
+	sdkCfg.ClusterId = p.ClusterId
+	sdkCfg.BlockId = blockId
+	sdkCfg.ChannelName = "mychannel"
+	sdkfabric.GenerateCfg(p.DeployNetCfg,sdkCfg)
 	return blockId,nil 
 }
 

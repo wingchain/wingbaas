@@ -28,7 +28,7 @@ type BaasCfg struct {
 	NfsInternalAddr         string		`json:"NfsInternalAddr"`
 	NfsBasePath				string		`json:"NfsBasePath"`
 	NfsLocalRootDir         string      `json:"NfsLocalRootDir"`
-	keyStorePath			string		`json:"keyStorePath"`
+	KeyStorePath			string		`json:"keyStorePath"`
 }
 
 var BAAS_CFG *BaasCfg = nil
@@ -79,7 +79,7 @@ func (cfg *BaasCfg) CfgPathInit() error {
 	cfg.BlockNetCfgBasePath = root + "/" + cfg.BlockNetCfgBasePath
 	cfg.BlockChainVersionCfg = root + "/" + cfg.BlockChainVersionCfg
 	cfg.NfsLocalRootDir = root + "/" + cfg.NfsLocalRootDir
-	cfg.keyStorePath = root + "/" + cfg.keyStorePath
+	cfg.KeyStorePath = root + "/" + cfg.KeyStorePath
 
 	err = DirCheck(cfg.ClusterCfgPath)
 	if err != nil {
@@ -101,7 +101,7 @@ func (cfg *BaasCfg) CfgPathInit() error {
 		logger.Errorf("CfgPathInit: NfsLocalRootDir init error")
 		return fmt.Errorf("%v", err)
 	}
-	err = DirCheck(cfg.keyStorePath)
+	err = DirCheck(cfg.KeyStorePath)
 	if err != nil {
 		logger.Errorf("CfgPathInit: keyStorePath init error")
 		return fmt.Errorf("%v", err)
