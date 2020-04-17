@@ -10,55 +10,17 @@ import (
 	"github.com/wingbaas/platformsrv/logger"
 	"github.com/wingbaas/platformsrv/utils"
 	"github.com/wingbaas/platformsrv/certgenerate/fabric"
-	"github.com/wingbaas/platformsrv/k8s/deployfabric"
+	"github.com/wingbaas/platformsrv/k8s/deployfabric" 
+	"github.com/wingbaas/platformsrv/settings/fabric/public" 
+	"github.com/wingbaas/platformsrv/sdk/sdkfabric"
 )
 
-const (
-	SOLO_FABRIC     string = "SOLO_FABRIC"
-	KAFKA_FABRIC    string = "KAFKA_FABRIC"
-	RAFT_FABRIC     string = "RAFT_FABRIC"
-	ZOOK_COUNT      int    = 3
-	KAFKA_COUNT     int    = 4
-)
-
-type NodeSpec struct {
-    Hostname string   `json:"Hostname"`
-}
-  
-type UsersSpec struct {
-    Count int `json:"Count"`
-}
-  
-type OrgSpec struct { 
-    Name          string       `json:"Name"`
-    Domain        string       `json:"Domain"`
-    Specs         []NodeSpec   `json:"Specs"`
-    Users         UsersSpec    `json:"Users"`
-}
-  
-type DeployNetConfig struct {
-    OrdererOrgs []OrgSpec `json:"OrdererOrgs"`
-    PeerOrgs    []OrgSpec `json:"PeerOrgs"`
-}
-
-type DeployNodeInfo map[string]string
-type DeployNodeGroup map[string]DeployNodeInfo
-
-type DeployPara struct {
-	DeployNetCfg        DeployNetConfig    	`json:"DeployNetCfg"`  
-	DeployHost       	DeployNodeGroup 	`json:"DeployHost"`
-	DeployType       	string          	`json:"DeployType"`
-	Version    		 	string          	`json:"Version"`
-	CryptoType       	string          	`json:"CryptoType"`
-	ClusterId        	string          	`json:"ClusterId"` 
-}
-
-func DeployFabric(p DeployPara,chainName string,chainType string)(string,error) {
-	if p.DeployType != SOLO_FABRIC && p.DeployType != KAFKA_FABRIC && p.DeployType != RAFT_FABRIC {
+func DeployFabric(p public.DeployPara,chainName string,chainType string)(string,error) {
+	if p.DeployType != public.SOLO_FABRIC && p.DeployType != public.KAFKA_FABRIC && p.DeployType != public.RAFT_FABRIC {
 		logger.Errorf("DeployFabric: unsupported deploy type")
 		return "",fmt.Errorf("DeployFabric: unsupported deploy type")
 	}
-	if p.CryptoType  != fabric.CRYPTO_ECDSA && p.CryptoType != fabric.CRYPTO_SM {
+	if p.CryptoType  != fabric.CRYPTO_ECDSA && p.CryptoType != fabric.CRYPTO_SM { 
 		logger.Errorf("DeployFabric: unsupported crypto type")
 		return "",fmt.Errorf("DeployFabric: unsupported crypto type")
 	}
@@ -101,7 +63,7 @@ func DeployFabric(p DeployPara,chainName string,chainType string)(string,error) 
 		return "",fmt.Errorf("DeployFabric: copy blockchain cert to nfs error,blockchain id=%s",blockId) 
 	}
 
-	if p.DeployType == KAFKA_FABRIC {
+	if p.DeployType == public.KAFKA_FABRIC {
 		_,err = DeployComponetsKafka(p,chainName,blockId,chainType)
 		if err != nil {
 			logger.Errorf("DeployFabric: DeployComponets error=%s",err.Error())
@@ -120,10 +82,12 @@ func DeployFabric(p DeployPara,chainName string,chainType string)(string,error) 
 		logger.Errorf("DeployFabric: write block config error")
 		return "",fmt.Errorf("DeployFabric: write block config error") 
 	}
+	//var sdkCfg sdkfabric.GenerateParaSt
+	//sdkfabric.GenerateCfg(p.DeployNetCfg,sdkCfg)
 	return blockId,nil 
 }
 
-func DeployComponetsKafka(p DeployPara,chainName string,chainId string,chainType string)(string,error) {
+func DeployComponetsKafka(p public.DeployPara,chainName string,chainId string,chainType string)(string,error) {
 	_,err := deployfabric.CreateNamespace(p.ClusterId,chainName) 
 	if err != nil {
 		logger.Errorf("DeployComponets: CreateNamespace error") 
@@ -160,7 +124,7 @@ func DeployComponetsKafka(p DeployPara,chainName string,chainId string,chainType
 		logger.Errorf("DeployComponets: GetBlockImage zookeeper error,chainType=%s version=%s",chainType,p.Version)
 		return "",fmt.Errorf("DeployComponets: GetBlockImage zookeeper error,chainType=%s version=%s",chainType,p.Version)
 	}
-	for i:=1; i<=ZOOK_COUNT; i++ {
+	for i:=1; i<=public.ZOOK_COUNT; i++ {
 		zkName := "zookeeper" + strconv.Itoa(i)
 		_,err = deployfabric.CreateZookeeperDeployment(p.ClusterId,chainName,chainId,strconv.Itoa(i),zkImage,zkName)
 		if err != nil {
@@ -179,7 +143,7 @@ func DeployComponetsKafka(p DeployPara,chainName string,chainId string,chainType
 		logger.Errorf("DeployComponets: GetBlockImage kafka error,chainType=%s version=%s",chainType,p.Version)
 		return "",fmt.Errorf("DeployComponets: GetBlockImage kafka error,chainType=%s version=%s",chainType,p.Version)
 	}
-	for i:=1; i<=KAFKA_COUNT; i++ {
+	for i:=1; i<=public.KAFKA_COUNT; i++ {
 		kafkaName := "kafka" + strconv.Itoa(i)
 		_,err = deployfabric.CreateKafkaDeployment(p.ClusterId,chainName,chainId,strconv.Itoa(i),kafkaImage,kafkaName)
 		if err != nil {
@@ -215,7 +179,7 @@ func DeployComponetsKafka(p DeployPara,chainName string,chainId string,chainType
 		}
 	}
 	//deploy peer
-	peerImage,err := utils.GetBlockImage(chainType,p.Version,"peer")
+	peerImage,err := utils.GetBlockImage(chainType,p.Version,"peer") 
 	if err != nil {
 		logger.Errorf("DeployComponets: GetBlockImage peer error,chainType=%s version=%s",chainType,p.Version)
 		return "",fmt.Errorf("DeployComponets: GetBlockImage peer error,chainType=%s version=%s",chainType,p.Version)

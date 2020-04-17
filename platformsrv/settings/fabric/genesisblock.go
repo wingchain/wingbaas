@@ -10,9 +10,10 @@ import (
 	"github.com/wingbaas/platformsrv/logger" 
 	"github.com/wingbaas/platformsrv/utils"
 	"github.com/wingbaas/platformsrv/settings/fabric/txgenerate"
+	"github.com/wingbaas/platformsrv/settings/fabric/public"
 )
 
-func GenerateGenesisBlock(serviceRootPath string,deployConf DeployNetConfig,deployType string) error { 
+func GenerateGenesisBlock(serviceRootPath string,deployConf public.DeployNetConfig,deployType string) error { 
 	var txCnf genesisconfig.TopLevel
 	var orderArray []*genesisconfig.Organization
 	var peerArray []*genesisconfig.Organization
@@ -42,11 +43,11 @@ func GenerateGenesisBlock(serviceRootPath string,deployConf DeployNetConfig,depl
 	}
 
 	var orders genesisconfig.Orderer
-	if deployType == KAFKA_FABRIC {
+	if deployType == public.KAFKA_FABRIC {
 		orders.OrdererType = "kafka"
-	} else if deployType == SOLO_FABRIC {
+	} else if deployType == public.SOLO_FABRIC {
 		orders.OrdererType = "solo"
-	} else if deployType == RAFT_FABRIC {
+	} else if deployType == public.RAFT_FABRIC {
 		orders.OrdererType = "etcdraft"
 	}else {
 		logger.Errorf("unsupported orderer type %s",deployType)

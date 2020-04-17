@@ -13,6 +13,7 @@ import (
 	"github.com/goinggo/mapstructure"
 	"github.com/wingbaas/platformsrv/utils"
 	"github.com/wingbaas/platformsrv/settings/fabric"
+	"github.com/wingbaas/platformsrv/settings/fabric/public"
 )
 
 const (
@@ -133,7 +134,7 @@ func deployBlockChain(c echo.Context) error {
         	ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 			return c.JSON(http.StatusOK,ret)
 		}
-		var cfg fabric.DeployPara
+		var cfg public.DeployPara
 		err = mapstructure.Decode(cfgMap,&cfg); 
 		if err != nil {
 			msg := "blockchain fabric decode config map error"

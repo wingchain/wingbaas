@@ -11,6 +11,7 @@ import (
 type Cluster struct {
 	ClusterId     string `json:"ClusterId"`
 	Addr          string `json:"Addr"`
+	PublicIp	  string `json:"PublicIp"`
 	Cert          string `json:"Cert"`
 	Key           string `json:"Key"`
 }
