@@ -84,6 +84,7 @@ func DeployFabric(p public.DeployPara,chainName string,chainType string)(string,
 	}
 	var sdkCfg sdkfabric.GenerateParaSt
 	sdkCfg.ClusterId = p.ClusterId
+	sdkCfg.NamespaceId = chainName 
 	sdkCfg.BlockId = blockId
 	sdkCfg.ChannelName = "mychannel"
 	sdkfabric.GenerateCfg(p.DeployNetCfg,sdkCfg)
@@ -146,7 +147,7 @@ func DeployComponetsKafka(p public.DeployPara,chainName string,chainId string,ch
 		logger.Errorf("DeployComponets: GetBlockImage kafka error,chainType=%s version=%s",chainType,p.Version)
 		return "",fmt.Errorf("DeployComponets: GetBlockImage kafka error,chainType=%s version=%s",chainType,p.Version)
 	}
-	for i:=1; i<=public.KAFKA_COUNT; i++ {
+	for i:=0; i<public.KAFKA_COUNT; i++ {
 		kafkaName := "kafka" + strconv.Itoa(i)
 		_,err = deployfabric.CreateKafkaDeployment(p.ClusterId,chainName,chainId,strconv.Itoa(i),kafkaImage,kafkaName)
 		if err != nil {
