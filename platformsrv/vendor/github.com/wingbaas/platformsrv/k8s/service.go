@@ -58,7 +58,7 @@ func GetNamespaceServices(clusterId string,namespaceId string) ([]Service,error)
 		logger.Errorf("GetNamespaceServices: cluster nil,cluster id =%s",clusterId)
 		return nil,fmt.Errorf("GetNamespaceServices: cluster nil,cluster id =%s",clusterId)
 	}
-	bytes,err := utils.RequestWithCert(cluster.Addr + API_V1 + NAMESPACES + "/" + SERVICES,utils.REQ_GET,cluster.Cert,cluster.Key) 
+	bytes,err := utils.RequestWithCert(cluster.Addr + API_V1 + NAMESPACES + "/" + namespaceId + "/" + SERVICES,utils.REQ_GET,cluster.Cert,cluster.Key)
 	if err != nil { 
 		logger.Errorf("GetNamespaceServices: RequestWithCert err,%v", err)
 		return nil,nil
@@ -69,6 +69,8 @@ func GetNamespaceServices(clusterId string,namespaceId string) ([]Service,error)
 		logger.Errorf("GetNamespaceServices: unmarshal services err,%v", err)
 		return nil,fmt.Errorf("GetNamespaceServices: unmarshal services err,%v", err)
 	}
+	// logger.Debug("service list=")
+	// logger.Debug(services.Items)
 	return services.Items,nil
 } 
 
@@ -122,6 +124,8 @@ func GetServicesNodePort(clusterId string,namespaceId string,netCfg public.Deplo
 			m[caKey] = caps
 		}
 	}
+	// logger.Debug("GetServicesNodePort ret map=")
+	// logger.Debug(m)
 	return nil,m
 }
 
@@ -129,7 +133,7 @@ func GetNodePort(m map[string][]public.ServiceNodePortSt,firstKey string,secondK
 	obj := m[firstKey]
 	for _,po := range obj {
 		if po.ServerName == secondKey {
-			return po.NodePort
+			return po.NodePort 
 		}
 	}
 	logger.Debug("GetNodePort: not find,firstKey=%s,secondKey=%s",firstKey,secondKey)

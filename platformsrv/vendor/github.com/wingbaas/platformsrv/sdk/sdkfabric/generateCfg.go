@@ -16,12 +16,19 @@ type GenerateParaSt struct {
 	ClusterId			string
 	NamespaceId			string
 	BlockId				string
-	ChannelName	 		string
+	ChannelName	 		string 
 }
 
 var svMap map[string][]public.ServiceNodePortSt
 
 func GenerateCfg(netCfg public.DeployNetConfig,p GenerateParaSt)(string,error) { 
+	svMap = make(map[string][]public.ServiceNodePortSt)
+	err,sMap := k8s.GetServicesNodePort(p.ClusterId,p.NamespaceId,netCfg)
+	if err != nil {
+		logger.Errorf("GenerateCfg: GetServicesNodePort failed")
+		return "",fmt.Errorf("GenerateCfg: GetServicesNodePort failed")
+	}
+	svMap = sMap
 	channelMap := getChannelMap(netCfg,p) 
 	orgMap := getOrgMap(netCfg,p)
 	err,orderMap := getOrderMap(netCfg,p)
@@ -54,13 +61,6 @@ func GenerateCfg(netCfg public.DeployNetConfig,p GenerateParaSt)(string,error) {
 	if err != nil {
 		logger.Errorf("GenerateCfg: getCasMatch,id=%s",p.ClusterId)
 		return "",fmt.Errorf("GenerateCfg: getCasMatch failed,id=%s",p.ClusterId)
-	}
-
-	svMap = make(map[string][]public.ServiceNodePortSt)
-	err,svMap = k8s.GetServicesNodePort(p.ClusterId,p.NamespaceId,netCfg)
-	if err != nil {
-		logger.Errorf("GenerateCfg: GetServicesNodePort failed")
-		return "",fmt.Errorf("GenerateCfg: GetServicesNodePort failed")
 	}
 
 	var firstOrg public.OrgSpec
@@ -123,14 +123,14 @@ func GenerateCfg(netCfg public.DeployNetConfig,p GenerateParaSt)(string,error) {
 	} 
 	logger.Debug("GenerateCfg: json str=")
 	logger.Debug(string(bytes))
-	bl,yamlStr := fabric.JsonToYaml(string(bytes))
+	bl,yamlStr := fabric.JsonToYaml(string(bytes)) 
 	if !bl {
 		logger.Errorf("GenerateCfg: json2yaml error") 
 		return "",fmt.Errorf("GenerateCfg: json2yaml error")
 	}
 	logger.Debug("GenerateCfg: yaml str=")
 	logger.Debug(yamlStr)
-	cfgFile := utils.BAAS_CFG.BlockNetCfgBasePath + "/" + p.BlockId + "/config.yaml" 
+	cfgFile := utils.BAAS_CFG.BlockNetCfgBasePath + "/" + p.BlockId + "/network-config.yaml" 
 	err = utils.WriteFile(cfgFile,yamlStr)
 	if err != nil {
 		logger.Errorf("GenerateCfg: write sdk config error")
@@ -172,8 +172,9 @@ func getOrdersMatch(netCfg public.DeployNetConfig,p GenerateParaSt)(error,[]Matc
 	for _,org := range netCfg.OrdererOrgs {
 		for _,p := range org.Specs {
 			var om MatchFieldSt
+			var orderPort = k8s.GetNodePort(svMap,p.Hostname, p.Hostname)
 			om.Pattern = "(\\w*)" + p.Hostname + "." + org.Domain + "(\\w*)"
-			om.URLSubstitutionExp = cluster.PublicIp + ":7050"
+			om.URLSubstitutionExp = cluster.PublicIp + ":" + orderPort
 			om.SslTargetOverrideURLSubstitutionExp = p.Hostname + "." + org.Domain
 			om.MappedHost = p.Hostname + "." + org.Domain
 			ordersMatch = append(ordersMatch,om)
@@ -191,8 +192,10 @@ func getCasMatch(netCfg public.DeployNetConfig,p GenerateParaSt)(error,[]MatchFi
 	var casMatch []MatchFieldSt
 	for _,org := range netCfg.PeerOrgs {
 		var cm MatchFieldSt
+		key := strings.ToLower(org.Name + "-ca")
+		var caPort = k8s.GetNodePort(svMap,key, key)
 		cm.Pattern = "(\\w*)" + "ca." + org.Domain + "(\\w*)"
-		cm.URLSubstitutionExp = cluster.PublicIp + ":7054"
+		cm.URLSubstitutionExp = cluster.PublicIp + ":" + caPort 
 		cm.MappedHost = "ca." + org.Domain
 		casMatch = append(casMatch,cm)
 	}
@@ -209,7 +212,9 @@ func getCaMap(netCfg public.DeployNetConfig,p GenerateParaSt)(error,map[string]C
 	var key string
 	for _,org := range netCfg.PeerOrgs {
 		var field CaField
-		field.URL = "https://" + cluster.PublicIp + ":7054"
+		caKey := strings.ToLower(org.Name + "-ca")
+		var caPort = k8s.GetNodePort(svMap,caKey, caKey)
+		field.URL = "https://" + cluster.PublicIp + ":" + caPort
 		field.HTTPOptions = HTTPOptionsSt {
 			Verify: false,
 		}
@@ -236,10 +241,12 @@ func getPeersMemberMap(netCfg public.DeployNetConfig,p GenerateParaSt) (error,ma
 	m := make(map[string]MemberField)
 	var key string
 	for _,org := range netCfg.PeerOrgs {
-		var field MemberField
-		field.URL = cluster.PublicIp + ":7051"
-		field.EventURL = cluster.PublicIp + ":7053"
 		for _,member := range org.Specs {
+			var field MemberField
+			apiPort := k8s.GetNodePort(svMap,strings.ToLower(member.Hostname), "api")
+			eventPort := k8s.GetNodePort(svMap,strings.ToLower(member.Hostname), "events")
+			field.URL = cluster.PublicIp + ":" + apiPort
+			field.EventURL = cluster.PublicIp + ":" + eventPort
 			key = member.Hostname + "." + org.Domain
 			field.GrpcOptions = GrpcOptionsSt {
 				SslTargetNameOverride: member.Hostname + "." + org.Domain,
@@ -249,11 +256,11 @@ func getPeersMemberMap(netCfg public.DeployNetConfig,p GenerateParaSt) (error,ma
 				FailFast: false,
 				AllowInsecure: false,
 			}
+			field.TLSCACerts = TLSCACertsSt {
+				Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + org.Domain + "/tlsca/tlsca." + org.Domain + "-cert.pem",
+			}
+			m[key] = field
 		}
-		field.TLSCACerts = TLSCACertsSt {
-			Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + org.Domain + "/tlsca/tlsca." + org.Domain + "-cert.pem",
-		}
-		m[key] = field
 	}
 	return nil,m
 }
@@ -266,10 +273,9 @@ func getOrderMap(netCfg public.DeployNetConfig,p GenerateParaSt)(error,map[strin
 	}
 	m := make(map[string]MemberField)
 	var key string
-	for _,org := range netCfg.OrdererOrgs {
-		var field MemberField
-		field.URL = cluster.PublicIp + ":7050"
+	for _,org := range netCfg.OrdererOrgs {	
 		for _,member := range org.Specs {
+			var field MemberField
 			key = member.Hostname + "." + org.Domain
 			field.GrpcOptions = GrpcOptionsSt {
 				SslTargetNameOverride: member.Hostname + "." + org.Domain,
@@ -279,12 +285,14 @@ func getOrderMap(netCfg public.DeployNetConfig,p GenerateParaSt)(error,map[strin
 				FailFast: false,
 				AllowInsecure: false,
 			}
-			break
+			orderKey := member.Hostname
+			orderPort := k8s.GetNodePort(svMap,orderKey,orderKey)
+			field.URL = cluster.PublicIp + ":" + orderPort
+			field.TLSCACerts = TLSCACertsSt {
+				Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/ordererOrganizations/" + org.Domain + "/tlsca/tlsca." + org.Domain + "-cert.pem",
+			}
+			m[key] = field
 		}
-		field.TLSCACerts = TLSCACertsSt {
-			Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/ordererOrganizations/" + org.Domain + "/tlsca/tlsca." + org.Domain + "-cert.pem",
-		}
-		m[key] = field
 	}
 	return nil,m
 }

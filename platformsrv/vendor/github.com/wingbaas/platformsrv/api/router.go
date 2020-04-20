@@ -21,7 +21,7 @@ func Start(port string) {
 	r.POST("/api/v1/delete",deleteBlockChain)
 
 	// Start server
-	logger.Debug("start wing baas api server")
+	logger.Debug("start wing baas api server") 
 	r.Logger.Fatal(r.Start(":"+port))
 	logger.Debug("stop wing baas api server")
 }

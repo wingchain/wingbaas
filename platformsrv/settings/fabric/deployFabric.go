@@ -15,6 +15,12 @@ import (
 	"github.com/wingbaas/platformsrv/sdk/sdkfabric"
 )
 
+var FabricChainSdkMap map[string]sdkfabric.FabricSetup
+
+func ChainSdkMapInit() {
+	FabricChainSdkMap = make(map[string]sdkfabric.FabricSetup) 
+}
+
 func DeployFabric(p public.DeployPara,chainName string,chainType string)(string,error) {
 	if p.DeployType != public.SOLO_FABRIC && p.DeployType != public.KAFKA_FABRIC && p.DeployType != public.RAFT_FABRIC {
 		logger.Errorf("DeployFabric: unsupported deploy type")
@@ -46,7 +52,7 @@ func DeployFabric(p public.DeployPara,chainName string,chainType string)(string,
 		logger.Errorf("DeployFabric: GenerateGenesisBlock error")
 		return "",fmt.Errorf("DeployFabric: GenerateGenesisBlock error")
 	}
-	err = GenerateChannelTx(blockCertPath,"mychannel")
+	err = GenerateChannelTx(blockCertPath,sdkfabric.DefaultChannel)
 	if err != nil {
 		logger.Errorf("DeployFabric: GenerateChannelTx error: %v",err)
 		return "",fmt.Errorf("DeployFabric: GenerateChannelTx error: %v",err)
@@ -86,8 +92,10 @@ func DeployFabric(p public.DeployPara,chainName string,chainType string)(string,
 	sdkCfg.ClusterId = p.ClusterId
 	sdkCfg.NamespaceId = chainName 
 	sdkCfg.BlockId = blockId
-	sdkCfg.ChannelName = "mychannel"
+	sdkCfg.ChannelName = sdkfabric.DefaultChannel
 	sdkfabric.GenerateCfg(p.DeployNetCfg,sdkCfg)
+	// time.Sleep(5*time.Second)
+	// ChainSdkInit(p.DeployNetCfg,sdkCfg)
 	return blockId,nil 
 }
 
@@ -211,7 +219,7 @@ func DeployComponetsKafka(p public.DeployPara,chainName string,chainId string,ch
 		}
 		for _,spec :=  range org.Specs { 
 			dp.RawPeerName = spec.Hostname
-			dp.PeerName = spec.Hostname
+			dp.PeerName = spec.Hostname 
 			_,err = deployfabric.CreatePeerDeployment(p.ClusterId,chainName,chainId,dp)
 			if err != nil {
 				logger.Errorf("DeployComponets: CreatePeerDeployment error=%s",err.Error())
@@ -225,6 +233,106 @@ func DeployComponetsKafka(p public.DeployPara,chainName string,chainId string,ch
 		}
 	}
 	return "",nil 
+}
+
+//func ChainSdkInit(netCfg public.DeployNetConfig,p sdkfabric.GenerateParaSt) { 
+func ChainSdkInit() {
+	netCfg := public.DeployNetConfig{
+		OrdererOrgs: []public.OrgSpec{
+			{
+				Name: "Orderer",
+				Domain: "orderer.baas.xyz",
+				Specs: []public.NodeSpec{
+					{
+						Hostname: "orderer0",
+					},
+					{
+						Hostname: "orderer1",
+					},
+				},
+			},
+		},
+		PeerOrgs: []public.OrgSpec {
+			{
+				Name: "Org1",
+				Domain: "Org1.fabric.baas.xyz",
+				Specs: []public.NodeSpec{ 
+					{
+						Hostname: "peer0-org1",
+					},
+					{
+						Hostname: "peer1-org1",
+					},
+				},
+				Users: public.UsersSpec{
+					Count: 1,
+				},
+			},
+			{
+				Name: "Org2",
+				Domain: "Org2.fabric.baas.xyz",
+				Specs: []public.NodeSpec{
+					{
+						Hostname: "peer0-org2",
+					},
+					{
+						Hostname: "peer1-org2",
+					},
+				},
+				Users: public.UsersSpec{
+					Count: 1,
+				},
+			},
+		},
+	}
+
+	p := sdkfabric.GenerateParaSt{
+		ClusterId: "test-cluster1",		
+		NamespaceId: "test-chainnetwork11",	
+		BlockId: "2Iu7LhMTG9huzZK4yP8FTxwAXBM8HNqg",		
+		ChannelName: "mychannel",
+	}
+
+	rootPath,_ := utils.GetProcessRunRoot()
+	var orderId string
+	for _,org := range netCfg.OrdererOrgs {
+		for _,p := range org.Specs {
+			orderId = p.Hostname + "." + org.Domain
+			break
+		}
+	}
+	var firstOrg public.OrgSpec
+	for _,org := range netCfg.PeerOrgs { 
+		firstOrg = org
+		break
+	}
+	fSetup := sdkfabric.FabricSetup{
+		OrdererID: orderId,
+		ChannelID: sdkfabric.DefaultChannel, 
+		ChannelConfig: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/channel-artifacts/" + sdkfabric.DefaultChannel + ".tx",
+		//ChainCodeID:     "heroes-service",
+		ChaincodeGoPath: rootPath + "/sdk/sdkfabric",
+		ChaincodePath:   "ccexample/",
+		OrgAdmin:        "Admin",
+		OrgName:         firstOrg.Name, 
+		ConfigFile:      utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/network-config.yaml",
+		UserName: "User1",
+	}
+	err := fSetup.Initialize()
+	if err != nil {
+		logger.Errorf("Unable to initialize the Fabric SDK: %v\n", err)
+		return
+	}
+	// Close SDK
+	defer fSetup.CloseSDK()
+	FabricChainSdkMap[p.BlockId] = fSetup
+
+	// //Install and instantiate the chaincode
+	// err = fSetup.InstallAndInstantiateCC()
+	// if err != nil {
+	// 	fmt.Printf("Unable to install and instantiate the chaincode: %v\n", err)
+	// 	return
+	// } 
 }
 
 
