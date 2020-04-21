@@ -54,23 +54,24 @@ func (setup *FabricSetup) Initialize() error {
 	sdk, err := fabsdk.New(config.FromFile(setup.ConfigFile))
 	if err != nil {
 		logger.Errorf("failed to create SDK,err=%v",err)
-		return fmt.Errorf("failed to create SDK,err=%v",err)
+		return fmt.Errorf("failed to create SDK,err=%v",err) 
 	}
 	setup.sdk = sdk
-	logger.Debug("sdk=")
-	logger.Debug(sdk)
+	// logger.Debug("sdk=")
+	// logger.Debug(sdk)
 	// The resource management client is responsible for managing channels (create/update channel)
 	resourceManagerClientContext := setup.sdk.Context(fabsdk.WithUser(setup.OrgAdmin), fabsdk.WithOrg(setup.OrgName))
-	if err != nil {
-		logger.Errorf("failed to load Admin identity,err=%v",err)
-		return fmt.Errorf("failed to load Admin identity,err=%v",err)
-	}
-	resMgmtClient, err := resmgmt.New(resourceManagerClientContext) 
+	// ctx, err := resourceManagerClientContext()
+	// if ctx == nil {
+	// 	logger.Errorf("failed to load Admin identity,err=%v",err)
+	// 	return fmt.Errorf("failed to load Admin identity,err=%v",err)
+	// }
+	resMgmtClient, err := resmgmt.New(resourceManagerClientContext)  
 	if err != nil {
 		logger.Errorf("failed to create channel management client from Admin identity,err=%v",err)
 		return fmt.Errorf("failed to create channel management client from Admin identity,err=%v",err)
 	}
-	setup.admin = resMgmtClient
+	setup.admin = resMgmtClient 
 
 	// The MSP client allow us to retrieve user information from their identity, like its signing identity which we will need to save the channel
 	mspClient, err := mspclient.New(sdk.Context(), mspclient.WithOrg(setup.OrgName))

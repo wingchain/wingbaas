@@ -99,9 +99,17 @@ func GenerateCfg(netCfg public.DeployNetConfig,p GenerateParaSt)(string,error) {
 			},
 			TLSCerts: TLSCertsSt {
 				SystemCertPool: false,
+				// Client: ClientTLSCertsSt {
+				// 	Keyfile: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/User1@" + firstOrg.Domain + "/tls/client.key",
+				// 	Certfile: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/User1@" + firstOrg.Domain + "/tls/client.crt",
+				// },
 				Client: ClientTLSCertsSt {
-					Keyfile: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/User1@" + firstOrg.Domain + "/tls/client.key",
-					Certfile: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/User1@" + firstOrg.Domain + "/tls/client.crt",
+					Key: CryptoconfigSt {
+						Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/User1@" + firstOrg.Domain + "/tls/client.key",
+					},
+					Cert: CryptoconfigSt {
+						Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/User1@" + firstOrg.Domain + "/tls/client.crt",
+					},
 				},
 			},
 		},
@@ -223,8 +231,16 @@ func getCaMap(netCfg public.DeployNetConfig,p GenerateParaSt)(error,map[string]C
       		EnrollSecret: "adminpw",
 		}
 		field.CaName = strings.ToLower(org.Name + "-ca")
-		field.TLSCACerts = TLSCACertsSt {
+		field.TLSCACerts = TLSCACertsSt { 
 			Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + org.Domain + "/ca/ca." + org.Domain + "-cert.pem",
+			Client: ClientTLSCertsSt {
+				Key: CryptoconfigSt {
+					Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + org.Domain + "/users/User1@" + org.Domain + "/tls/client.key",
+				},
+				Cert: CryptoconfigSt {
+					Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + org.Domain + "/users/User1@" + org.Domain + "/tls/client.crt",
+				},
+			},
 		}
 		key = "ca." + org.Domain
 		m[key] = field

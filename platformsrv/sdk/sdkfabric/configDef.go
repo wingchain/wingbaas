@@ -35,8 +35,10 @@ type BCCSPSt struct {
 }
 
 type ClientTLSCertsSt struct {
-	Keyfile interface{} `json:"keyfile"`
-	Certfile interface{} `json:"certfile"`
+	// Keyfile interface{} `json:"keyfile"`
+	// Certfile interface{} `json:"certfile"`
+	Key CryptoconfigSt `json:"key"`
+	Cert CryptoconfigSt `json:"cert"`
 }
 
 type TLSCertsSt struct {
@@ -100,6 +102,7 @@ type GrpcOptionsSt struct {
 
 type TLSCACertsSt struct {
 	Path string `json:"path"`
+	Client ClientTLSCertsSt `json:"client"`
 }
 
 type MemberField struct {
