@@ -325,7 +325,7 @@ func ChainSdkInit() {
 	}
 	// Close SDK
 	defer fSetup.CloseSDK()
-	FabricChainSdkMap[p.BlockId] = fSetup
+	FabricChainSdkMap[p.BlockId] = fSetup 
 
 	// //Install and instantiate the chaincode
 	// err = fSetup.InstallAndInstantiateCC()
