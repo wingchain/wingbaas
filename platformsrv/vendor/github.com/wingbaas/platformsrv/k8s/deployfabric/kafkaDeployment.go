@@ -47,7 +47,7 @@ func CreateKafkaDeployment(clusterId string,namespaceId string,chainId string,ka
 												Key: "team",
 												Operator: "In",
 												Values: []string{"baas"},
-											},
+											}, 
 										},		
 									},
 								},	
@@ -96,7 +96,7 @@ func CreateKafkaDeployment(clusterId string,namespaceId string,chainId string,ka
 								},
 								{
 									Name: "KAFKA_ZOOKEEPER_CONNECT",
-									Value: "zookeeper1:2181,zookeeper2:2181,zookeeper3:2181",
+									Value: "zookeeper0:2181,zookeeper1:2181,zookeeper2:2181",
 								}, 
 							},
 							Ports: []PortContainerSpecTemplateSt{
@@ -123,6 +123,7 @@ func CreateKafkaDeployment(clusterId string,namespaceId string,chainId string,ka
 							},
 						},
 					},
+					Hostname: kafkaName,
 				},
 			},
 		},

@@ -74,7 +74,7 @@ func CreateOrderKafkaDeployment(clusterId string,namespaceId string,chainId stri
 							Env: []EnvContainerSpecTemplateSt{
 								{
 									Name: "CONFIGTX_ORDERER_KAFKA_BROKERS", 
-									Value: "[kafka1:9092,kafka2:9092,kafka3:9092,kafka4:9092]",
+									Value: "[kafka0:9092,kafka1:9092,kafka2:9092,kafka3:9092]",
 								},
 								{
 									Name: "CONFIGTX_ORDERER_ORDERERTYPE",
@@ -128,6 +128,10 @@ func CreateOrderKafkaDeployment(clusterId string,namespaceId string,chainId stri
 									Name: "ORDERER_FILELEDGER_LOCATION",
 									Value: "/var/fabric/production/orderer",
 								},
+								// {
+								// 	Name: "ORDERER_GENERAL_TLS_ENABLED",
+								// 	Value: "true",
+								// },
 								{
 									Name: "ORDERER_GENERAL_TLS_CERTIFICATE",
 									Value: "/cert/crypto-config/ordererOrganizations/" + orderDomain + "/orderers/" + orderName + "."  + orderDomain + "/tls/server.crt",
@@ -162,7 +166,7 @@ func CreateOrderKafkaDeployment(clusterId string,namespaceId string,chainId stri
 							VolumeMounts: []VolumeContainerSpecTemplateSt{ 
 								{
 									MountPath: "/var/data",
-									Name: "order-data-store",
+									Name: "order-cert",
 									//SubPath: clusterId + "/" + chainId + "/DataStore/" + orderName + "/data",
 								}, 
 							},    
@@ -171,13 +175,14 @@ func CreateOrderKafkaDeployment(clusterId string,namespaceId string,chainId stri
 					RestartPolicy: "Always",
 					Volumes: []VolumeSpecTemplateSt{
 						{
-							Name: "order-data-store",
+							Name: "order-cert",
 							Nfs: NfsVolumeSpecTemplateSt{
 								Server: utils.BAAS_CFG.NfsInternalAddr,
 								Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId,
 							},
 						},
 					},
+					Hostname: orderName,
 				},
 			},
 		},

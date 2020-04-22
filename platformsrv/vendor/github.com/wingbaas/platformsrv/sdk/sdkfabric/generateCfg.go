@@ -313,6 +313,19 @@ func getOrderMap(netCfg public.DeployNetConfig,p GenerateParaSt)(error,map[strin
 	return nil,m
 }
 
+func getUserMap(user string,domain string,p GenerateParaSt) map[string]ClientTLSCertsSt {
+	m := make(map[string]ClientTLSCertsSt)
+	var field ClientTLSCertsSt
+	field.Key = CryptoconfigSt {
+		Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + domain + "/users/" + user + "@" + domain + "/tls/client.key",
+	}
+	field.Cert = CryptoconfigSt {
+		Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + domain + "/users/"  + user + "@" + domain + "/tls/client.crt",
+	}
+	m["Admin"] = field
+	return m
+}
+
 func getOrgMap(netCfg public.DeployNetConfig,p GenerateParaSt) map[string]OrgField {
 	m := make(map[string]OrgField)
 	for _,org := range netCfg.PeerOrgs {
@@ -323,6 +336,7 @@ func getOrgMap(netCfg public.DeployNetConfig,p GenerateParaSt) map[string]OrgFie
 			field.Peers = append(field.Peers,p.Hostname + "." + org.Domain)
 		}
 		field.CertificateAuthorities = append(field.CertificateAuthorities,"ca." + org.Domain)
+		field.Users = getUserMap("Admin",org.Domain,p)
 		m[org.Name] = field
 	}
 	return m

@@ -89,6 +89,7 @@ type OrgField struct {
 	CryptoPath string `json:"cryptoPath"`
 	Peers []string `json:"peers"`
 	CertificateAuthorities []string `json:"certificateAuthorities"`
+	Users map[string]ClientTLSCertsSt `json:"users"` 
 }
 
 type GrpcOptionsSt struct {
@@ -102,7 +103,7 @@ type GrpcOptionsSt struct {
 
 type TLSCACertsSt struct {
 	Path string `json:"path"`
-	Client ClientTLSCertsSt `json:"client"`
+	Client ClientTLSCertsSt `json:"client,omitempty"`
 }
 
 type MemberField struct {

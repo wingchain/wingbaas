@@ -14,7 +14,7 @@ type KafkaService struct {
 }
 
 func CreateKafkaService(clusterId string,namespaceId string,chainId string,kafkaName string)([]byte,error) {
-	kafkaService := ZookeeperService{
+	kafkaService := KafkaService{
 		APIVersion: "v1",
 		Kind: "Service",   
 		Metadata: MetadataService{

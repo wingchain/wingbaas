@@ -111,7 +111,7 @@ func CreatePeerDeployment(clusterId string,namespaceId string,chainId string,p P
 							Args: []string{"sh","-c","cp -a /var/data/. " + "/cert; exec peer node start"},
 							Env: []EnvContainerSpecTemplateSt{
 								{
-									Name: "CORE_LOGGING_LEVEL",
+									Name: "CORE_LOGGING_LEVEL", 
 									Value: "debug",
 								},
 								{
@@ -238,7 +238,7 @@ func CreatePeerDeployment(clusterId string,namespaceId string,chainId string,p P
 							VolumeMounts: []VolumeContainerSpecTemplateSt{ 
 								{
 									MountPath: "/var/data",
-									Name: "peer-data-store",
+									Name: "peer-cert",
 								}, 
 							},    
 						},
@@ -247,7 +247,7 @@ func CreatePeerDeployment(clusterId string,namespaceId string,chainId string,p P
 					Hostname: p.PeerName,
 					Volumes: []VolumeSpecTemplateSt{
 						{
-							Name: "peer-data-store",
+							Name: "peer-cert",
 							Nfs: NfsVolumeSpecTemplateSt{
 								Server: utils.BAAS_CFG.NfsInternalAddr,
 								Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId,

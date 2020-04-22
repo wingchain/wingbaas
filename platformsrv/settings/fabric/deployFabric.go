@@ -70,7 +70,7 @@ func DeployFabric(p public.DeployPara,chainName string,chainType string)(string,
 	}
 
 	if p.DeployType == public.KAFKA_FABRIC {
-		_,err = DeployComponetsKafka(p,chainName,blockId,chainType)
+		_,err := DeployComponetsKafka(p,chainName,blockId,chainType)
 		if err != nil {
 			logger.Errorf("DeployFabric: DeployComponets error=%s",err.Error())
 			return "",fmt.Errorf("DeployFabric: DeployComponets error=%s",err.Error())
@@ -107,7 +107,7 @@ func DeployComponetsKafka(p public.DeployPara,chainName string,chainId string,ch
 	}
 	time.Sleep(10 * time.Second)
 	//deploy ca
-	for _,org := range p.DeployNetCfg.PeerOrgs {
+	for _,org := range p.DeployNetCfg.PeerOrgs { 
 		caName := strings.ToLower(org.Name + "-ca")
 		caImage,err := utils.GetBlockImage(chainType,p.Version,"ca")
 		if err != nil {
@@ -136,19 +136,19 @@ func DeployComponetsKafka(p public.DeployPara,chainName string,chainId string,ch
 		logger.Errorf("DeployComponets: GetBlockImage zookeeper error,chainType=%s version=%s",chainType,p.Version)
 		return "",fmt.Errorf("DeployComponets: GetBlockImage zookeeper error,chainType=%s version=%s",chainType,p.Version)
 	}
-	for i:=1; i<=public.ZOOK_COUNT; i++ {
-		zkName := "zookeeper" + strconv.Itoa(i)
-		_,err = deployfabric.CreateZookeeperDeployment(p.ClusterId,chainName,chainId,strconv.Itoa(i),zkImage,zkName)
+	for i:=0; i<public.ZOOK_COUNT; i++ {
+		zkName := "zookeeper" + strconv.Itoa(i)   
+		_,err = deployfabric.CreateZookeeperDeployment(p.ClusterId,chainName,chainId,strconv.Itoa(i+1),zkImage,zkName)
 		if err != nil {
 			logger.Errorf("DeployComponets: CreateZkDeployment error=%s zkName=%s",err.Error(),zkName)
 			return "",fmt.Errorf("DeployComponets: CreateZkDeployment error=%s zkName=%s",err.Error(),zkName)
 		}
-		_,err = deployfabric.CreateZookeeperService(p.ClusterId,chainName,chainId,zkName)
+		_,err = deployfabric.CreateZookeeperService(p.ClusterId,chainName,chainId,zkName) 
 		if err != nil {
 			logger.Errorf("DeployComponets: CreateZookeeperService error=%s zkName=%s",err.Error(),zkName) 
 			return "",fmt.Errorf("DeployComponets: CreateZookeeperService error=%s zkName=%s",err.Error(),zkName)
 		}
-	}
+	} 
 	//deploy kafka
 	kafkaImage,err := utils.GetBlockImage(chainType,p.Version,"kafka")
 	if err != nil {
@@ -238,7 +238,7 @@ func DeployComponetsKafka(p public.DeployPara,chainName string,chainId string,ch
 //func ChainSdkInit(netCfg public.DeployNetConfig,p sdkfabric.GenerateParaSt) { 
 func ChainSdkInit() {
 	netCfg := public.DeployNetConfig{
-		OrdererOrgs: []public.OrgSpec{
+		OrdererOrgs: []public.OrgSpec{ 
 			{
 				Name: "Orderer",
 				Domain: "orderer.baas.xyz",
@@ -289,7 +289,7 @@ func ChainSdkInit() {
 	p := sdkfabric.GenerateParaSt{
 		ClusterId: "test-cluster1",		
 		NamespaceId: "test-chainnetwork11",	
-		BlockId: "2Iu7LhMTG9huzZK4yP8FTxwAXBM8HNqg",		
+		BlockId: "bGuPFCJXRdmY9TrKV5BDgdHZfcyzOg07",		
 		ChannelName: "mychannel",
 	}
 
@@ -316,7 +316,7 @@ func ChainSdkInit() {
 		OrgAdmin:        "Admin",
 		OrgName:         firstOrg.Name, 
 		ConfigFile:      utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/network-config.yaml",
-		UserName: "User1",
+		UserName: "Admin",
 	}
 	err := fSetup.Initialize()
 	if err != nil {

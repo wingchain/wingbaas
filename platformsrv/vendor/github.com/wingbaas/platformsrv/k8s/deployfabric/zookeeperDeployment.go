@@ -67,12 +67,12 @@ func CreateZookeeperDeployment(clusterId string,namespaceId string,chainId strin
 							},
 							Env: []EnvContainerSpecTemplateSt{
 								{
-									Name: "ZOO_MY_ID",
+									Name: "ZOO_MY_ID", 
 									Value: zkId,
 								},
 								{
 									Name: "ZOO_SERVERS",
-									Value: "server.1=zookeeper1:2888:3888 server.2=zookeeper2:2888:3888 server.3=zookeeper3:2888:3888",
+									Value: "server.1=zookeeper0:2888:3888 server.2=zookeeper1:2888:3888 server.3=zookeeper2:2888:3888",
 								},
 							},
 							Ports: []PortContainerSpecTemplateSt{

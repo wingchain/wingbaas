@@ -114,7 +114,7 @@ func (cfg *BaasCfg) CfgPathInit() error {
 	// 	logger.Errorf("CfgPathInit: mount nfs error, %v",err)
 	// 	return fmt.Errorf("CfgPathInit: mount nfs error, %v",err)
 	// }
-
+	
 	return nil 
 }
 

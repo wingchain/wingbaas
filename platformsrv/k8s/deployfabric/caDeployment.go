@@ -103,8 +103,8 @@ func CreateCaDeployment(clusterId string,namespaceId string,chainId string,image
 							},
 							VolumeMounts: []VolumeContainerSpecTemplateSt{
 								{
-									MountPath: "/var/data/",
-									Name: "ca-data-store",
+									MountPath: "/var/data",
+									Name: "ca-cert",
 								},
 							},
 						},
@@ -112,7 +112,7 @@ func CreateCaDeployment(clusterId string,namespaceId string,chainId string,image
 					RestartPolicy: "Always",
 					Volumes: []VolumeSpecTemplateSt{
 						{
-							Name: "ca-data-store",
+							Name: "ca-cert",
 							Nfs: NfsVolumeSpecTemplateSt{
 								Server: utils.BAAS_CFG.NfsInternalAddr,
 								Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId,
