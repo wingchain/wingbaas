@@ -197,10 +197,19 @@ type NfsVolumeSpecTemplateSt struct {
 type EmptyDirVolumeSpecTemplateSt struct {
 }
 
+type HostPathVolumeSpecTemplateSt struct {
+	Path string `json:"path"`
+}
+
+type VolumeSpecTemplateHostSt struct {
+	Name string `json:"name"`
+	HostPath HostPathVolumeSpecTemplateSt `json:"hostPath"` 
+}
+
 type VolumeSpecTemplateSt struct {
 	Name string `json:"name"`
 	//EmptyDir EmptyDirVolumeSpecTemplateSt `json:"emptyDir,omitempty"`
-	Nfs NfsVolumeSpecTemplateSt `json:"nfs,omitempty"` 
+	Nfs NfsVolumeSpecTemplateSt `json:"nfs,omitempty"`
 }
 
 type NodeSelectorSpecTemplateSt struct {

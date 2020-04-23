@@ -128,10 +128,10 @@ func CreateOrderKafkaDeployment(clusterId string,namespaceId string,chainId stri
 									Name: "ORDERER_FILELEDGER_LOCATION",
 									Value: "/var/fabric/production/orderer",
 								},
-								// {
-								// 	Name: "ORDERER_GENERAL_TLS_ENABLED",
-								// 	Value: "true",
-								// },
+								{
+									Name: "ORDERER_GENERAL_TLS_ENABLED",
+									Value: "true",
+								},
 								{
 									Name: "ORDERER_GENERAL_TLS_CERTIFICATE",
 									Value: "/cert/crypto-config/ordererOrganizations/" + orderDomain + "/orderers/" + orderName + "."  + orderDomain + "/tls/server.crt",
@@ -142,7 +142,7 @@ func CreateOrderKafkaDeployment(clusterId string,namespaceId string,chainId stri
 								}, 
 								{
 									Name: "ORDERER_GENERAL_TLS_ROOTCAS",
-									Value: "[/cert/crypto-config/ordererOrganizations/" + orderDomain + "/orderers/" + orderName + "."  + orderDomain + "tls/ca.crt]",
+									Value: "[/cert/crypto-config/ordererOrganizations/" + orderDomain + "/orderers/" + orderName + "."  + orderDomain + "/tls/ca.crt]",
 								},
 								{
 									Name: "ORDERER_KAFKA_RETRY_SHORTINTERVAL",

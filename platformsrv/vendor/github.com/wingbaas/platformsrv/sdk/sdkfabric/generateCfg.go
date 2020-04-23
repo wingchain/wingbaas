@@ -100,17 +100,13 @@ func GenerateCfg(netCfg public.DeployNetConfig,p GenerateParaSt)(string,error) {
 			TLSCerts: TLSCertsSt {
 				SystemCertPool: false,
 				// Client: ClientTLSCertsSt {
-				// 	Keyfile: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/User1@" + firstOrg.Domain + "/tls/client.key",
-				// 	Certfile: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/User1@" + firstOrg.Domain + "/tls/client.crt",
+				// 	Key: CryptoconfigSt {
+				// 		Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/Admin@" + firstOrg.Domain + "/tls/client.key",
+				// 	},
+				// 	Cert: CryptoconfigSt {
+				// 		Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/Admin@" + firstOrg.Domain + "/tls/client.crt",
+				// 	},
 				// },
-				Client: ClientTLSCertsSt {
-					Key: CryptoconfigSt {
-						Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/User1@" + firstOrg.Domain + "/tls/client.key",
-					},
-					Cert: CryptoconfigSt {
-						Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/User1@" + firstOrg.Domain + "/tls/client.crt",
-					},
-				},
 			},
 		},
 		Channels: channelMap,
@@ -235,10 +231,10 @@ func getCaMap(netCfg public.DeployNetConfig,p GenerateParaSt)(error,map[string]C
 			Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + org.Domain + "/ca/ca." + org.Domain + "-cert.pem",
 			Client: ClientTLSCertsSt {
 				Key: CryptoconfigSt {
-					Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + org.Domain + "/users/User1@" + org.Domain + "/tls/client.key",
+					Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + org.Domain + "/users/Admin@" + org.Domain + "/tls/client.key",
 				},
 				Cert: CryptoconfigSt {
-					Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + org.Domain + "/users/User1@" + org.Domain + "/tls/client.crt",
+					Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + org.Domain + "/users/Admin@" + org.Domain + "/tls/client.crt",
 				},
 			},
 		}
@@ -331,12 +327,12 @@ func getOrgMap(netCfg public.DeployNetConfig,p GenerateParaSt) map[string]OrgFie
 	for _,org := range netCfg.PeerOrgs {
 		var field OrgField
 		field.Mspid = org.Name + "MSP"
-		field.CryptoPath = utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + org.Domain + "/users/User1@" + org.Domain + "/msp"
+		field.CryptoPath = utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + org.Domain + "/users/Admin@" + org.Domain + "/msp"
 		for _,p := range org.Specs {
 			field.Peers = append(field.Peers,p.Hostname + "." + org.Domain)
 		}
 		field.CertificateAuthorities = append(field.CertificateAuthorities,"ca." + org.Domain)
-		field.Users = getUserMap("Admin",org.Domain,p)
+		//field.Users = getUserMap("Admin",org.Domain,p)
 		m[org.Name] = field
 	}
 	return m

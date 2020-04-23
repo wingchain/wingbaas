@@ -94,8 +94,8 @@ func DeployFabric(p public.DeployPara,chainName string,chainType string)(string,
 	sdkCfg.BlockId = blockId
 	sdkCfg.ChannelName = sdkfabric.DefaultChannel
 	sdkfabric.GenerateCfg(p.DeployNetCfg,sdkCfg)
-	// time.Sleep(5*time.Second)
-	// ChainSdkInit(p.DeployNetCfg,sdkCfg)
+	time.Sleep(30*time.Second)
+	ChainSdkInit(p.DeployNetCfg,sdkCfg)
 	return blockId,nil 
 }
 
@@ -235,8 +235,9 @@ func DeployComponetsKafka(p public.DeployPara,chainName string,chainId string,ch
 	return "",nil 
 }
 
-//func ChainSdkInit(netCfg public.DeployNetConfig,p sdkfabric.GenerateParaSt) { 
-func ChainSdkInit() {
+//func ChainSdkInit(netCfg public.DeployNetConfig,p sdkfabric.GenerateParaSt) error { 
+
+func ChainSdkInit(interface{},interface{}) error{
 	netCfg := public.DeployNetConfig{
 		OrdererOrgs: []public.OrgSpec{ 
 			{
@@ -248,7 +249,7 @@ func ChainSdkInit() {
 					},
 					{
 						Hostname: "orderer1",
-					},
+					}, 
 				},
 			},
 		},
@@ -289,7 +290,7 @@ func ChainSdkInit() {
 	p := sdkfabric.GenerateParaSt{
 		ClusterId: "test-cluster1",		
 		NamespaceId: "test-chainnetwork11",	
-		BlockId: "bGuPFCJXRdmY9TrKV5BDgdHZfcyzOg07",		
+		BlockId: "8ZXbQCuDonOkzBA3mvzjTn1ECpcpg5W0",		
 		ChannelName: "mychannel",
 	}
 
@@ -306,33 +307,51 @@ func ChainSdkInit() {
 		firstOrg = org
 		break
 	}
-	fSetup := sdkfabric.FabricSetup{
+	fSetup := sdkfabric.FabricSetup{ 
 		OrdererID: orderId,
+		OrgAdmin:  "Admin",
+		OrgName:   firstOrg.Name, 
+		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/network-config.yaml",
+		UserName: "Admin",
+	}
+	chSetup := sdkfabric.ChannnelSetup{
 		ChannelID: sdkfabric.DefaultChannel, 
 		ChannelConfig: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/channel-artifacts/" + sdkfabric.DefaultChannel + ".tx",
-		//ChainCodeID:     "heroes-service",
-		ChaincodeGoPath: rootPath + "/sdk/sdkfabric",
-		ChaincodePath:   "ccexample/",
-		OrgAdmin:        "Admin",
-		OrgName:         firstOrg.Name, 
-		ConfigFile:      utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/network-config.yaml",
-		UserName: "Admin",
+	}
+	ccSetup := sdkfabric.ChaincodeSetup {
+		ChainCodeID:     	"cctest",
+		ChaincodeGoPath: 	rootPath + "/sdk/sdkfabric",
+		ChaincodePath:   	"ccexample/",
+		ChaincodeVersion:	"1.0",
+		InitOrg:			firstOrg.Name,
 	}
 	err := fSetup.Initialize()
 	if err != nil {
-		logger.Errorf("Unable to initialize the Fabric SDK: %v\n", err)
-		return
+		return fmt.Errorf("initialize SDK error: %v\n", err)
 	}
-	// Close SDK
 	defer fSetup.CloseSDK()
 	FabricChainSdkMap[p.BlockId] = fSetup 
 
-	// //Install and instantiate the chaincode
-	// err = fSetup.InstallAndInstantiateCC()
+	// err = fSetup.CreateChannel(chSetup)
 	// if err != nil {
-	// 	fmt.Printf("Unable to install and instantiate the chaincode: %v\n", err)
-	// 	return
-	// } 
+	// 	return fmt.Errorf("create channel error: %v\n", err)
+	// }
+	// time.Sleep(5*time.Second)
+	// err = fSetup.JoinChannel(chSetup)
+	// if err != nil {
+	// 	return fmt.Errorf("join channel error: %v\n", err)
+	// }
+	// time.Sleep(5*time.Second)
+	// err = fSetup.InstallCC(ccSetup)
+	// if err != nil {
+	// 	return fmt.Errorf("install cc error: %v\n", err)
+	// }
+	//time.Sleep(3*time.Second)
+	err = fSetup.InstantiateCC(chSetup,ccSetup)
+	if err != nil {
+		return fmt.Errorf("instatiate cc error: %v\n", err)
+	}
+	return nil
 }
 
 

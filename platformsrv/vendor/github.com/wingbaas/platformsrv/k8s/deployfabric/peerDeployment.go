@@ -2,6 +2,9 @@
 package deployfabric
 import (
 	"os"
+	"fmt"
+	"github.com/wingbaas/platformsrv/logger"
+	"github.com/wingbaas/platformsrv/k8s"
 	"github.com/wingbaas/platformsrv/utils"
 )
 
@@ -12,7 +15,7 @@ type SpecTemplateStPeer struct {
 	RestartPolicy string `json:"restartPolicy"`
 	ImagePullSecrets []ImagePullSecretSpecTemplateSt `json:"imagePullSecrets"` 
 	Hostname string `json:"hostname"`
-	Volumes []VolumeSpecTemplateSt `json:"volumes"`
+	Volumes []interface{} `json:"volumes"`
 }
 
 type TemplateStPeer struct {
@@ -45,6 +48,11 @@ type PeerDeploymentPara struct{
 } 
 
 func CreatePeerDeployment(clusterId string,namespaceId string,chainId string,p PeerDeploymentPara)([]byte,error) {
+	cluster,_ := k8s.GetCluster(clusterId)
+	if cluster == nil {
+		logger.Errorf("CreatePeerDeployment: get cluster failed,id=%s",clusterId)
+		return nil,fmt.Errorf("CreatePeerDeployment: get cluster failed,id=%s",clusterId)
+	}
 	peerDeployMent :=  PeerDeployMent { 
 		APIVersion: "apps/v1",
 		Kind: "Deployment",
@@ -194,10 +202,10 @@ func CreatePeerDeployment(clusterId string,namespaceId string,chainId string,p P
 									Name: "CORE_VM_ENDPOINT",
 									Value: "unix:///host/var/run/docker.sock",
 								}, 
-								// {
-								// 	Name: "CORE_VM_DOCKER_HOSTCONFIG_DNS",
-								// 	Value: "dns ip",
-								// },
+								{
+									Name: "CORE_VM_DOCKER_HOSTCONFIG_DNS",
+									Value: cluster.PublicIp,
+								},
 								{
 									Name: "CORE_VM_DOCKER_HOSTCONFIG_DNSSEARCH",
 									Value: namespaceId + ".svc.cluster.local",
@@ -240,17 +248,27 @@ func CreatePeerDeployment(clusterId string,namespaceId string,chainId string,p P
 									MountPath: "/var/data",
 									Name: "peer-cert",
 								}, 
+								{
+									MountPath: "/host/var/run/",
+									Name: "host-vol-var-run",
+								}, 
 							},    
 						},
 					},
 					RestartPolicy: "Always",
 					Hostname: p.PeerName,
-					Volumes: []VolumeSpecTemplateSt{
-						{
+					Volumes: []interface{}{
+						VolumeSpecTemplateSt{
 							Name: "peer-cert",
 							Nfs: NfsVolumeSpecTemplateSt{
 								Server: utils.BAAS_CFG.NfsInternalAddr,
 								Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId,
+							},
+						},
+						VolumeSpecTemplateHostSt{
+							Name: "host-vol-var-run",
+							HostPath: HostPathVolumeSpecTemplateSt{
+								Path: "/var/run/", 
 							},
 						},
 					},

@@ -39,8 +39,8 @@ func main() {
 		logger.Errorf("baas blockchain config init error, server exit!")
 		return
 	}
-	fabric.ChainSdkMapInit()
-	fabric.ChainSdkInit()
+	fabric.ChainSdkMapInit() 
+	fabric.ChainSdkInit(nil,nil)
 	logger.Debug("start wing baas server")
 	api.Start(utils.BAAS_CFG.SrvPort)
 	logger.Debug("wingbaas server exit!") 

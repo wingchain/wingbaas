@@ -35,15 +35,13 @@ type BCCSPSt struct {
 }
 
 type ClientTLSCertsSt struct {
-	// Keyfile interface{} `json:"keyfile"`
-	// Certfile interface{} `json:"certfile"`
 	Key CryptoconfigSt `json:"key"`
 	Cert CryptoconfigSt `json:"cert"`
 }
 
 type TLSCertsSt struct {
 	SystemCertPool bool `json:"systemCertPool"`
-	Client ClientTLSCertsSt `json:"client"`
+	//Client ClientTLSCertsSt `json:"client"`
 }
 
 type ClientSt struct {
@@ -89,7 +87,7 @@ type OrgField struct {
 	CryptoPath string `json:"cryptoPath"`
 	Peers []string `json:"peers"`
 	CertificateAuthorities []string `json:"certificateAuthorities"`
-	Users map[string]ClientTLSCertsSt `json:"users"` 
+	//Users map[string]ClientTLSCertsSt `json:"users"` 
 }
 
 type GrpcOptionsSt struct {
