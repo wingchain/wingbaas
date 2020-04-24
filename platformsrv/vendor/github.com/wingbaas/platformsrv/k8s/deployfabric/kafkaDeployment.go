@@ -12,7 +12,7 @@ type KafkaDeployMent struct {
 	Spec SpecSt `json:"spec"`  
 } 
 
-func CreateKafkaDeployment(clusterId string,namespaceId string,chainId string,kafkaId string,image string,kafkaName string)([]byte,error) {
+func CreateKafkaDeployment(clusterId string,node string,namespaceId string,chainId string,kafkaId string,image string,kafkaName string)([]byte,error) {
 	kafkaDeployMent :=  KafkaDeployMent {
 		APIVersion: "apps/v1",
 		Kind: "Deployment",
@@ -36,24 +36,28 @@ func CreateKafkaDeployment(clusterId string,namespaceId string,chainId string,ka
 					},
 				},
 				Spec: SpecTemplateSt{
-					Affinity: AffinitySpecTemplateSt{
-						NodeAffinity: NodeAffinityAffinitySpecTemplateSt{
-							PreferredDuringSchedulingIgnoredDuringExecution: []ExeAffinitySpecTemplateSt{
-								{
-									Weight: 10,
-									Preference: PreferenceExeAffinitySpecTemplateSt{
-										MatchExpressions: []MatchPreferenceExeAffinitySpecTemplateSt{
-											{
-												Key: "team",
-												Operator: "In",
-												Values: []string{"baas"},
-											}, 
-										},		
-									},
-								},	
-							},
-						},
-					},
+					NodeName: node,
+					// NodeSelector: NodeSelectorSpecTemplateSt{
+					// 	KubernetesIoHostname: "172-16-254-33", 
+					// },
+					// Affinity: AffinitySpecTemplateSt{
+					// 	NodeAffinity: NodeAffinityAffinitySpecTemplateSt{
+					// 		PreferredDuringSchedulingIgnoredDuringExecution: []ExeAffinitySpecTemplateSt{
+					// 			{
+					// 				Weight: 10,
+					// 				Preference: PreferenceExeAffinitySpecTemplateSt{
+					// 					MatchExpressions: []MatchPreferenceExeAffinitySpecTemplateSt{
+					// 						{
+					// 							Key: "team",
+					// 							Operator: "In",
+					// 							Values: []string{"baas"},
+					// 						}, 
+					// 					},		
+					// 				},
+					// 			},	
+					// 		},
+					// 	},
+					// },
 					Containers: []ContainerSpecTemplateSt{
 						{
 							Name: kafkaName,

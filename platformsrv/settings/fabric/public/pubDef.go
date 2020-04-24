@@ -10,7 +10,7 @@ const (
 )
 
 type NodeSpec struct {
-    Hostname string   `json:"Hostname"`
+	Hostname string   `json:"Hostname"`
 }
   
 type UsersSpec struct {
@@ -19,14 +19,17 @@ type UsersSpec struct {
   
 type OrgSpec struct { 
     Name          string       `json:"Name"`
-    Domain        string       `json:"Domain"`
+	Domain        string       `json:"Domain"`
+	DeployNode    string       `json:"DeployNode"`
     Specs         []NodeSpec   `json:"Specs"`
-    Users         UsersSpec    `json:"Users"`
+	Users         UsersSpec    `json:"Users"`
 }
   
 type DeployNetConfig struct {  
     OrdererOrgs []OrgSpec `json:"OrdererOrgs"`
-    PeerOrgs    []OrgSpec `json:"PeerOrgs"`
+	PeerOrgs    []OrgSpec `json:"PeerOrgs"`
+	KafkaDeployNode	string `json:"KafkaDeployNode"`
+	ZookeeperDeployNode string `json:"ZookeeperDeployNode"` 
 }
 
 type DeployNodeInfo map[string]string

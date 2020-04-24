@@ -10,6 +10,7 @@ import (
 
 type SpecTemplateStPeer struct {
 	//NodeSelector NodeSelectorSpecTemplateSt `json:"nodeSelector,omitempty"`
+	NodeName string `json:"nodeName,omitempty"`
 	InitContainers []ContainerSpecTemplateSt `json:"initContainers"`
 	Containers []ContainerSpecTemplateSt `json:"containers"`
 	RestartPolicy string `json:"restartPolicy"`
@@ -47,7 +48,7 @@ type PeerDeploymentPara struct{
 	OrgName 	string
 } 
 
-func CreatePeerDeployment(clusterId string,namespaceId string,chainId string,p PeerDeploymentPara)([]byte,error) {
+func CreatePeerDeployment(clusterId string,node string,namespaceId string,chainId string,p PeerDeploymentPara)([]byte,error) {
 	cluster,_ := k8s.GetCluster(clusterId)
 	if cluster == nil {
 		logger.Errorf("CreatePeerDeployment: get cluster failed,id=%s",clusterId)
@@ -77,8 +78,10 @@ func CreatePeerDeployment(clusterId string,namespaceId string,chainId string,p P
 				},
 				Spec: SpecTemplateStPeer{
 					// NodeSelector: NodeSelectorSpecTemplateSt{
-					// 	KubernetesIoHostname: "deploy host",
+					// 	KubernetesIoHostname: "172-16-254-33", 
+					// 	//Hostname: "172-16-254-33", 
 					// },
+					NodeName: node, 
 					InitContainers: []ContainerSpecTemplateSt{
 						{
 							Name: "pre-pull-ccenv",
@@ -203,9 +206,13 @@ func CreatePeerDeployment(clusterId string,namespaceId string,chainId string,p P
 									Value: "unix:///host/var/run/docker.sock",
 								}, 
 								{
-									Name: "CORE_VM_DOCKER_HOSTCONFIG_DNS",
-									Value: cluster.PublicIp,
-								},
+									Name: "CORE_PEER_ADDRESSAUTODETECT",
+									Value: "true",
+								}, 
+								// {
+								// 	Name: "CORE_VM_DOCKER_HOSTCONFIG_DNS",
+								// 	Value: cluster.PublicIp,
+								// },
 								{
 									Name: "CORE_VM_DOCKER_HOSTCONFIG_DNSSEARCH",
 									Value: namespaceId + ".svc.cluster.local",

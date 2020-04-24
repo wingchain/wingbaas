@@ -98,7 +98,7 @@ func (setup *FabricSetup) CreateChannel(ch ChannnelSetup) error {
 		return fmt.Errorf("failed to get admin signing identity,err=%v",err)
 	}
 	req := resmgmt.SaveChannelRequest{ChannelID: ch.ChannelID, ChannelConfigPath: ch.ChannelConfig, SigningIdentities: []msp.SigningIdentity{adminIdentity}}
-	txID, err := setup.netAdmin.SaveChannel(req,/*resmgmt.WithRetry(retry.DefaultResMgmtOpts),*/resmgmt.WithOrdererEndpoint(setup.OrdererID))
+	txID, err := setup.netAdmin.SaveChannel(req,resmgmt.WithOrdererEndpoint(setup.OrdererID))
 	if err != nil || txID.TransactionID == "" {
 		logger.Errorf("failed to save channel,err=%v",err)
 		return fmt.Errorf("failed to save channel,err=%v",err)
@@ -125,8 +125,6 @@ func (setup *FabricSetup) InstallCC(cc ChaincodeSetup) error {
 		logger.Errorf("failed to create chaincode package,err=%v",err)
 		return fmt.Errorf("failed to create chaincode package,err=%v",err)
 	}
-	logger.Debug("ccPkg created")
-
 	// Install cc to org peers
 	installCCReq := resmgmt.InstallCCRequest{Name: cc.ChainCodeID, Path: cc.ChaincodePath, Version: cc.ChaincodeVersion, Package: ccPkg}
 	_, err = setup.netAdmin.InstallCC(installCCReq, resmgmt.WithRetry(retry.DefaultResMgmtOpts))
@@ -148,13 +146,13 @@ func (setup *FabricSetup) InstantiateCC(ch ChannnelSetup,cc ChaincodeSetup) erro
 		Name: cc.ChainCodeID,
 		Path: cc.ChaincodeGoPath,
 		Version: cc.ChaincodeVersion,
-		Args:    args,
-		Policy:  ccPolicy,
+		Args: args,
+		Policy: ccPolicy,
 	}
 	peers := []string{"peer0-org1.Org1.fabric.baas.xyz","peer1-org1.Org1.fabric.baas.xyz"}
 	reqPeers := resmgmt.WithTargetEndpoints(peers...)
 
-	resp, err := setup.netAdmin.InstantiateCC(ch.ChannelID,req,reqPeers)
+	resp, err := setup.netAdmin.InstantiateCC(ch.ChannelID,req,reqPeers) 
 	if err != nil || resp.TransactionID == "" {
 		logger.Errorf("failed to instantiate the chaincode,err=%v",err)
 		return fmt.Errorf("failed to instantiate the chaincode,err=%v",err)

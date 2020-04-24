@@ -7,6 +7,7 @@ import (
 
 type SpecTemplateStOrder struct {
 	//NodeSelector NodeSelectorSpecTemplateSt `json:"nodeSelector,omitempty"`
+	NodeName string `json:"nodeName,omitempty"`
 	Containers []ContainerSpecTemplateSt `json:"containers"`
 	RestartPolicy string `json:"restartPolicy"`
 	ImagePullSecrets []ImagePullSecretSpecTemplateSt `json:"imagePullSecrets"`
@@ -32,7 +33,7 @@ type OrderDeployMent struct {
 	Spec SpecStOrder `json:"spec"`  
 }  
 
-func CreateOrderKafkaDeployment(clusterId string,namespaceId string,chainId string,image string,orderName string,orderDomain string)([]byte,error) {
+func CreateOrderKafkaDeployment(clusterId string,node string,namespaceId string,chainId string,image string,orderName string,orderDomain string)([]byte,error) {
 	orderKafkaDeployMent :=  OrderDeployMent {
 		APIVersion: "apps/v1",
 		Kind: "Deployment",
@@ -56,6 +57,7 @@ func CreateOrderKafkaDeployment(clusterId string,namespaceId string,chainId stri
 					},
 				},
 				Spec: SpecTemplateStOrder{
+					NodeName: node,
 					// NodeSelector: NodeSelectorSpecTemplateSt{
 					// 	KubernetesIoHostname: "deploy host",
 					// },
@@ -178,7 +180,7 @@ func CreateOrderKafkaDeployment(clusterId string,namespaceId string,chainId stri
 							Name: "order-cert",
 							Nfs: NfsVolumeSpecTemplateSt{
 								Server: utils.BAAS_CFG.NfsInternalAddr,
-								Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId,
+								Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId, 
 							},
 						},
 					},

@@ -12,7 +12,7 @@ type CaDeployMent struct {
 	Spec SpecSt `json:"spec"`  
 }
 
-func CreateCaDeployment(clusterId string,namespaceId string,chainId string,image string,caName string,orgDomain string,caPriKey string)([]byte,error) {
+func CreateCaDeployment(clusterId string,node string,namespaceId string,chainId string,image string,caName string,orgDomain string,caPriKey string)([]byte,error) {
 	caDeployMent :=  CaDeployMent {
 		APIVersion: "apps/v1",
 		Kind: "Deployment",
@@ -36,24 +36,25 @@ func CreateCaDeployment(clusterId string,namespaceId string,chainId string,image
 					},
 				},
 				Spec: SpecTemplateSt{
-					Affinity: AffinitySpecTemplateSt{
-						NodeAffinity: NodeAffinityAffinitySpecTemplateSt{
-							PreferredDuringSchedulingIgnoredDuringExecution: []ExeAffinitySpecTemplateSt{
-								{
-									Weight: 10,
-									Preference: PreferenceExeAffinitySpecTemplateSt{
-										MatchExpressions: []MatchPreferenceExeAffinitySpecTemplateSt{
-											{
-												Key: "team",
-												Operator: "In",
-												Values: []string{"baas"},
-											},
-										},		
-									},
-								},	
-							},
-						},
-					},
+					NodeName: node,
+					// Affinity: AffinitySpecTemplateSt{
+					// 	NodeAffinity: NodeAffinityAffinitySpecTemplateSt{
+					// 		PreferredDuringSchedulingIgnoredDuringExecution: []ExeAffinitySpecTemplateSt{
+					// 			{
+					// 				Weight: 10,
+					// 				Preference: PreferenceExeAffinitySpecTemplateSt{
+					// 					MatchExpressions: []MatchPreferenceExeAffinitySpecTemplateSt{
+					// 						{
+					// 							Key: "team",
+					// 							Operator: "In",
+					// 							Values: []string{"baas"},
+					// 						},
+					// 					},		
+					// 				},
+					// 			},	
+					// 		},
+					// 	},
+					// },
 					Containers: []ContainerSpecTemplateSt{
 						{
 							Name: caName,

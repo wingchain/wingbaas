@@ -217,11 +217,13 @@ type NodeSelectorSpecTemplateSt struct {
 }
 
 type SpecTemplateSt struct {
+	//NodeSelector NodeSelectorSpecTemplateSt `json:"nodeSelector,omitempty"` 
+	NodeName string `json:"nodeName,omitempty"` 
 	Affinity AffinitySpecTemplateSt `json:"affinity"`
 	Containers []ContainerSpecTemplateSt `json:"containers"`
 	RestartPolicy string `json:"restartPolicy"`
 	ImagePullSecrets []ImagePullSecretSpecTemplateSt `json:"imagePullSecrets"`
-	Hostname string `json:"hostname"`
+	Hostname string `json:"hostname,omitempty"`
 	Volumes []VolumeSpecTemplateSt `json:"volumes"`
 }
 

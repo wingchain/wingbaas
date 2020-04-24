@@ -119,7 +119,7 @@ func DeployComponetsKafka(p public.DeployPara,chainName string,chainId string,ch
 			logger.Errorf("DeployComponets: GetCaPrivateKey error=%s caName=%s",err.Error(),caName) 
 			return "",fmt.Errorf("DeployComponets: GetCaPrivateKey error=%s caName=%s",err.Error(),caName)
 		}
-		_,err = deployfabric.CreateCaDeployment(p.ClusterId,chainName,chainId,caImage,caName,org.Domain,priKey)
+		_,err = deployfabric.CreateCaDeployment(p.ClusterId,org.DeployNode,chainName,chainId,caImage,caName,org.Domain,priKey) 
 		if err != nil {
 			logger.Errorf("DeployComponets: CreateCaDeployment error=%s caName=%s",err.Error(),caName)
 			return "",fmt.Errorf("DeployComponets: CreateCaDeployment error=%s caName=%s",err.Error(),caName)
@@ -138,7 +138,7 @@ func DeployComponetsKafka(p public.DeployPara,chainName string,chainId string,ch
 	}
 	for i:=0; i<public.ZOOK_COUNT; i++ {
 		zkName := "zookeeper" + strconv.Itoa(i)   
-		_,err = deployfabric.CreateZookeeperDeployment(p.ClusterId,chainName,chainId,strconv.Itoa(i+1),zkImage,zkName)
+		_,err = deployfabric.CreateZookeeperDeployment(p.ClusterId,p.DeployNetCfg.ZookeeperDeployNode,chainName,chainId,strconv.Itoa(i+1),zkImage,zkName) 
 		if err != nil {
 			logger.Errorf("DeployComponets: CreateZkDeployment error=%s zkName=%s",err.Error(),zkName)
 			return "",fmt.Errorf("DeployComponets: CreateZkDeployment error=%s zkName=%s",err.Error(),zkName)
@@ -157,7 +157,7 @@ func DeployComponetsKafka(p public.DeployPara,chainName string,chainId string,ch
 	}
 	for i:=0; i<public.KAFKA_COUNT; i++ {
 		kafkaName := "kafka" + strconv.Itoa(i)
-		_,err = deployfabric.CreateKafkaDeployment(p.ClusterId,chainName,chainId,strconv.Itoa(i),kafkaImage,kafkaName)
+		_,err = deployfabric.CreateKafkaDeployment(p.ClusterId,p.DeployNetCfg.KafkaDeployNode,chainName,chainId,strconv.Itoa(i),kafkaImage,kafkaName) 
 		if err != nil {
 			logger.Errorf("DeployComponets: CreateKafkaDeployment error=%s kafkaName=%s",err.Error(),kafkaName)
 			return "",fmt.Errorf("DeployComponets: CreateKafkaDeployment error=%s kafkaName=%s",err.Error(),kafkaName)
@@ -178,7 +178,7 @@ func DeployComponetsKafka(p public.DeployPara,chainName string,chainId string,ch
 		domain := org.Domain
 		for _,spec := range org.Specs {
 			orderName := spec.Hostname
-			_,err = deployfabric.CreateOrderKafkaDeployment(p.ClusterId,chainName,chainId,orderImage,orderName,domain)
+			_,err = deployfabric.CreateOrderKafkaDeployment(p.ClusterId,org.DeployNode,chainName,chainId,orderImage,orderName,domain) 
 			if err != nil {
 				logger.Errorf("DeployComponets: CreateOrderKafkaDeployment error=%s orderName=%s",err.Error(),orderName)
 				return "",fmt.Errorf("DeployComponets: CreateOrderKafkaDeployment error=%s orderName=%s",err.Error(),orderName)
@@ -220,7 +220,7 @@ func DeployComponetsKafka(p public.DeployPara,chainName string,chainId string,ch
 		for _,spec :=  range org.Specs { 
 			dp.RawPeerName = spec.Hostname
 			dp.PeerName = spec.Hostname 
-			_,err = deployfabric.CreatePeerDeployment(p.ClusterId,chainName,chainId,dp)
+			_,err = deployfabric.CreatePeerDeployment(p.ClusterId,org.DeployNode,chainName,chainId,dp) 
 			if err != nil {
 				logger.Errorf("DeployComponets: CreatePeerDeployment error=%s",err.Error())
 				return "",fmt.Errorf("DeployComponets: CreatePeerDeployment error=%s",err.Error())
@@ -286,11 +286,10 @@ func ChainSdkInit(interface{},interface{}) error{
 			},
 		},
 	}
-
 	p := sdkfabric.GenerateParaSt{
 		ClusterId: "test-cluster1",		
 		NamespaceId: "test-chainnetwork11",	
-		BlockId: "8ZXbQCuDonOkzBA3mvzjTn1ECpcpg5W0",		
+		BlockId: "3XbYIqD2M91WiUya1lIt36nCwWCpMpIc",		
 		ChannelName: "mychannel",
 	}
 
@@ -346,7 +345,7 @@ func ChainSdkInit(interface{},interface{}) error{
 	// if err != nil {
 	// 	return fmt.Errorf("install cc error: %v\n", err)
 	// }
-	//time.Sleep(3*time.Second)
+	// time.Sleep(3*time.Second) 
 	err = fSetup.InstantiateCC(chSetup,ccSetup)
 	if err != nil {
 		return fmt.Errorf("instatiate cc error: %v\n", err)

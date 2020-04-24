@@ -12,7 +12,7 @@ const (
 	NODES    string = "nodes"
 )
 
-type HostList struct {
+type HostList struct { 
 	APIVersion string `json:"apiVersion"`
 	Kind     string `json:"kind"`
 	Metadata struct {

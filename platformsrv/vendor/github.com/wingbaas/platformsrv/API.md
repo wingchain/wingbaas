@@ -134,14 +134,15 @@ request:http://localhost:9001/api/v1/deploy
 request parameter:       
 ```json
 {
-	"BlockChainName": "chainnetwork1",
-	"BlockChainType": "fabric",
+	"BlockChainName": "test-chainnetwork11",  
+	"BlockChainType": "fabric", 
 	"DeployCfg":{ 
-		"DeployNetCfg": {
+		"DeployNetCfg": { 
 			"OrdererOrgs": [
 			{
 				"Name": "Orderer",
 				"Domain": "orderer.baas.xyz",
+				"DeployNode": "172-16-254-33",
 				"Specs": [
 					{
 						"Hostname": "orderer0"
@@ -156,12 +157,13 @@ request parameter:
 			{
 				"Name": "Org1",
 				"Domain": "Org1.fabric.baas.xyz",
+				"DeployNode": "172-16-254-130",
 				"Specs": [
 					{
-						"Hostname": "peer0"
+						"Hostname": "peer0-org1"
 					},
 					{
-						"Hostname": "peer1"
+						"Hostname": "peer1-org1"
 					}
 				],
 				"Users": {
@@ -171,24 +173,27 @@ request parameter:
 			{
 				"Name": "Org2",
 				"Domain": "Org2.fabric.baas.xyz",
+				"DeployNode": "172-16-254-33",
 				"Specs": [
 					{
-						"Hostname": "peer0"
+						"Hostname": "peer0-org2"
 					},
 					{
-						"Hostname": "peer1"
+						"Hostname": "peer1-org2"
 					}
 				],
 				"Users": {
 					"Count": 1
 				}
 			}
-		]
+		],
+		"KafkaDeployNode": "172-16-254-33",
+		"ZookeeperDeployNode": "172-16-254-130"
 		},
 		"DeployType": "KAFKA_FABRIC",
 		"Version": "1.3.0",
 		"CryptoType": "ECDSA",
-		"ClusterId": "cluster1"
+		"ClusterId": "test-cluster1"
 	}
 }
 ``` 
