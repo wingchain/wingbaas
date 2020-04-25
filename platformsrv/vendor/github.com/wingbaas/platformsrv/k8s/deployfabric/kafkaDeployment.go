@@ -18,6 +18,9 @@ func CreateKafkaDeployment(clusterId string,node string,namespaceId string,chain
 		Kind: "Deployment",
 		Metadata: MetadataDeployMent{
 			Name: kafkaName,
+			Labels: LabelsSt{
+				App: kafkaName, 
+			},
 		},
 		Spec: SpecSt{
 			Selector: SelectorSt{

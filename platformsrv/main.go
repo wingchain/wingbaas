@@ -40,7 +40,7 @@ func main() {
 		return
 	}
 	fabric.ChainSdkMapInit() 
-	fabric.ChainSdkInit(nil,nil)
+	//fabric.ChainSdkInit(nil,nil)
 	logger.Debug("start wing baas server")
 	api.Start(utils.BAAS_CFG.SrvPort)
 	logger.Debug("wingbaas server exit!") 

@@ -59,6 +59,9 @@ func CreatePeerDeployment(clusterId string,node string,namespaceId string,chainI
 		Kind: "Deployment",
 		Metadata: MetadataDeployMent{
 			Name: p.PeerName,
+			Labels: LabelsSt{
+				App: p.PeerName, 
+			},
 		},
 		Spec: SpecStPeer{
 			Selector: SelectorSt{
@@ -77,11 +80,11 @@ func CreatePeerDeployment(clusterId string,node string,namespaceId string,chainI
 					},
 				},
 				Spec: SpecTemplateStPeer{
+					NodeName: node, 
 					// NodeSelector: NodeSelectorSpecTemplateSt{
 					// 	KubernetesIoHostname: "172-16-254-33", 
 					// 	//Hostname: "172-16-254-33", 
 					// },
-					NodeName: node, 
 					InitContainers: []ContainerSpecTemplateSt{
 						{
 							Name: "pre-pull-ccenv",

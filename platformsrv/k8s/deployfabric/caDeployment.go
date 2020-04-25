@@ -18,6 +18,9 @@ func CreateCaDeployment(clusterId string,node string,namespaceId string,chainId 
 		Kind: "Deployment",
 		Metadata: MetadataDeployMent{
 			Name: caName,
+			Labels: LabelsSt{
+				App: caName, 
+			},
 		},
 		Spec: SpecSt{
 			Selector: SelectorSt{

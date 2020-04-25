@@ -39,6 +39,9 @@ func CreateOrderKafkaDeployment(clusterId string,node string,namespaceId string,
 		Kind: "Deployment",
 		Metadata: MetadataDeployMent{
 			Name: orderName,
+			Labels: LabelsSt{
+				App: orderName, 
+			},
 		},
 		Spec: SpecStOrder{
 			Selector: SelectorSt{
@@ -157,7 +160,27 @@ func CreateOrderKafkaDeployment(clusterId string,node string,namespaceId string,
 								{
 									Name: "ORDERER_KAFKA_VERBOSE",
 									Value: "true",
+								},  
+								{
+									Name: "CORE_VM_DOCKER_ATTACHSTDOUT",
+									Value: "true",
+								},
+								{
+									Name: "CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE",
+									Value: "host",
+								},
+								{
+									Name: "CORE_VM_ENDPOINT",
+									Value: "unix:///host/var/run/docker.sock",
 								}, 
+								{
+									Name: "CORE_PEER_ADDRESSAUTODETECT",
+									Value: "true",
+								}, 
+								{
+									Name: "CORE_VM_DOCKER_HOSTCONFIG_DNSSEARCH",
+									Value: namespaceId + ".svc.cluster.local",
+								},
 							},
 							Ports: []PortContainerSpecTemplateSt{
 								{

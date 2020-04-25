@@ -152,7 +152,7 @@ func (setup *FabricSetup) InstantiateCC(ch ChannnelSetup,cc ChaincodeSetup) erro
 	peers := []string{"peer0-org1.Org1.fabric.baas.xyz","peer1-org1.Org1.fabric.baas.xyz"}
 	reqPeers := resmgmt.WithTargetEndpoints(peers...)
 
-	resp, err := setup.netAdmin.InstantiateCC(ch.ChannelID,req,reqPeers) 
+	resp, err := setup.netAdmin.InstantiateCC(ch.ChannelID,req,reqPeers)
 	if err != nil || resp.TransactionID == "" {
 		logger.Errorf("failed to instantiate the chaincode,err=%v",err)
 		return fmt.Errorf("failed to instantiate the chaincode,err=%v",err)
@@ -160,7 +160,7 @@ func (setup *FabricSetup) InstantiateCC(ch ChannnelSetup,cc ChaincodeSetup) erro
 	logger.Debug("Chaincode instantiate success") 
 
 	// Channel client is used to query and execute transactions
-	clientContext := setup.sdk.ChannelContext(ch.ChannelID, fabsdk.WithUser(setup.UserName))
+	clientContext := setup.sdk.ChannelContext(ch.ChannelID, fabsdk.WithUser(setup.UserName)) 
 	setup.chClient, err = channel.New(clientContext)
 	if err != nil {
 		logger.Errorf("failed to create new channel client,err=%v",err)

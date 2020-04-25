@@ -235,8 +235,8 @@ func DeployComponetsKafka(p public.DeployPara,chainName string,chainId string,ch
 	return "",nil 
 }
 
-//func ChainSdkInit(netCfg public.DeployNetConfig,p sdkfabric.GenerateParaSt) error { 
-
+func ChainSdkInit(netCfg public.DeployNetConfig,p sdkfabric.GenerateParaSt) error { 
+/*
 func ChainSdkInit(interface{},interface{}) error{
 	netCfg := public.DeployNetConfig{
 		OrdererOrgs: []public.OrgSpec{ 
@@ -289,10 +289,10 @@ func ChainSdkInit(interface{},interface{}) error{
 	p := sdkfabric.GenerateParaSt{
 		ClusterId: "test-cluster1",		
 		NamespaceId: "test-chainnetwork11",	
-		BlockId: "3XbYIqD2M91WiUya1lIt36nCwWCpMpIc",		
+		BlockId: "XjbI1wcwtJF1qbbHcCmMQAXRtctSXNja",		
 		ChannelName: "mychannel",
 	}
-
+*/
 	rootPath,_ := utils.GetProcessRunRoot()
 	var orderId string
 	for _,org := range netCfg.OrdererOrgs {
@@ -331,21 +331,21 @@ func ChainSdkInit(interface{},interface{}) error{
 	defer fSetup.CloseSDK()
 	FabricChainSdkMap[p.BlockId] = fSetup 
 
-	// err = fSetup.CreateChannel(chSetup)
-	// if err != nil {
-	// 	return fmt.Errorf("create channel error: %v\n", err)
-	// }
-	// time.Sleep(5*time.Second)
-	// err = fSetup.JoinChannel(chSetup)
-	// if err != nil {
-	// 	return fmt.Errorf("join channel error: %v\n", err)
-	// }
-	// time.Sleep(5*time.Second)
-	// err = fSetup.InstallCC(ccSetup)
-	// if err != nil {
-	// 	return fmt.Errorf("install cc error: %v\n", err)
-	// }
-	// time.Sleep(3*time.Second) 
+	err = fSetup.CreateChannel(chSetup)
+	if err != nil {
+		return fmt.Errorf("create channel error: %v\n", err)
+	}
+	time.Sleep(5*time.Second)
+	err = fSetup.JoinChannel(chSetup)
+	if err != nil {
+		return fmt.Errorf("join channel error: %v\n", err)
+	}
+	time.Sleep(5*time.Second)
+	err = fSetup.InstallCC(ccSetup)
+	if err != nil {
+		return fmt.Errorf("install cc error: %v\n", err)
+	}
+	time.Sleep(3*time.Second) 
 	err = fSetup.InstantiateCC(chSetup,ccSetup)
 	if err != nil {
 		return fmt.Errorf("instatiate cc error: %v\n", err)

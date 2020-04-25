@@ -18,6 +18,9 @@ func CreateZookeeperDeployment(clusterId string,node string,namespaceId string,c
 		Kind: "Deployment",
 		Metadata: MetadataDeployMent{
 			Name: zookeeperName,
+			Labels: LabelsSt{
+				App: zookeeperName, 
+			},
 		},
 		Spec: SpecSt{
 			Selector: SelectorSt{

@@ -248,6 +248,7 @@ type SpecSt struct {
 
 type MetadataDeployMent struct {
 	Name string `json:"name"` 
+	Labels LabelsSt `json:"labels"`
 }
 
 type DeployResult struct {
