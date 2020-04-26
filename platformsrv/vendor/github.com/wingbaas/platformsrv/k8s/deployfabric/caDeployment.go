@@ -24,7 +24,7 @@ func CreateCaDeployment(clusterId string,node string,namespaceId string,chainId 
 		},
 		Spec: SpecSt{
 			Selector: SelectorSt{
-				MatchLabels: MatchLabelSt{
+				MatchLabels: LabelsSt{
 					App: caName,
 				},
 			},
@@ -40,24 +40,24 @@ func CreateCaDeployment(clusterId string,node string,namespaceId string,chainId 
 				},
 				Spec: SpecTemplateSt{
 					NodeName: node,
-					// Affinity: AffinitySpecTemplateSt{
-					// 	NodeAffinity: NodeAffinityAffinitySpecTemplateSt{
-					// 		PreferredDuringSchedulingIgnoredDuringExecution: []ExeAffinitySpecTemplateSt{
-					// 			{
-					// 				Weight: 10,
-					// 				Preference: PreferenceExeAffinitySpecTemplateSt{
-					// 					MatchExpressions: []MatchPreferenceExeAffinitySpecTemplateSt{
-					// 						{
-					// 							Key: "team",
-					// 							Operator: "In",
-					// 							Values: []string{"baas"},
-					// 						},
-					// 					},		
-					// 				},
-					// 			},	
-					// 		},
-					// 	},
-					// },
+					Affinity: AffinitySpecTemplateSt{
+						NodeAffinity: NodeAffinityAffinitySpecTemplateSt{
+							PreferredDuringSchedulingIgnoredDuringExecution: []ExeAffinitySpecTemplateSt{
+								{
+									Weight: 1,
+									Preference: PreferenceExeAffinitySpecTemplateSt{
+										MatchExpressions: []MatchPreferenceExeAffinitySpecTemplateSt{
+											{
+												Key: "team",
+												Operator: "In",
+												Values: []string{"baas"},
+											},
+										},		
+									},
+								},	
+							},
+						},
+					},
 					Containers: []ContainerSpecTemplateSt{
 						{
 							Name: caName,
@@ -114,13 +114,22 @@ func CreateCaDeployment(clusterId string,node string,namespaceId string,chainId 
 						},
 					},
 					RestartPolicy: "Always",
-					Volumes: []VolumeSpecTemplateSt{
-						{
+					// HostNetwork: "true",
+					// DnsPolicy: "ClusterFirstWithHostNet", 
+					//Subdomain: caName, 
+					Volumes: []interface{}{ 
+						// VolumeSpecTemplateSt{
+						// 	Name: "ca-cert",
+						// 	Nfs: NfsVolumeSpecTemplateSt{
+						// 		Server: utils.BAAS_CFG.NfsInternalAddr,
+						// 		Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId,
+						// 	},
+						// },
+						VolumeSpecTemplateHostSt{
 							Name: "ca-cert",
-							Nfs: NfsVolumeSpecTemplateSt{
-								Server: utils.BAAS_CFG.NfsInternalAddr,
-								Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId,
-							},
+							HostPath: HostPathVolumeSpecTemplateSt{
+								Path: "/home/nfs/" + chainId,
+							}, 
 						},
 					 },
 				},

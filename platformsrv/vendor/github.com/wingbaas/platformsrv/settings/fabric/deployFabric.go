@@ -289,7 +289,7 @@ func ChainSdkInit(interface{},interface{}) error{
 	p := sdkfabric.GenerateParaSt{
 		ClusterId: "test-cluster1",		
 		NamespaceId: "test-chainnetwork11",	
-		BlockId: "XjbI1wcwtJF1qbbHcCmMQAXRtctSXNja",		
+		BlockId: "pxbnI9DVgN1MwhvsBMT1qdFVXixCbJKe",		
 		ChannelName: "mychannel",
 	}
 */
@@ -326,7 +326,7 @@ func ChainSdkInit(interface{},interface{}) error{
 	}
 	err := fSetup.Initialize()
 	if err != nil {
-		return fmt.Errorf("initialize SDK error: %v\n", err)
+		return fmt.Errorf("init SDK error: %v\n", err)
 	}
 	defer fSetup.CloseSDK()
 	FabricChainSdkMap[p.BlockId] = fSetup 

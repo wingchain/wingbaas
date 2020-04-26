@@ -29,6 +29,7 @@ func CreateOrderService(clusterId string,namespaceId string,chainId string,order
 					TargetPort: 7050,
 				},
 			},
+			//ClusterIP: "None", 
 			Selector: SelectorSpecService{
 				App: orderName,
 			},

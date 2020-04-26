@@ -29,6 +29,7 @@ func CreateCaService(clusterId string,namespaceId string,chainId string,caName s
 					TargetPort: 7054,
 				},
 			},
+			//ClusterIP: "None",  
 			Selector: SelectorSpecService{
 				App: caName,
 			},

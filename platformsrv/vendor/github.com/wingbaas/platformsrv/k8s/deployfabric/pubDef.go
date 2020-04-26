@@ -34,6 +34,7 @@ type SpecService struct {
 	Type string `json:"type"`
 	Ports []PortSpecService `json:"ports"`
 	Selector SelectorSpecService `json:"selector"`
+	//ClusterIP string `json:"clusterIP"` 
 }
 
 //deployment struct define 
@@ -219,28 +220,30 @@ type NodeSelectorSpecTemplateSt struct {
 type SpecTemplateSt struct {
 	//NodeSelector NodeSelectorSpecTemplateSt `json:"nodeSelector,omitempty"` 
 	NodeName string `json:"nodeName,omitempty"` 
-	Affinity AffinitySpecTemplateSt `json:"affinity"`
-	Containers []ContainerSpecTemplateSt `json:"containers"`
+	Affinity AffinitySpecTemplateSt `json:"affinity,omitempty"`
+	InitContainers []ContainerSpecTemplateSt `json:"initContainers,omitempty"` 
+	Containers []ContainerSpecTemplateSt `json:"containers"` 
 	RestartPolicy string `json:"restartPolicy"`
 	ImagePullSecrets []ImagePullSecretSpecTemplateSt `json:"imagePullSecrets"`
 	Hostname string `json:"hostname,omitempty"`
-	Volumes []VolumeSpecTemplateSt `json:"volumes"`
+	Subdomain string `json:"subdomain,omitempty"`
+	HostNetwork string `json:"hostNetwork,omitempty"`
+	DnsPolicy string `json:"dnsPolicy,omitempty"`
+	//Volumes []VolumeSpecTemplateSt `json:"volumes"` 
+	Volumes []interface{} `json:"volumes,omitempty"` 
 }
 
 type TemplateSt struct {
 	Metadata MetadataTemplateSt `json:"metadata"`
 	Spec SpecTemplateSt `json:"spec"`
 } 
-type MatchLabelSt struct {
-	App	string `json:"app"`
-}
 
 type SelectorSt struct {
-	MatchLabels MatchLabelSt `json:"matchLabels"`
+	MatchLabels LabelsSt `json:"matchLabels"`
 }
 
 type SpecSt struct {
-	Selector SelectorSt `json:"selector"`
+	Selector SelectorSt `json:"selector,omitempty"` 
 	Replicas int `json:"replicas"`
 	Strategy StrategySt `json:"strategy"`
 	Template TemplateSt `json:"template"`

@@ -28,6 +28,7 @@ func CreateKafkaService(clusterId string,namespaceId string,chainId string,kafka
 					TargetPort: 9092,
 				},
 			},
+			//ClusterIP: "None", 
 			Selector: SelectorSpecService{
 				App: kafkaName,
 			},

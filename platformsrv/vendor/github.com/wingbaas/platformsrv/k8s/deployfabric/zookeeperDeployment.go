@@ -22,9 +22,9 @@ func CreateZookeeperDeployment(clusterId string,node string,namespaceId string,c
 				App: zookeeperName, 
 			},
 		},
-		Spec: SpecSt{
+		Spec: SpecSt{ 
 			Selector: SelectorSt{
-				MatchLabels: MatchLabelSt{
+				MatchLabels: LabelsSt{
 					App: zookeeperName,
 				},
 			},
@@ -40,24 +40,24 @@ func CreateZookeeperDeployment(clusterId string,node string,namespaceId string,c
 				},
 				Spec: SpecTemplateSt{
 					NodeName: node,
-					// Affinity: AffinitySpecTemplateSt{
-					// 	NodeAffinity: NodeAffinityAffinitySpecTemplateSt{
-					// 		PreferredDuringSchedulingIgnoredDuringExecution: []ExeAffinitySpecTemplateSt{
-					// 			{
-					// 				Weight: 10,
-					// 				Preference: PreferenceExeAffinitySpecTemplateSt{
-					// 					MatchExpressions: []MatchPreferenceExeAffinitySpecTemplateSt{
-					// 						{
-					// 							Key: "team",
-					// 							Operator: "In",
-					// 							Values: []string{"baas"},
-					// 						},
-					// 					},		
-					// 				},
-					// 			},	
-					// 		},
-					// 	},
-					// },
+					Affinity: AffinitySpecTemplateSt{
+						NodeAffinity: NodeAffinityAffinitySpecTemplateSt{
+							PreferredDuringSchedulingIgnoredDuringExecution: []ExeAffinitySpecTemplateSt{
+								{
+									Weight: 1,
+									Preference: PreferenceExeAffinitySpecTemplateSt{
+										MatchExpressions: []MatchPreferenceExeAffinitySpecTemplateSt{
+											{
+												Key: "team",
+												Operator: "In",
+												Values: []string{"baas"},
+											},
+										},		
+									},
+								},	
+							},
+						},
+					},
 					Containers: []ContainerSpecTemplateSt{
 						{
 							Name: zookeeperName,
@@ -90,26 +90,26 @@ func CreateZookeeperDeployment(clusterId string,node string,namespaceId string,c
 									ContainerPort: 3888,
 								},	
 							},
-							VolumeMounts: []VolumeContainerSpecTemplateSt{
-								{
-									MountPath: "/data",
-									Name: "zk-data-store",
-									SubPath: clusterId + "/" + chainId + "/DataStore/" + zookeeperName + "/data",
-								}, 
-							},
+							// VolumeMounts: []VolumeContainerSpecTemplateSt{
+							// 	{
+							// 		MountPath: "/data",
+							// 		Name: "zk-data-store",
+							// 		SubPath: clusterId + "/" + chainId + "/DataStore/" + zookeeperName + "/data",
+							// 	}, 
+							// },
 						},
 					},
 					Hostname: zookeeperName,
 					RestartPolicy: "Always",
-					Volumes: []VolumeSpecTemplateSt{
-						{
-							Name: "zk-data-store",
-							Nfs: NfsVolumeSpecTemplateSt{
-								Server: utils.BAAS_CFG.NfsInternalAddr,
-								Path: utils.BAAS_CFG.NfsBasePath,
-							},
-						},
-					},
+					// Volumes: []interface{}{
+					// 	VolumeSpecTemplateSt{
+					// 		Name: "zk-data-store",
+					// 		Nfs: NfsVolumeSpecTemplateSt{
+					// 			Server: utils.BAAS_CFG.NfsInternalAddr,
+					// 			Path: utils.BAAS_CFG.NfsBasePath,
+					// 		},
+					// 	},
+					// },
 				},
 			},
 		},

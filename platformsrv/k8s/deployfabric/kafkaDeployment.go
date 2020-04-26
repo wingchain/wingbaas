@@ -24,7 +24,7 @@ func CreateKafkaDeployment(clusterId string,node string,namespaceId string,chain
 		},
 		Spec: SpecSt{
 			Selector: SelectorSt{
-				MatchLabels: MatchLabelSt{
+				MatchLabels: LabelsSt{
 					App: kafkaName,
 				},
 			},
@@ -43,24 +43,24 @@ func CreateKafkaDeployment(clusterId string,node string,namespaceId string,chain
 					// NodeSelector: NodeSelectorSpecTemplateSt{
 					// 	KubernetesIoHostname: "172-16-254-33", 
 					// },
-					// Affinity: AffinitySpecTemplateSt{
-					// 	NodeAffinity: NodeAffinityAffinitySpecTemplateSt{
-					// 		PreferredDuringSchedulingIgnoredDuringExecution: []ExeAffinitySpecTemplateSt{
-					// 			{
-					// 				Weight: 10,
-					// 				Preference: PreferenceExeAffinitySpecTemplateSt{
-					// 					MatchExpressions: []MatchPreferenceExeAffinitySpecTemplateSt{
-					// 						{
-					// 							Key: "team",
-					// 							Operator: "In",
-					// 							Values: []string{"baas"},
-					// 						}, 
-					// 					},		
-					// 				},
-					// 			},	
-					// 		},
-					// 	},
-					// },
+					Affinity: AffinitySpecTemplateSt{
+						NodeAffinity: NodeAffinityAffinitySpecTemplateSt{
+							PreferredDuringSchedulingIgnoredDuringExecution: []ExeAffinitySpecTemplateSt{
+								{
+									Weight: 1,
+									Preference: PreferenceExeAffinitySpecTemplateSt{
+										MatchExpressions: []MatchPreferenceExeAffinitySpecTemplateSt{
+											{
+												Key: "team",
+												Operator: "In",
+												Values: []string{"baas"},
+											}, 
+										},		
+									},
+								},	
+							},
+						},
+					},
 					Containers: []ContainerSpecTemplateSt{
 						{
 							Name: kafkaName,
@@ -111,25 +111,25 @@ func CreateKafkaDeployment(clusterId string,node string,namespaceId string,chain
 									ContainerPort: 9092,
 								},
 							},
-							VolumeMounts: []VolumeContainerSpecTemplateSt{
-								{
-									MountPath: "/data",
-									Name: "kafka-data-store",
-									//SubPath: clusterId + "/" + chainId + "/DataStore/" + kafkaName + "/data",
-								}, 
-							},    
+							// VolumeMounts: []VolumeContainerSpecTemplateSt{
+							// 	{
+							// 		MountPath: "/data",
+							// 		Name: "kafka-data-store",
+							// 		//SubPath: clusterId + "/" + chainId + "/DataStore/" + kafkaName + "/data",
+							// 	}, 
+							// },    
 						},
 					},
 					RestartPolicy: "Always",
-					Volumes: []VolumeSpecTemplateSt{
-						{
-							Name: "kafka-data-store",
-							Nfs: NfsVolumeSpecTemplateSt{
-								Server: utils.BAAS_CFG.NfsInternalAddr,
-								Path: utils.BAAS_CFG.NfsBasePath,
-							},
-						},
-					},
+					// Volumes: []interface{}{
+					// 	VolumeSpecTemplateSt{
+					// 		Name: "kafka-data-store",
+					// 		Nfs: NfsVolumeSpecTemplateSt{
+					// 			Server: utils.BAAS_CFG.NfsInternalAddr,
+					// 			Path: utils.BAAS_CFG.NfsBasePath,
+					// 		},
+					// 	},
+					// },
 					Hostname: kafkaName,
 				},
 			},

@@ -8,33 +8,11 @@ import (
 	"github.com/wingbaas/platformsrv/utils"
 )
 
-type SpecTemplateStPeer struct {
-	//NodeSelector NodeSelectorSpecTemplateSt `json:"nodeSelector,omitempty"`
-	NodeName string `json:"nodeName,omitempty"`
-	InitContainers []ContainerSpecTemplateSt `json:"initContainers"`
-	Containers []ContainerSpecTemplateSt `json:"containers"`
-	RestartPolicy string `json:"restartPolicy"`
-	ImagePullSecrets []ImagePullSecretSpecTemplateSt `json:"imagePullSecrets"` 
-	Hostname string `json:"hostname"`
-	Volumes []interface{} `json:"volumes"`
-}
-
-type TemplateStPeer struct {
-	Metadata MetadataTemplateSt `json:"metadata"` 
-	Spec SpecTemplateStPeer `json:"spec"`
-} 
-type SpecStPeer struct {
-	Selector SelectorSt `json:"selector"`
-	Replicas int `json:"replicas"`
-	Strategy StrategySt `json:"strategy"`
-	Template TemplateStPeer `json:"template"`
-}
-
 type PeerDeployMent struct {
 	APIVersion string `json:"apiVersion"`
 	Kind string `json:"kind"`
 	Metadata MetadataDeployMent `json:"metadata"`
-	Spec SpecStPeer `json:"spec"`  
+	Spec SpecSt `json:"spec"`  
 }  
 
 type PeerDeploymentPara struct{
@@ -63,9 +41,9 @@ func CreatePeerDeployment(clusterId string,node string,namespaceId string,chainI
 				App: p.PeerName, 
 			},
 		},
-		Spec: SpecStPeer{
+		Spec: SpecSt{
 			Selector: SelectorSt{
-				MatchLabels: MatchLabelSt{
+				MatchLabels: LabelsSt{
 					App: p.PeerName,
 				},
 			},
@@ -73,13 +51,13 @@ func CreatePeerDeployment(clusterId string,node string,namespaceId string,chainI
 			Strategy: StrategySt{
 				Type: "Recreate",
 			},
-			Template: TemplateStPeer{
+			Template: TemplateSt{
 				Metadata: MetadataTemplateSt{
 					Labels: LabelsSt{
 						App: p.PeerName,
 					},
 				},
-				Spec: SpecTemplateStPeer{
+				Spec: SpecTemplateSt{
 					NodeName: node, 
 					// NodeSelector: NodeSelectorSpecTemplateSt{
 					// 	KubernetesIoHostname: "172-16-254-33", 
@@ -210,18 +188,18 @@ func CreatePeerDeployment(clusterId string,node string,namespaceId string,chainI
 								}, 
 								{
 									Name: "CORE_PEER_ADDRESSAUTODETECT",
-									Value: "true",
+									Value: "true", 
 								}, 
-								// {
-								// 	Name: "CORE_VM_DOCKER_HOSTCONFIG_DNS",
-								// 	Value: cluster.PublicIp,
-								// },
+								{
+									Name: "CORE_VM_DOCKER_HOSTCONFIG_DNS",
+									Value: cluster.PublicIp,
+								},
 								{
 									Name: "CORE_VM_DOCKER_HOSTCONFIG_DNSSEARCH",
 									Value: namespaceId + ".svc.cluster.local",
 								},
 								{
-									Name: "CORE_CHAINCODE_BUILDER",
+									Name: "CORE_CHAINCODE_BUILDER",   
 									Value: p.CcenvImage,
 								}, 
 								// {
@@ -268,18 +246,24 @@ func CreatePeerDeployment(clusterId string,node string,namespaceId string,chainI
 					RestartPolicy: "Always",
 					Hostname: p.PeerName,
 					Volumes: []interface{}{
-						VolumeSpecTemplateSt{
+						// VolumeSpecTemplateSt{
+						// 	Name: "peer-cert",
+						// 	Nfs: NfsVolumeSpecTemplateSt{
+						// 		Server: utils.BAAS_CFG.NfsInternalAddr,
+						// 		Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId,
+						// 	},
+						// },
+						VolumeSpecTemplateHostSt{
 							Name: "peer-cert",
-							Nfs: NfsVolumeSpecTemplateSt{
-								Server: utils.BAAS_CFG.NfsInternalAddr,
-								Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId,
-							},
+							HostPath: HostPathVolumeSpecTemplateSt{
+								Path: "/home/nfs/" + chainId, 
+							}, 
 						},
 						VolumeSpecTemplateHostSt{
 							Name: "host-vol-var-run",
 							HostPath: HostPathVolumeSpecTemplateSt{
-								Path: "/var/run/", 
-							},
+								Path: "/var/run/",  
+							}, 
 						},
 					},
 				},

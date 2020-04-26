@@ -39,6 +39,7 @@ func CreateZookeeperService(clusterId string,namespaceId string,chainId string,z
 					TargetPort: 3888,
 				},
 			},
+			//ClusterIP: "None", 
 			Selector: SelectorSpecService{
 				App: zkName,
 			},

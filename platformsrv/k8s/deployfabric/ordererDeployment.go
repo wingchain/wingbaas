@@ -5,32 +5,11 @@ import (
 	"github.com/wingbaas/platformsrv/utils"
 )
 
-type SpecTemplateStOrder struct {
-	//NodeSelector NodeSelectorSpecTemplateSt `json:"nodeSelector,omitempty"`
-	NodeName string `json:"nodeName,omitempty"`
-	Containers []ContainerSpecTemplateSt `json:"containers"`
-	RestartPolicy string `json:"restartPolicy"`
-	ImagePullSecrets []ImagePullSecretSpecTemplateSt `json:"imagePullSecrets"`
-	Hostname string `json:"hostname"`
-	Volumes []VolumeSpecTemplateSt `json:"volumes"`
-}
-
-type TemplateStOrder struct {
-	Metadata MetadataTemplateSt `json:"metadata"` 
-	Spec SpecTemplateStOrder `json:"spec"`
-} 
-type SpecStOrder struct {
-	Selector SelectorSt `json:"selector"`
-	Replicas int `json:"replicas"`
-	Strategy StrategySt `json:"strategy"`
-	Template TemplateStOrder `json:"template"`
-}
-
 type OrderDeployMent struct {
 	APIVersion string `json:"apiVersion"`
 	Kind string `json:"kind"`
 	Metadata MetadataDeployMent `json:"metadata"`
-	Spec SpecStOrder `json:"spec"`  
+	Spec SpecSt `json:"spec"`  
 }  
 
 func CreateOrderKafkaDeployment(clusterId string,node string,namespaceId string,chainId string,image string,orderName string,orderDomain string)([]byte,error) {
@@ -43,9 +22,9 @@ func CreateOrderKafkaDeployment(clusterId string,node string,namespaceId string,
 				App: orderName, 
 			},
 		},
-		Spec: SpecStOrder{
+		Spec: SpecSt{
 			Selector: SelectorSt{
-				MatchLabels: MatchLabelSt{
+				MatchLabels: LabelsSt{ 
 					App: orderName,
 				},
 			},
@@ -53,13 +32,13 @@ func CreateOrderKafkaDeployment(clusterId string,node string,namespaceId string,
 			Strategy: StrategySt{
 				Type: "Recreate",
 			},
-			Template: TemplateStOrder{
+			Template: TemplateSt{
 				Metadata: MetadataTemplateSt{
 					Labels: LabelsSt{
 						App: orderName,
 					},
 				},
-				Spec: SpecTemplateStOrder{
+				Spec: SpecTemplateSt{
 					NodeName: node,
 					// NodeSelector: NodeSelectorSpecTemplateSt{
 					// 	KubernetesIoHostname: "deploy host",
@@ -174,10 +153,6 @@ func CreateOrderKafkaDeployment(clusterId string,node string,namespaceId string,
 									Value: "unix:///host/var/run/docker.sock",
 								}, 
 								{
-									Name: "CORE_PEER_ADDRESSAUTODETECT",
-									Value: "true",
-								}, 
-								{
 									Name: "CORE_VM_DOCKER_HOSTCONFIG_DNSSEARCH",
 									Value: namespaceId + ".svc.cluster.local",
 								},
@@ -194,20 +169,36 @@ func CreateOrderKafkaDeployment(clusterId string,node string,namespaceId string,
 									Name: "order-cert",
 									//SubPath: clusterId + "/" + chainId + "/DataStore/" + orderName + "/data",
 								}, 
+								{
+									MountPath: "/host/var/run/",
+									Name: "host-vol-var-run",
+								}, 
 							},    
 						},
 					},
-					RestartPolicy: "Always",
-					Volumes: []VolumeSpecTemplateSt{
-						{
+					RestartPolicy: "Always", 
+					Hostname: orderName,
+					Volumes: []interface{}{
+						// VolumeSpecTemplateSt{
+						// 	Name: "order-cert",
+						// 	Nfs: NfsVolumeSpecTemplateSt{
+						// 		Server: utils.BAAS_CFG.NfsInternalAddr,
+						// 		Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId, 
+						// 	},
+						// },
+						VolumeSpecTemplateHostSt{
 							Name: "order-cert",
-							Nfs: NfsVolumeSpecTemplateSt{
-								Server: utils.BAAS_CFG.NfsInternalAddr,
-								Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId, 
-							},
+							HostPath: HostPathVolumeSpecTemplateSt{
+								Path: "/home/nfs/" + chainId, 
+							}, 
+						},
+						VolumeSpecTemplateHostSt{
+							Name: "host-vol-var-run",
+							HostPath: HostPathVolumeSpecTemplateSt{
+								Path: "/var/run/",  
+							}, 
 						},
 					},
-					Hostname: orderName,
 				},
 			},
 		},
@@ -230,9 +221,9 @@ func CreateOrderSoloDeployment(clusterId string,namespaceId string,chainId strin
 		Metadata: MetadataDeployMent{
 			Name: orderName,
 		},
-		Spec: SpecStOrder{
+		Spec: SpecSt{
 			Selector: SelectorSt{
-				MatchLabels: MatchLabelSt{
+				MatchLabels: LabelsSt{
 					App: orderName,
 				},
 			},
@@ -240,13 +231,13 @@ func CreateOrderSoloDeployment(clusterId string,namespaceId string,chainId strin
 			Strategy: StrategySt{
 				Type: "Recreate",
 			},
-			Template: TemplateStOrder{
+			Template: TemplateSt{
 				Metadata: MetadataTemplateSt{
 					Labels: LabelsSt{
 						App: orderName,
 					},
 				},
-				Spec: SpecTemplateStOrder{
+				Spec: SpecTemplateSt{
 					// NodeSelector: NodeSelectorSpecTemplateSt{
 					// 	KubernetesIoHostname: "deploy host",
 					// },
@@ -324,8 +315,8 @@ func CreateOrderSoloDeployment(clusterId string,namespaceId string,chainId strin
 						},
 					},
 					RestartPolicy: "Always",
-					Volumes: []VolumeSpecTemplateSt{
-						{
+					Volumes: []interface{}{
+						VolumeSpecTemplateSt{
 							Name: "order-data-store",
 							Nfs: NfsVolumeSpecTemplateSt{
 								Server: utils.BAAS_CFG.NfsInternalAddr,

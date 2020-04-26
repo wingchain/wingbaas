@@ -54,7 +54,7 @@ func (setup *FabricSetup) Initialize() error {
 
 	// Add parameters for the initialization
 	if setup.initialized {
-		logger.Debug("sdk already initialized")
+		logger.Debug("sdk already inited")
 		return nil
 	}
 	// Initialize the SDK with the configuration file
@@ -72,7 +72,7 @@ func (setup *FabricSetup) Initialize() error {
 	}
 	setup.netAdmin = resMgmtClient 
 	setup.initialized = true
-	logger.Debug("sdk initialize success")
+	logger.Debug("sdk init success")
 	return nil
 } 
 

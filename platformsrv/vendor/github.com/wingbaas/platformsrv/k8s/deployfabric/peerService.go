@@ -39,6 +39,7 @@ func CreatePeerService(clusterId string,namespaceId string,chainId string,peerNa
 					TargetPort: 7053,
 				},
 			},
+			//ClusterIP: "None", 
 			Selector: SelectorSpecService{
 				App: peerName,
 			},
