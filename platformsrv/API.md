@@ -432,7 +432,7 @@ API RETURN：
 ```       
 
 ## delete blockchain network                     
-URL：http://ip:port//api/v1/delete                 
+URL：http://ip:port/api/v1/delete                 
 METHOD：POST   
 RETURN：json object           
 example:        
@@ -451,4 +451,77 @@ API RETURN:
     "message": "success",    
     "data": null    
 }
-```        
+```     
+
+## org join into blockchain                           
+URL：http://ip:port/api/v1/orgjoinchannel                    
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/orgjoinchannel                         
+request parameter:            
+```json    
+{
+	"BlockChainId": "KSpAvrMQhZHjoTDX8zqsv027qcuNZLHm",
+	"OrgName": "Org1",
+	"ChannelId": "mychannel" 
+}
+``` 
+API RETURN:                  
+```json     
+{
+    "code": 0,
+    "message": "success",    
+    "data": null    
+}
+```     
+
+## upload chaincode src code into blockchain                           
+URL：http://ip:port/api/v1/upLoadChainCode                    
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/upLoadChainCode                                 
+request parameter(form-data):            
+```json    
+{
+	"BlockChainId": "KSpAvrMQhZHjoTDX8zqsv027qcuNZLHm",
+	"ChainCodeId": "cctest",
+    "ChainCodeVersion": "1.0",
+    "file": file
+}
+``` 
+API RETURN:                  
+```json     
+{
+    "code": 0,
+    "message": "success",    
+    "data": null    
+}
+```     
+
+## deploy already uploaded chaincode blockchain                         
+URL：http://ip:port/api/v1/orgdeployChainCode                         
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/orgdeployChainCode                             
+request parameter:            
+```json    
+{
+	"BlockChainId": "KSpAvrMQhZHjoTDX8zqsv027qcuNZLHm",
+	"OrgName": "Org1",
+	"ChannelId": "mychannel",
+	"ChainCodeId": "cctest",
+	"ChainCodeVersion": "1.0",
+	"InitArgs":["init","a","200","b","200"]
+}
+``` 
+API RETURN:                  
+```json     
+{
+    "code": 0,
+    "message": "success",    
+    "data": null    
+}
+```     

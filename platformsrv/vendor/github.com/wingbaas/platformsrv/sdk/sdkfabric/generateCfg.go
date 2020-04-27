@@ -16,10 +16,27 @@ type GenerateParaSt struct {
 	ClusterId			string
 	NamespaceId			string
 	BlockId				string
+	OrgName				string
 	ChannelName	 		string 
 }
 
 var svMap map[string][]public.ServiceNodePortSt
+
+func GenerateOrgCfg(netCfg public.DeployNetConfig,p GenerateParaSt)(string,error) {
+	for _,org := range netCfg.PeerOrgs {
+		var orgCfg public.DeployNetConfig
+		orgCfg.OrdererOrgs = append(orgCfg.OrdererOrgs,netCfg.OrdererOrgs...)
+		orgCfg.KafkaDeployNode = netCfg.KafkaDeployNode
+		orgCfg.ZookeeperDeployNode = netCfg.ZookeeperDeployNode
+		orgCfg.PeerOrgs = append(orgCfg.PeerOrgs,org)
+		_,err := GenerateCfg(orgCfg,p)
+		if err != nil {
+			logger.Errorf("GenerateOrgCfg failed,org=%s",org.Name)
+			return "",fmt.Errorf("GenerateOrgCfg failed,org=%s",org.Name)
+		}
+	}
+	return "",nil
+}
 
 func GenerateCfg(netCfg public.DeployNetConfig,p GenerateParaSt)(string,error) { 
 	svMap = make(map[string][]public.ServiceNodePortSt)
@@ -81,9 +98,9 @@ func GenerateCfg(netCfg public.DeployNetConfig,p GenerateParaSt)(string,error) {
 				Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config" ,
 			},
 			CredentialStore: CredentialStoreSt {
-				Path: utils.BAAS_CFG.KeyStorePath + p.BlockId + "/credentialstore",
+				Path: utils.BAAS_CFG.KeyStorePath + p.BlockId + "/credentialstore/" + firstOrg.Name,
 				CryptoStore: CryptoStoreSt {
-					Path: utils.BAAS_CFG.KeyStorePath + p.BlockId + "/cryptostore", 
+					Path: utils.BAAS_CFG.KeyStorePath + p.BlockId + "/cryptostore/" + firstOrg.Name, 
 				}, 
 			},
 			BCCSP: BCCSPSt {
@@ -134,7 +151,7 @@ func GenerateCfg(netCfg public.DeployNetConfig,p GenerateParaSt)(string,error) {
 	}
 	logger.Debug("GenerateCfg: yaml str=")
 	logger.Debug(yamlStr)
-	cfgFile := utils.BAAS_CFG.BlockNetCfgBasePath + "/" + p.BlockId + "/network-config.yaml" 
+	cfgFile := utils.BAAS_CFG.BlockNetCfgBasePath + "/" + p.BlockId + "/network-config-" + firstOrg.Name + ".yaml" 
 	err = utils.WriteFile(cfgFile,yamlStr)
 	if err != nil {
 		logger.Errorf("GenerateCfg: write sdk config error")
@@ -339,9 +356,17 @@ func getOrgMap(netCfg public.DeployNetConfig,p GenerateParaSt) map[string]OrgFie
 }
 
 func getChannelMap(netCfg public.DeployNetConfig,p GenerateParaSt)map[string]ChannelField {
+	var orderers []string
+	for _,org := range netCfg.OrdererOrgs {
+		for _,member := range org.Specs {
+			order := member.Hostname + "." + org.Domain
+			orderers = append(orderers,order)
+		}
+	}
 	peerMap := getPeerMap(netCfg)
 	m := make(map[string]ChannelField)
-	field := ChannelField {
+	field := ChannelField { 
+		Orderers: orderers,
 		Peers: peerMap,
 		Policies: PoliciesSt {
 			QueryChannelConfig: QueryChannelConfigSt {

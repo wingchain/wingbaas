@@ -35,7 +35,7 @@ type DeployNetConfig struct {
 type DeployNodeInfo map[string]string
 type DeployNodeGroup map[string]DeployNodeInfo
 
-type DeployPara struct {
+type DeployPara struct { 
 	DeployNetCfg        DeployNetConfig    	`json:"DeployNetCfg"`  
 	DeployHost       	DeployNodeGroup 	`json:"DeployHost"`
 	DeployType       	string          	`json:"DeployType"`

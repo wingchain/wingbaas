@@ -230,6 +230,6 @@ func deleteBlockChain(c echo.Context) error {
 		os.RemoveAll(nfsPath)
 		os.Remove(cfgFile)
 	}
-	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil)
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil) 
 	return c.JSON(http.StatusOK,ret)
 }

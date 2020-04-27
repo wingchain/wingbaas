@@ -19,9 +19,12 @@ func Start(port string) {
 	r.POST("/api/v1/deploy",deployBlockChain)
 	r.GET("/api/v1/:clusterid/blockchains",getChains)
 	r.POST("/api/v1/delete",deleteBlockChain)
+	r.POST("/api/v1/orgjoinchannel",orgJoinChannel) 
+	r.POST("/api/v1/upLoadChainCode",upChainCode)
+	r.POST("/api/v1/orgdeployChainCode",orgDeployCC)
 
 	// Start server
-	logger.Debug("start wing baas api server") 
+	logger.Debug("start wing baas api server")
 	r.Logger.Fatal(r.Start(":"+port))
 	logger.Debug("stop wing baas api server")
 }

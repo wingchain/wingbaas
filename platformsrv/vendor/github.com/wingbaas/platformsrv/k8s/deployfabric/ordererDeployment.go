@@ -140,22 +140,22 @@ func CreateOrderKafkaDeployment(clusterId string,node string,namespaceId string,
 									Name: "ORDERER_KAFKA_VERBOSE",
 									Value: "true",
 								},  
-								{
-									Name: "CORE_VM_DOCKER_ATTACHSTDOUT",
-									Value: "true",
-								},
-								{
-									Name: "CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE",
-									Value: "host",
-								},
-								{
-									Name: "CORE_VM_ENDPOINT",
-									Value: "unix:///host/var/run/docker.sock",
-								}, 
-								{
-									Name: "CORE_VM_DOCKER_HOSTCONFIG_DNSSEARCH",
-									Value: namespaceId + ".svc.cluster.local",
-								},
+								// {
+								// 	Name: "CORE_VM_DOCKER_ATTACHSTDOUT",
+								// 	Value: "true",
+								// },
+								// {
+								// 	Name: "CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE",
+								// 	Value: "host",
+								// },
+								// {
+								// 	Name: "CORE_VM_ENDPOINT",
+								// 	Value: "unix:///host/var/run/docker.sock",
+								// }, 
+								// {
+								// 	Name: "CORE_VM_DOCKER_HOSTCONFIG_DNSSEARCH",
+								// 	Value: namespaceId + ".svc.cluster.local",
+								// },
 							},
 							Ports: []PortContainerSpecTemplateSt{
 								{
@@ -169,15 +169,15 @@ func CreateOrderKafkaDeployment(clusterId string,node string,namespaceId string,
 									Name: "order-cert",
 									//SubPath: clusterId + "/" + chainId + "/DataStore/" + orderName + "/data",
 								}, 
-								{
-									MountPath: "/host/var/run/",
-									Name: "host-vol-var-run",
-								}, 
+								// {
+								// 	MountPath: "/host/var/run/",
+								// 	Name: "host-vol-var-run",
+								// }, 
 							},    
 						},
 					},
 					RestartPolicy: "Always", 
-					Hostname: orderName,
+					//Hostname: orderName,
 					Volumes: []interface{}{
 						// VolumeSpecTemplateSt{
 						// 	Name: "order-cert",
@@ -192,12 +192,12 @@ func CreateOrderKafkaDeployment(clusterId string,node string,namespaceId string,
 								Path: "/home/nfs/" + chainId, 
 							}, 
 						},
-						VolumeSpecTemplateHostSt{
-							Name: "host-vol-var-run",
-							HostPath: HostPathVolumeSpecTemplateSt{
-								Path: "/var/run/",  
-							}, 
-						},
+						// VolumeSpecTemplateHostSt{
+						// 	Name: "host-vol-var-run",
+						// 	HostPath: HostPathVolumeSpecTemplateSt{
+						// 		Path: "/var/run/",  
+						// 	}, 
+						// },
 					},
 				},
 			},
@@ -308,7 +308,7 @@ func CreateOrderSoloDeployment(clusterId string,namespaceId string,chainId strin
 							VolumeMounts: []VolumeContainerSpecTemplateSt{ 
 								{
 									MountPath: "/var/data",
-									Name: "order-data-store",
+									Name: "order-cert-store",
 									//SubPath: clusterId + "/" + chainId + "/DataStore/" + orderName + "/data",
 								}, 
 							},    
@@ -317,7 +317,7 @@ func CreateOrderSoloDeployment(clusterId string,namespaceId string,chainId strin
 					RestartPolicy: "Always",
 					Volumes: []interface{}{
 						VolumeSpecTemplateSt{
-							Name: "order-data-store",
+							Name: "order-cert-store",
 							Nfs: NfsVolumeSpecTemplateSt{
 								Server: utils.BAAS_CFG.NfsInternalAddr,
 								Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId,

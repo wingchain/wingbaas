@@ -78,6 +78,7 @@ type PoliciesSt struct {
 }
 
 type ChannelField struct {
+	Orderers []string `json:"orderers"`
 	Peers map[string]PeerField `json:"peers"`
 	Policies PoliciesSt `json:"policies"`
 }

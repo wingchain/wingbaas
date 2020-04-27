@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/wingbaas/platformsrv/logger"
 	"github.com/hyperledger/fabric-sdk-go/pkg/client/channel"
-	"github.com/hyperledger/fabric-sdk-go/pkg/client/event"
 	mspclient "github.com/hyperledger/fabric-sdk-go/pkg/client/msp"
 	"github.com/hyperledger/fabric-sdk-go/pkg/client/resmgmt"
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/errors/retry"
@@ -14,8 +13,7 @@ import (
 	packager "github.com/hyperledger/fabric-sdk-go/pkg/fab/ccpackager/gopackager"
 	"github.com/hyperledger/fabric-sdk-go/pkg/fabsdk"
 	"github.com/hyperledger/fabric-protos-go/common"
-	"github.com/hyperledger/fabric-sdk-go/third_party/github.com/hyperledger/fabric/common/cauthdsl"
-	//"github.com/pkg/errors" 
+	"github.com/hyperledger/fabric-sdk-go/third_party/github.com/hyperledger/fabric/common/cauthdsl" 
 )
 
 const (
@@ -26,13 +24,14 @@ const (
 type FabricSetup struct {
 	ConfigFile      string
 	OrdererID       string
+	ChannelId		string
 	OrgAdmin        string
 	OrgName         string
 	UserName        string
-	sdk             *fabsdk.FabricSDK
+	Peers           []string
+	sdk             *fabsdk.FabricSDK 
 	netAdmin        *resmgmt.Client
 	chClient        *channel.Client
-	chEventClient   *event.Client
 	initialized     bool
 }
 
@@ -47,12 +46,11 @@ type ChaincodeSetup struct {
 	ChaincodeGoPath 	string
 	ChaincodePath   	string
 	InitOrg				string
+	InitArgs            []string 
 }
 
 // Initialize reads the configuration file and sets up the client, chain and event hub
 func (setup *FabricSetup) Initialize() error { 
-
-	// Add parameters for the initialization
 	if setup.initialized {
 		logger.Debug("sdk already inited")
 		return nil
@@ -71,18 +69,21 @@ func (setup *FabricSetup) Initialize() error {
 		return fmt.Errorf("failed to create channel management client from Admin identity,err=%v",err)
 	}
 	setup.netAdmin = resMgmtClient 
+	logger.Debug("rc client create success")
+
+	// Channel client is used to query and execute transactions
+	// clientContext := setup.sdk.ChannelContext(setup.ChannelId, fabsdk.WithUser(setup.UserName)) 
+	// setup.chClient, err = channel.New(clientContext)
+	// if err != nil {
+	// 	logger.Errorf("failed to create channel client,err=%v",err)
+	// 	return fmt.Errorf("failed to create channel client,err=%v",err) 
+	// }
+	// logger.Debug("Channel client create success")
+
 	setup.initialized = true
 	logger.Debug("sdk init success")
 	return nil
 } 
-
-func packArgs(paras []string) [][]byte {
-	var args [][]byte
-	for _, k := range paras {
-		args = append(args, []byte(k))
-	}
-	return args
-}
 
 func (setup *FabricSetup) CreateChannel(ch ChannnelSetup) error {
 	 
@@ -136,12 +137,9 @@ func (setup *FabricSetup) InstallCC(cc ChaincodeSetup) error {
 	return nil
 }
 
-func (setup *FabricSetup) InstantiateCC(ch ChannnelSetup,cc ChaincodeSetup) error { 
-	// Set up chaincode policy
-	//endorser := "OR('Org1MSP.member','Org2MSP.member')"
-	
+func (setup *FabricSetup) InstantiateCC(ch ChannnelSetup,cc ChaincodeSetup) error {
 	ccPolicy := cauthdsl.SignedByAnyMember([]string{cc.InitOrg})
-	args := packArgs([]string{"init", "a", "100", "b", "200"})
+	args := packArgs(cc.InitArgs)
 	req := resmgmt.InstantiateCCRequest{
 		Name: cc.ChainCodeID,
 		Path: cc.ChaincodeGoPath,
@@ -149,8 +147,7 @@ func (setup *FabricSetup) InstantiateCC(ch ChannnelSetup,cc ChaincodeSetup) erro
 		Args: args,
 		Policy: ccPolicy,
 	}
-	peers := []string{"peer0-org1.Org1.fabric.baas.xyz","peer1-org1.Org1.fabric.baas.xyz"}
-	reqPeers := resmgmt.WithTargetEndpoints(peers...)
+	reqPeers := resmgmt.WithTargetEndpoints(setup.Peers...)
 
 	resp, err := setup.netAdmin.InstantiateCC(ch.ChannelID,req,reqPeers)
 	if err != nil || resp.TransactionID == "" {
@@ -158,22 +155,6 @@ func (setup *FabricSetup) InstantiateCC(ch ChannnelSetup,cc ChaincodeSetup) erro
 		return fmt.Errorf("failed to instantiate the chaincode,err=%v",err)
 	}
 	logger.Debug("Chaincode instantiate success") 
-
-	// Channel client is used to query and execute transactions
-	clientContext := setup.sdk.ChannelContext(ch.ChannelID, fabsdk.WithUser(setup.UserName)) 
-	setup.chClient, err = channel.New(clientContext)
-	if err != nil {
-		logger.Errorf("failed to create new channel client,err=%v",err)
-		return fmt.Errorf("failed to create new channel client,err=%v",err)
-	}
-	logger.Debug("Channel client create success")
-	event, err := event.New(clientContext)
-	if err != nil {
-		logger.Debug("failed to create new channel event client")
-		return fmt.Errorf("failed to create new channel event client")
-	}
-	setup.chEventClient = event
-	logger.Debug("channel event client create success")
 	return nil
 }
 
@@ -187,4 +168,12 @@ func (setup *FabricSetup) genPolicy(p string) (*common.SignaturePolicyEnvelope, 
 
 func (setup *FabricSetup) CloseSDK() {
 	setup.sdk.Close() 
+}
+
+func packArgs(paras []string) [][]byte {
+	var args [][]byte
+	for _, k := range paras {
+		args = append(args, []byte(k))
+	}
+	return args
 }
