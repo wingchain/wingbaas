@@ -39,9 +39,15 @@ type ClientTLSCertsSt struct {
 	Cert CryptoconfigSt `json:"cert"`
 }
 
+type ClientCertSt struct {
+	Keyfile string `json:"keyfile"`
+	Certfile string `json:"certfile"`
+}
+
 type TLSCertsSt struct {
 	SystemCertPool bool `json:"systemCertPool"`
-	//Client ClientTLSCertsSt `json:"client"`
+	Client ClientTLSCertsSt `json:"client,omitempty"`
+	//Client ClientCertSt`json:"client,omitempty"`
 }
 
 type ClientSt struct {
@@ -86,8 +92,8 @@ type ChannelField struct {
 type OrgField struct {
 	Mspid string `json:"mspid"`
 	CryptoPath string `json:"cryptoPath"`
-	Peers []string `json:"peers"`
-	CertificateAuthorities []string `json:"certificateAuthorities"`
+	Peers []string `json:"peers,omitempty"`
+	CertificateAuthorities []string `json:"certificateAuthorities,omitempty"`
 	//Users map[string]ClientTLSCertsSt `json:"users"` 
 }
 

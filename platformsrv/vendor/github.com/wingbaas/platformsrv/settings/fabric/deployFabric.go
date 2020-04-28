@@ -82,7 +82,6 @@ func DeployFabric(p public.DeployPara,chainName string,chainType string)(string,
 		logger.Errorf("DeployFabric: write block config error")
 		return "",fmt.Errorf("DeployFabric: write block config error") 
 	}
-
 	var sdkCfg sdkfabric.GenerateParaSt
 	sdkCfg.ClusterId = p.ClusterId
 	sdkCfg.NamespaceId = chainName 
@@ -90,8 +89,7 @@ func DeployFabric(p public.DeployPara,chainName string,chainType string)(string,
 	sdkCfg.ChannelName = sdkfabric.DefaultChannel
 	sdkfabric.GenerateOrgCfg(p.DeployNetCfg,sdkCfg) 
 	time.Sleep(30*time.Second)
-	InitDefaultChannel(p.DeployNetCfg,sdkCfg)  
-	return blockId,nil 
+	return blockId,nil  
 }
 
 func DeployComponetsKafka(p public.DeployPara,chainName string,chainId string,chainType string)(string,error) {
@@ -227,45 +225,44 @@ func DeployComponetsKafka(p public.DeployPara,chainName string,chainId string,ch
 			}
 		}
 	}
-	return "",nil 
+	return "",nil
 }
 
-func InitDefaultChannel(netCfg public.DeployNetConfig,p sdkfabric.GenerateParaSt) error {
-	var firstOrg public.OrgSpec
+func OrgCreateChannel(chainId string,orgName string,channelId string) error {
+	obj,err := sdkfabric.LoadChainCfg(chainId)
+	if err != nil {
+		return fmt.Errorf("OrgCreateChannel: load chain cfg error,channelId=%s\n", channelId)
+	}
 	var orderId string
-	for _,org := range netCfg.OrdererOrgs {
+	for _,org := range obj.DeployNetCfg.OrdererOrgs { 
 		for _,p := range org.Specs {
 			orderId = p.Hostname + "." + org.Domain
 			break
 		}
 	}
-	for _,org := range netCfg.PeerOrgs {
-		firstOrg = org
-		break
-	}
 	fSetup := sdkfabric.FabricSetup{ 
 		OrdererID: orderId,
 		OrgAdmin:  "Admin",
-		OrgName:   firstOrg.Name, 
-		ChannelId: p.ChannelName,
-		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/network-config-" + firstOrg.Name + ".yaml",
+		OrgName:   orgName, 
+		ChannelId: channelId,
+		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
 		UserName: "User1",
 	}
 	chSetup := sdkfabric.ChannnelSetup{
 		ChannelID: sdkfabric.DefaultChannel, 
-		ChannelConfig: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/channel-artifacts/" + p.ChannelName + ".tx",
+		ChannelConfig: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/channel-artifacts/" + channelId + ".tx",
 	}
-	err := fSetup.Initialize()
+	err = fSetup.Initialize()
 	if err != nil {
-		return fmt.Errorf("InitDefaultChannel: init SDK error: %s\n", err)
+		return fmt.Errorf("OrgCreateChannel: init SDK error: %s\n", err)
 	}
 	defer fSetup.CloseSDK() 
 
 	err = fSetup.CreateChannel(chSetup)
 	if err != nil {
-		return fmt.Errorf("InitDefaultChannel: create channel error: %s\n", err)
+		return fmt.Errorf("OrgCreateChannel: create channel error: %s\n", err)
 	}
-	logger.Debug("InitDefaultChannel success")
+	logger.Debug("OrgCreateChannel success")
 	return nil
 }
 
@@ -298,6 +295,7 @@ func OrgJoinChannel(chainId string,orgName string,channelId string) error {
 		return fmt.Errorf("OrgJoinChannel: init SDK failed: org=%s  err=%s\n", orgName,err)
 	}
 	defer fSetup.CloseSDK() 
+
 	err = fSetup.JoinChannel(chSetup) 
 	if err != nil {
 		return fmt.Errorf("OrgJoinChannel: join channel error=%s\n", err)
@@ -346,7 +344,7 @@ func OrgDeployChaiCode(chainId string,orgName string,channelId string,ChainCodeI
 	ccSetup := sdkfabric.ChaincodeSetup {
 		ChainCodeID:     	ChainCodeID,
 		ChaincodeGoPath: 	rootPath + "/tmp/" + chainId,
-		ChaincodePath:   	ChainCodeID + "/" + ChaincodeVersion,
+		ChaincodePath:   	ChainCodeID + ChaincodeVersion,
 		ChaincodeVersion:	ChaincodeVersion,
 		InitOrg:			orgName,
 	}
@@ -380,7 +378,7 @@ func ChainSdkInit(netCfg public.DeployNetConfig,p sdkfabric.GenerateParaSt) erro
 	// fSetup.ExecuteCC(ccSetup.ChainCodeID,"Invoke",invokeParas,peers)
 	
 	// fSetup.QueryCC(ccSetup.ChainCodeID,"Invoke",queryParas,"peer0-org1.Org1.fabric.baas.xyz")
-	return nil
+	return nil 
 }
 
 

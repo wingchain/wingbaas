@@ -13,7 +13,7 @@ import (
 
 func (setup *FabricSetup)ExecuteCC(ccId string,fcn string, paras []string, peers []string) ([]byte,error) {
 	args := packArgs(paras)
-	response, err := setup.chClient.Execute(channel.Request{ChaincodeID: ccId, Fcn: fcn, Args: args},channel.WithRetry(retry.DefaultChannelOpts), channel.WithTargetEndpoints(peers...))
+	response, err := setup.ChClient.Execute(channel.Request{ChaincodeID: ccId, Fcn: fcn, Args: args},channel.WithRetry(retry.DefaultChannelOpts), channel.WithTargetEndpoints(peers...))
 	if err != nil {
 		logger.Errorf("ExecuteCC failed,err=%s",err)
 		return nil,fmt.Errorf("ExecuteCC failed,err=%s",err)

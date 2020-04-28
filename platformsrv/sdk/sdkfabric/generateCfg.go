@@ -116,14 +116,18 @@ func GenerateCfg(netCfg public.DeployNetConfig,p GenerateParaSt)(string,error) {
 			},
 			TLSCerts: TLSCertsSt {
 				SystemCertPool: false,
-				// Client: ClientTLSCertsSt {
-				// 	Key: CryptoconfigSt {
-				// 		Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/Admin@" + firstOrg.Domain + "/tls/client.key",
-				// 	},
-				// 	Cert: CryptoconfigSt {
-				// 		Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/Admin@" + firstOrg.Domain + "/tls/client.crt",
-				// 	},
-				// },
+				Client: ClientTLSCertsSt {
+					Key: CryptoconfigSt {
+						Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/Admin@" + firstOrg.Domain + "/tls/client.key",
+					},
+					Cert: CryptoconfigSt {
+						Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/Admin@" + firstOrg.Domain + "/tls/client.crt",
+					},
+				},
+				// Client: ClientCertSt {
+				// 	Keyfile: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/User1@" + firstOrg.Domain + "/tls/client.key",
+				// 	Certfile: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/User1@" + firstOrg.Domain + "/tls/client.crt",
+				// }, 
 			},
 		},
 		Channels: channelMap,
@@ -352,6 +356,12 @@ func getOrgMap(netCfg public.DeployNetConfig,p GenerateParaSt) map[string]OrgFie
 		//field.Users = getUserMap("Admin",org.Domain,p)
 		m[org.Name] = field
 	}
+	for _,org := range netCfg.OrdererOrgs {
+		var field OrgField
+		field.Mspid = org.Name + "MSP"
+		field.CryptoPath = utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/ordererOrganizations/" + org.Domain + "/users/Admin@" + org.Domain + "/msp"
+		m[org.Name] = field
+	} 
 	return m
 }
 
@@ -372,7 +382,7 @@ func getChannelMap(netCfg public.DeployNetConfig,p GenerateParaSt)map[string]Cha
 			QueryChannelConfig: QueryChannelConfigSt {
 				MinResponses: 1,
 				MaxTargets: 1,
-				RetryOpts: RetryOptsSt {
+				RetryOpts: RetryOptsSt { 
 					Attempts: 5,
 					InitialBackoff: "500ms",
 					MaxBackoff: "5s",

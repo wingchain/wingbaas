@@ -16,7 +16,7 @@ import (
 //query chaincode
 func (setup *FabricSetup)QueryCC(ccId string, fcn string, paras []string, peer string) ([]byte,error) {
 	args := packArgs(paras)
-	response, err := setup.chClient.Query(channel.Request{ChaincodeID: ccId, Fcn: fcn, Args: args},
+	response, err := setup.ChClient.Query(channel.Request{ChaincodeID: ccId, Fcn: fcn, Args: args},
 		channel.WithRetry(retry.DefaultChannelOpts), channel.WithTargetEndpoints(peer))
 	if err != nil {
 		logger.Errorf("QueryCC failed,err=%s",err)

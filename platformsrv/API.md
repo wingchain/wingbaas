@@ -453,6 +453,29 @@ API RETURN:
 }
 ```     
 
+## org create channel in blockchain                            
+URL：http://ip:port/api/v1/orgcreatechannel                     
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/orgcreatechannel                           
+request parameter:            
+```json    
+{
+	"BlockChainId": "KSpAvrMQhZHjoTDX8zqsv027qcuNZLHm",
+	"OrgName": "Org1",
+	"ChannelId": "mychannel" 
+}
+``` 
+API RETURN:                  
+```json     
+{
+    "code": 0,
+    "message": "success",    
+    "data": null    
+}
+```     
+
 ## org join into blockchain                           
 URL：http://ip:port/api/v1/orgjoinchannel                    
 METHOD：POST   
@@ -477,11 +500,11 @@ API RETURN:
 ```     
 
 ## upload chaincode src code into blockchain                           
-URL：http://ip:port/api/v1/upLoadChainCode                    
+URL：http://ip:port/api/v1/uploadcc                    
 METHOD：POST   
 RETURN：json object           
 example:        
-request:http://localhost:9001/api/v1/upLoadChainCode                                 
+request:http://localhost:9001/api/v1/uploadcc                                 
 request parameter(form-data):            
 ```json    
 {
@@ -501,11 +524,11 @@ API RETURN:
 ```     
 
 ## deploy already uploaded chaincode blockchain                         
-URL：http://ip:port/api/v1/orgdeployChainCode                         
+URL：http://ip:port/api/v1/orgdeploycc                         
 METHOD：POST   
 RETURN：json object           
 example:        
-request:http://localhost:9001/api/v1/orgdeployChainCode                             
+request:http://localhost:9001/api/v1/orgdeploycc                             
 request parameter:            
 ```json    
 {

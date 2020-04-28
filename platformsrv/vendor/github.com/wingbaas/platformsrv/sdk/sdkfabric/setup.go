@@ -29,9 +29,9 @@ type FabricSetup struct {
 	OrgName         string
 	UserName        string
 	Peers           []string
-	sdk             *fabsdk.FabricSDK 
+	Sdk             *fabsdk.FabricSDK 
+	ChClient        *channel.Client
 	netAdmin        *resmgmt.Client
-	chClient        *channel.Client
 	initialized     bool
 }
 
@@ -61,8 +61,8 @@ func (setup *FabricSetup) Initialize() error {
 		logger.Errorf("failed to create SDK,err=%v",err)
 		return fmt.Errorf("failed to create SDK,err=%v",err) 
 	}
-	setup.sdk = sdk
-	resourceManagerClientContext := setup.sdk.Context(fabsdk.WithUser(setup.OrgAdmin), fabsdk.WithOrg(setup.OrgName))
+	setup.Sdk = sdk
+	resourceManagerClientContext := setup.Sdk.Context(fabsdk.WithUser(setup.OrgAdmin),fabsdk.WithOrg(setup.OrgName))
 	resMgmtClient, err := resmgmt.New(resourceManagerClientContext)  
 	if err != nil {
 		logger.Errorf("failed to create channel management client from Admin identity,err=%v",err) 
@@ -70,16 +70,6 @@ func (setup *FabricSetup) Initialize() error {
 	}
 	setup.netAdmin = resMgmtClient 
 	logger.Debug("rc client create success")
-
-	// Channel client is used to query and execute transactions
-	// clientContext := setup.sdk.ChannelContext(setup.ChannelId, fabsdk.WithUser(setup.UserName)) 
-	// setup.chClient, err = channel.New(clientContext)
-	// if err != nil {
-	// 	logger.Errorf("failed to create channel client,err=%v",err)
-	// 	return fmt.Errorf("failed to create channel client,err=%v",err) 
-	// }
-	// logger.Debug("Channel client create success")
-
 	setup.initialized = true
 	logger.Debug("sdk init success")
 	return nil
@@ -88,7 +78,7 @@ func (setup *FabricSetup) Initialize() error {
 func (setup *FabricSetup) CreateChannel(ch ChannnelSetup) error {
 	 
 	// The MSP client allow us to retrieve user information from their identity, like its signing identity which we will need to save the channel
-	mspClient, err := mspclient.New(setup.sdk.Context(), mspclient.WithOrg(setup.OrgName))
+	mspClient, err := mspclient.New(setup.Sdk.Context(), mspclient.WithOrg(setup.OrgName))
 	if err != nil {
 		logger.Errorf("failed to create MSP client,err=%v",err)
 		return fmt.Errorf("failed to create MSP client,err=%v",err)
@@ -167,7 +157,7 @@ func (setup *FabricSetup) genPolicy(p string) (*common.SignaturePolicyEnvelope, 
 }
 
 func (setup *FabricSetup) CloseSDK() {
-	setup.sdk.Close() 
+	setup.Sdk.Close() 
 }
 
 func packArgs(paras []string) [][]byte {

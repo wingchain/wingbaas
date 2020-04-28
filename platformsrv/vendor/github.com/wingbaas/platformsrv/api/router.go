@@ -19,9 +19,12 @@ func Start(port string) {
 	r.POST("/api/v1/deploy",deployBlockChain)
 	r.GET("/api/v1/:clusterid/blockchains",getChains)
 	r.POST("/api/v1/delete",deleteBlockChain)
+	r.POST("/api/v1/orgcreatechannel",orgCreateChannel)  
 	r.POST("/api/v1/orgjoinchannel",orgJoinChannel) 
-	r.POST("/api/v1/upLoadChainCode",upChainCode)
-	r.POST("/api/v1/orgdeployChainCode",orgDeployCC)
+	r.POST("/api/v1/uploadcc",upChainCode)
+	r.POST("/api/v1/orgdeploycc",orgDeployCC)
+	r.POST("/api/v1/callcc",chaincodeCall)
+	r.POST("/api/v1/querycc",chaincodeQuery) 
 
 	// Start server
 	logger.Debug("start wing baas api server")

@@ -14,6 +14,36 @@ import (
 	"github.com/wingbaas/platformsrv/sdk/sdkfabric"
 )
 
+func orgCreateChannel(c echo.Context) error {
+	logger.Debug("orgCreateChannel")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	type ReqPara struct {
+		BlockChainId string `json:"BlockChainId"`
+		OrgName string `json:"OrgName"`
+		ChannelId string `json:"ChannelId"`
+	}
+	var d ReqPara
+    err = json.Unmarshal(result, &d)
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	d.ChannelId = sdkfabric.DefaultChannel
+	err = fabric.OrgCreateChannel(d.BlockChainId,d.OrgName,d.ChannelId)
+	if err != nil {
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil)
+	return c.JSON(http.StatusOK,ret)
+}
+
 func orgJoinChannel(c echo.Context) error {
 	logger.Debug("orgJoinChannel")
 	result, err := ioutil.ReadAll(c.Request().Body)
@@ -66,13 +96,13 @@ func upChainCode(c echo.Context) error {
 	}
 	defer src.Close()
 	rootPath,_ := utils.GetProcessRunRoot()
-	dstDir := rootPath + "/tmp/" + chainId + "/src/" + ccId + "/" + ccVersion + "/"
+	dstDir := rootPath + "/tmp/" + chainId + "/src/" + ccId + ccVersion + "/" 
 	bl,_ := utils.CreateDir(dstDir)
 	if !bl {
 		msg := "create cc dir error"
 		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
 		return c.JSON(http.StatusOK,ret)
-	}
+	}  
 	dst, err := os.Create(dstDir + file.Filename)
 	if err != nil {
 		msg := "create cc file error"
@@ -123,5 +153,68 @@ func orgDeployCC(c echo.Context) error {
 
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil)
 	return c.JSON(http.StatusOK,ret)
+}
 
+func chaincodeCall(c echo.Context) error {
+	logger.Debug("chaincodeCall")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	type ReqPara struct {
+		BlockChainId string `json:"BlockChainId"`
+		OrgName string `json:"OrgName"`
+		ChannelId string `json:"ChannelId"`
+		ChainCodeID string `json:"ChainCodeID"`
+		Args []string `json:"Args"`
+	}
+	var d ReqPara
+    err = json.Unmarshal(result, &d)
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	d.ChannelId = sdkfabric.DefaultChannel
+	err = fabric.OrgInvokeChainCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeID,d.Args)
+	if err != nil {
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil)
+	return c.JSON(http.StatusOK,ret)
+}
+
+func chaincodeQuery(c echo.Context) error {
+	logger.Debug("chaincodeQuery")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	type ReqPara struct {
+		BlockChainId string `json:"BlockChainId"`
+		OrgName string `json:"OrgName"`
+		ChannelId string `json:"ChannelId"`
+		ChainCodeID string `json:"ChainCodeID"`
+		Args []string `json:"Args"`
+	}
+	var d ReqPara
+    err = json.Unmarshal(result, &d)
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	d.ChannelId = sdkfabric.DefaultChannel
+	err = fabric.OrgQueryChainCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeID,d.Args)
+	if err != nil {
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil) 
+	return c.JSON(http.StatusOK,ret)
 }
