@@ -246,7 +246,7 @@ func OrgCreateChannel(chainId string,orgName string,channelId string) error {
 		OrgName:   orgName, 
 		ChannelId: channelId,
 		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
-		UserName: "User1",
+		//UserName: "User1",
 	}
 	chSetup := sdkfabric.ChannnelSetup{
 		ChannelID: sdkfabric.DefaultChannel, 
@@ -284,7 +284,7 @@ func OrgJoinChannel(chainId string,orgName string,channelId string) error {
 		OrgName:   orgName, 
 		ChannelId: channelId,
 		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
-		UserName: "User1",
+		//UserName: "User1",
 	}
 	chSetup := sdkfabric.ChannnelSetup{
 		ChannelID: channelId, 
@@ -326,7 +326,7 @@ func OrgDeployChaiCode(chainId string,orgName string,channelId string,ChainCodeI
 		OrgName:   orgName, 
 		ChannelId: channelId,
 		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
-		UserName: "User1",
+		//UserName: "User1",
 	}
 	for _,org := range obj.DeployNetCfg.PeerOrgs {
 		if org.Name == orgName {

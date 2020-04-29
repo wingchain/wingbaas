@@ -3,6 +3,7 @@ package sdkfabric
 
 import (
 	"fmt"
+	"strings"
 	"github.com/wingbaas/platformsrv/logger"
 	"github.com/hyperledger/fabric-sdk-go/pkg/client/channel"
 	mspclient "github.com/hyperledger/fabric-sdk-go/pkg/client/msp"
@@ -13,7 +14,7 @@ import (
 	packager "github.com/hyperledger/fabric-sdk-go/pkg/fab/ccpackager/gopackager"
 	"github.com/hyperledger/fabric-sdk-go/pkg/fabsdk"
 	"github.com/hyperledger/fabric-protos-go/common"
-	"github.com/hyperledger/fabric-sdk-go/third_party/github.com/hyperledger/fabric/common/cauthdsl" 
+	"github.com/hyperledger/fabric-sdk-go/third_party/github.com/hyperledger/fabric/common/cauthdsl"
 )
 
 const (
@@ -27,7 +28,6 @@ type FabricSetup struct {
 	ChannelId		string
 	OrgAdmin        string
 	OrgName         string
-	UserName        string
 	Peers           []string
 	Sdk             *fabsdk.FabricSDK 
 	ChClient        *channel.Client
@@ -47,6 +47,13 @@ type ChaincodeSetup struct {
 	ChaincodePath   	string
 	InitOrg				string
 	InitArgs            []string 
+}
+
+type UserClient struct {
+	Secret string
+	IdentityTypeUser string
+	RegistrarUserName string
+	RegistrarPassword string
 }
 
 // Initialize reads the configuration file and sets up the client, chain and event hub
@@ -167,3 +174,61 @@ func packArgs(paras []string) [][]byte {
 	}
 	return args
 }
+
+func (setup *FabricSetup) GetRegisteredUser(userName string, orgName string,secret string,identityTypeUser string) (string, error) {
+	ctxProvider := setup.Sdk.Context()
+	client,err := mspclient.New(ctxProvider,mspclient.WithOrg(orgName))
+	if err != nil {
+		logger.Errorf("GetRegisteredUser: failed to create msp client: %s", err.Error())
+		return "",fmt.Errorf("GetRegisteredUser: failed to create msp client: %s", err.Error())
+	}
+	enrollSecret,err := client.Register(&mspclient.RegistrationRequest{
+					Name:        userName,
+					Type:        identityTypeUser,
+					Affiliation: "org1" + ".department1",
+					//Affiliation: orgName,
+					Secret:      secret,
+					CAName: strings.ToLower(orgName + "-ca"),
+				})
+	if err != nil {
+		msg := err.Error()
+		if strings.Contains(msg,"is already registered") {
+			logger.Debug("GetRegisteredUser: %s already registered",userName)
+			return "",nil
+		}
+		logger.Errorf("GetRegisteredUser: %s", err.Error())
+		return "",fmt.Errorf("GetRegisteredUser: failed to Register")
+	}
+	err = client.Enroll(userName,mspclient.WithSecret(enrollSecret))
+	if err != nil {
+		logger.Errorf("GetRegisteredUser: enroll %s failed: %s", userName, err)
+		return "",fmt.Errorf("failed " + err.Error())
+	}
+	logger.Debug(userName + " enrolled Successfully")
+	return "",nil
+}
+
+func (setup *FabricSetup) GetUserClient(channelName string,userName string,orgName string) (*channel.Client,error){
+	clientChannelContext := setup.Sdk.ChannelContext(channelName,fabsdk.WithUser(userName),fabsdk.WithOrg(orgName))
+	client,err := channel.New(clientChannelContext)
+	if err != nil {
+		logger.Errorf("GetUserClient: failed to create channel client: %s\n",err)
+		return nil,fmt.Errorf("GetUserClient: failed to create channel client: %s\n",err)
+	}
+	setup.ChClient = client
+	logger.Debug("GetUserClient success,user=%v  orgName=%v",userName,orgName) 
+	return client,nil
+}
+
+func (setup *FabricSetup) SetupCA(orgName string) error {
+	ctxProvider := setup.Sdk.Context()
+	mpClient, err := mspclient.New(ctxProvider,mspclient.WithOrg(orgName))
+	err = mpClient.Enroll("admin",mspclient.WithSecret("adminpw"))
+	if err != nil {
+		logger.Errorf("SetupCA: enroll registrar failed: %s", err)
+		return fmt.Errorf("SetupCA: enroll registrar failed")
+	}
+	return nil
+}
+
+
