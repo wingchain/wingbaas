@@ -305,8 +305,8 @@ func CreateDeployment(clusterId string,namespaceId string,deployObj interface{})
 			return nil,fmt.Errorf("CreateDeployment: create failed")
 		}
 	}
-	logger.Debug("CreateDeployment: create success,result str=")
-	logger.Debug(string(bytes))
+	// logger.Debug("CreateDeployment: create success,result str=")
+	// logger.Debug(string(bytes))
 	return nil,nil
 }
 
@@ -368,8 +368,8 @@ func CreateService(clusterId string,namespaceId string,serviceObj interface{})([
 			return nil,fmt.Errorf("CreateService: create failed")
 		}
 	}
-	logger.Debug("CreateService: create success,result str=")
-	logger.Debug(string(bytes))
+	// logger.Debug("CreateService: create success,result str=")
+	// logger.Debug(string(bytes))
 	return nil,nil 
 }
 

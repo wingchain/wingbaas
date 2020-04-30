@@ -23,7 +23,7 @@ func (setup *FabricSetup)ExecuteCC(ccId string,fcn string, paras []string, peers
 		logger.Errorf("ExecuteCC marshal response failed,err=%s",err)
 		return nil,fmt.Errorf("ExecuteCC marshal response failed,err=%s",err)
 	}
-	logger.Debug("ExecuteCC result=")
-	logger.Debug(string(res))
+	// logger.Debug("ExecuteCC result=")
+	// logger.Debug(string(res))
 	return res,nil 
 }

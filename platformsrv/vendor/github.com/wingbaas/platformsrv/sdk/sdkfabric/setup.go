@@ -135,7 +135,13 @@ func (setup *FabricSetup) InstallCC(cc ChaincodeSetup) error {
 }
 
 func (setup *FabricSetup) InstantiateCC(ch ChannnelSetup,cc ChaincodeSetup) error {
-	ccPolicy := cauthdsl.SignedByAnyMember([]string{cc.InitOrg})
+	//ccPolicy := cauthdsl.SignedByAnyMember([]string{cc.InitOrg})
+	endorse := "AND('" + setup.OrgName + "MSP.member')"
+	ccPolicy,err := setup.genPolicy(endorse)
+	if err != nil {
+		logger.Errorf("InstantiateCC: genPolicy failed,msg=%v",err.Error())
+		return fmt.Errorf("InstantiateCC: genPolicy failed,msg=%v",err.Error())
+	}
 	args := packArgs(cc.InitArgs)
 	req := resmgmt.InstantiateCCRequest{
 		Name: cc.ChainCodeID,
@@ -186,7 +192,6 @@ func (setup *FabricSetup) GetRegisteredUser(userName string, orgName string,secr
 					Name:        userName,
 					Type:        identityTypeUser,
 					Affiliation: "org1" + ".department1",
-					//Affiliation: orgName,
 					Secret:      secret,
 					CAName: strings.ToLower(orgName + "-ca"),
 				})

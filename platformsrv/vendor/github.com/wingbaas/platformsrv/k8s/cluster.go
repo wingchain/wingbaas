@@ -80,8 +80,7 @@ func GetClusters()([]Cluster,error) {
 	}
 }
 
-func GetCluster(clusterId string) (*Cluster,error) { 
-	logger.Debug("GetCluster")
+func GetCluster(clusterId string) (*Cluster,error) {
 	clusters,err := GetClusters()
 	if err != nil {
 		logger.Errorf("GetCluster: get clusters error,%v", err)

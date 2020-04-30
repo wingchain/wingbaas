@@ -159,4 +159,30 @@ type SdkFabricCfg struct {
 	Peers map[string]MemberField `json:"peers"`
 	CertificateAuthorities map[string]CaField `json:"certificateAuthorities"`
 	EntityMatchers EntityMatchersSt `json:"entityMatchers"` 
-}  
+}
+
+type CCInvokeResult struct {
+	Proposal struct {
+		TxnID string `json:"TxnID"`
+		Header string `json:"header"`
+		Payload string `json:"payload"`
+	} `json:"Proposal"`
+	Responses []struct {
+		Endorser string `json:"Endorser"`
+		Status int `json:"Status"`
+		ChaincodeStatus int `json:"ChaincodeStatus"`
+		Version int `json:"version"`
+		Response struct {
+			Status int `json:"status"`
+		} `json:"response"`
+		Payload string `json:"payload"`
+		Endorsement struct {
+			Endorser string `json:"endorser"`
+			Signature string `json:"signature"` 
+		} `json:"endorsement"`
+	} `json:"Responses"`
+	TransactionID string `json:"TransactionID"`
+	TxValidationCode int `json:"TxValidationCode"`
+	ChaincodeStatus int `json:"ChaincodeStatus"`
+	Payload interface{} `json:"Payload"`
+}

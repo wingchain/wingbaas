@@ -146,15 +146,15 @@ func GenerateCfg(netCfg public.DeployNetConfig,p GenerateParaSt)(string,error) {
 		logger.Errorf("GenerateCfg: Marshal fabric sdk config error") 
 		return "",fmt.Errorf("GenerateCfg: Marshal fabric sdk config error")
 	} 
-	logger.Debug("GenerateCfg: json str=")
-	logger.Debug(string(bytes))
+	// logger.Debug("GenerateCfg: json str=")
+	// logger.Debug(string(bytes))
 	bl,yamlStr := fabric.JsonToYaml(string(bytes)) 
 	if !bl {
 		logger.Errorf("GenerateCfg: json2yaml error") 
 		return "",fmt.Errorf("GenerateCfg: json2yaml error")
 	}
-	logger.Debug("GenerateCfg: yaml str=")
-	logger.Debug(yamlStr)
+	// logger.Debug("GenerateCfg: yaml str=")
+	// logger.Debug(yamlStr)
 	cfgFile := utils.BAAS_CFG.BlockNetCfgBasePath + "/" + p.BlockId + "/network-config-" + firstOrg.Name + ".yaml" 
 	err = utils.WriteFile(cfgFile,yamlStr)
 	if err != nil {
@@ -238,8 +238,10 @@ func getCaMap(netCfg public.DeployNetConfig,p GenerateParaSt)(error,map[string]C
 	for _,org := range netCfg.PeerOrgs {
 		var field CaField
 		caKey := strings.ToLower(org.Name + "-ca")
+		key = "ca." + org.Domain
 		var caPort = k8s.GetNodePort(svMap,caKey, caKey)
-		field.URL = "https://" + cluster.PublicIp + ":" + caPort
+		//field.URL = "https://" + cluster.PublicIp + ":" + caPort
+		field.URL = "https://" + key + ":" + caPort 
 		field.HTTPOptions = HTTPOptionsSt {
 			Verify: false,
 		}
@@ -259,7 +261,11 @@ func getCaMap(netCfg public.DeployNetConfig,p GenerateParaSt)(error,map[string]C
 				},
 			},
 		}
-		key = "ca." + org.Domain
+		bl := AddHosts(key,cluster.PublicIp)
+		if !bl {
+			logger.Errorf("getCaMap: AddHosts failed,need manual add to /etc/hosts,host=%s  ip=%s",key,cluster.PublicIp)
+			continue
+		}
 		m[key] = field
 	}
 	return nil,m

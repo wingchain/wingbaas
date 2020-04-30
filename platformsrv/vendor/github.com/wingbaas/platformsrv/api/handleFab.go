@@ -178,12 +178,12 @@ func chaincodeCall(c echo.Context) error {
 		return c.JSON(http.StatusOK,ret) 
 	}
 	d.ChannelId = sdkfabric.DefaultChannel
-	err = fabric.OrgInvokeChainCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeID,d.Args)
+	cr,err := fabric.OrgInvokeChainCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeID,d.Args)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
 		return c.JSON(http.StatusOK,ret)
 	}
-	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil)
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,cr)
 	return c.JSON(http.StatusOK,ret)
 }
 
@@ -210,11 +210,11 @@ func chaincodeQuery(c echo.Context) error {
 		return c.JSON(http.StatusOK,ret) 
 	}
 	d.ChannelId = sdkfabric.DefaultChannel
-	err = fabric.OrgQueryChainCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeID,d.Args)
+	qr,err := fabric.OrgQueryChainCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeID,d.Args)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
 		return c.JSON(http.StatusOK,ret)
 	}
-	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil) 
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,qr) 
 	return c.JSON(http.StatusOK,ret)
 }
