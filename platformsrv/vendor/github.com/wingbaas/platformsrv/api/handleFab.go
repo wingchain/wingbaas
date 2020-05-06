@@ -177,7 +177,7 @@ func chaincodeCall(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
-	d.ChannelId = sdkfabric.DefaultChannel
+	d.ChannelId = sdkfabric.DefaultChannel 
 	cr,err := fabric.OrgInvokeChainCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeID,d.Args)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
@@ -217,4 +217,184 @@ func chaincodeQuery(c echo.Context) error {
 	}
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,qr) 
 	return c.JSON(http.StatusOK,ret)
+}
+
+func queryInstatialCC(c echo.Context) error {
+	logger.Debug("queryInstatialCC")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	type ReqPara struct {
+		BlockChainId string `json:"BlockChainId"`
+		OrgName string `json:"OrgName"`
+		ChannelId string `json:"ChannelId"`
+	}
+	var d ReqPara
+    err = json.Unmarshal(result, &d)
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	d.ChannelId = sdkfabric.DefaultChannel
+	qr,err := fabric.OrgQueryInstantiateCC(d.BlockChainId,d.OrgName,d.ChannelId)
+	if err != nil {
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,qr) 
+	return c.JSON(http.StatusOK,ret)
+}
+
+func queryInstalledCC(c echo.Context) error {
+	logger.Debug("queryInstalledCC")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	type ReqPara struct {
+		BlockChainId string `json:"BlockChainId"`
+		OrgName string `json:"OrgName"`
+		ChannelId string `json:"ChannelId"`
+	}
+	var d ReqPara
+    err = json.Unmarshal(result, &d)
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	d.ChannelId = sdkfabric.DefaultChannel
+	qr,err := fabric.OrgQueryInstalledCC(d.BlockChainId,d.OrgName,d.ChannelId)
+	if err != nil {
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,qr) 
+	return c.JSON(http.StatusOK,ret) 
+}
+
+func queryChannel(c echo.Context) error {
+	logger.Debug("queryChannel")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	type ReqPara struct {
+		BlockChainId string `json:"BlockChainId"`
+		OrgName string `json:"OrgName"`
+	}
+	var d ReqPara
+    err = json.Unmarshal(result, &d)
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	qr,err := fabric.OrgQueryChannel(d.BlockChainId,d.OrgName)
+	if err != nil {
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,qr) 
+	return c.JSON(http.StatusOK,ret) 
+}
+
+func queryTxInfo(c echo.Context) error {
+	logger.Debug("queryTxInfo")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	type ReqPara struct {
+		BlockChainId string `json:"BlockChainId"`
+		OrgName string `json:"OrgName"`
+		ChannelId string `json:"ChannelId"`
+		TxId string `json:"TxId"`
+	}
+	var d ReqPara
+    err = json.Unmarshal(result, &d)
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	d.ChannelId = sdkfabric.DefaultChannel
+	qr,err := fabric.OrgQueryTxById(d.BlockChainId,d.OrgName,d.ChannelId,d.TxId)
+	if err != nil {
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,qr) 
+	return c.JSON(http.StatusOK,ret) 
+}
+
+func queryBlockInfo(c echo.Context) error {
+	logger.Debug("queryBlockInfo")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	type ReqPara struct {
+		BlockChainId string `json:"BlockChainId"`
+		OrgName string `json:"OrgName"`
+		ChannelId string `json:"ChannelId"`
+		BlockId uint64 `json:"BlockId"`
+	}
+	var d ReqPara
+    err = json.Unmarshal(result, &d)
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	d.ChannelId = sdkfabric.DefaultChannel
+	qr,err := fabric.OrgQueryBlockById(d.BlockChainId,d.OrgName,d.ChannelId,d.BlockId)
+	if err != nil {
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,qr) 
+	return c.JSON(http.StatusOK,ret) 
+}
+
+func queryBlock(c echo.Context) error {
+	logger.Debug("queryBlock")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	type ReqPara struct {
+		BlockChainId string `json:"BlockChainId"`
+		OrgName string `json:"OrgName"`
+		ChannelId string `json:"ChannelId"`
+	}
+	var d ReqPara
+    err = json.Unmarshal(result, &d)
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	d.ChannelId = sdkfabric.DefaultChannel
+	qr,err := fabric.OrgQueryBlockChain(d.BlockChainId,d.OrgName,d.ChannelId)
+	if err != nil {
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,qr) 
+	return c.JSON(http.StatusOK,ret) 
 }

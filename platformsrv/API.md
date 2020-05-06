@@ -548,3 +548,805 @@ API RETURN:
     "data": null    
 }
 ```     
+
+## call chaincode                             
+URL：http://ip:port/api/v1/callcc                             
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/callcc                                       
+request parameter:            
+```json    
+{
+	"BlockChainId": "KSpAvrMQhZHjoTDX8zqsv027qcuNZLHm",
+	"OrgName": "Org1",
+	"ChannelId": "mychannel",
+	"ChainCodeId": "cctest",
+	"Args":["transfer","a","b","10"]
+}
+``` 
+API RETURN:                  
+```json     
+{
+    "code": 0,
+    "message": "success",    
+    "data": {
+        "TransactionID": "4cb2d7db491f8f9c517e89e1332f539f4d5d8c335d6def0a4c18facb32a53c23",
+        "TxValidationCode": 0,
+        "ChaincodeStatus": 200
+    }
+}
+```       
+
+## query chaincode                                  
+URL：http://ip:port/api/v1/querycc                                 
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/querycc                                           
+request parameter:            
+```json    
+{
+	"BlockChainId": "6f2Wq0Hy5LSYpSt0yvmTd1XD2XEn3Hdr",
+	"OrgName": "Org1",
+	"ChannelId": "mychannel" ,
+	"ChainCodeID": "cctest",
+	"Args": ["query","a"]
+}
+``` 
+API RETURN:                  
+```json     
+{
+    "code": 0,
+    "message": "success",    
+    "data": "190"
+}
+```       
+
+## query all instatial chaincode list                                     
+URL：http://ip:port/api/v1/queryinstatialcc                                 
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/queryinstatialcc                                           
+request parameter:            
+```json    
+{
+	"BlockChainId": "6f2Wq0Hy5LSYpSt0yvmTd1XD2XEn3Hdr",
+	"OrgName": "Org1",
+	"ChannelId": "mychannel" 
+}
+``` 
+API RETURN:                  
+```json     
+{
+    "code": 0,
+    "message": "success",    
+    "data": {
+        "chaincodes": [
+            {
+                "name": "cctest",
+                "version": "10",
+                "path": "cctest10",
+                "input": "<nil>",
+                "escc": "escc",
+                "vscc": "vscc"
+            }
+        ]
+    }
+}
+```         
+
+## query all installed chaincode list                                     
+URL：http://ip:port/api/v1/queryinstalledcc                                 
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/queryinstalledcc                                           
+request parameter:            
+```json    
+{
+	"BlockChainId": "6f2Wq0Hy5LSYpSt0yvmTd1XD2XEn3Hdr",
+	"OrgName": "Org1",
+	"ChannelId": "mychannel" 
+}
+``` 
+API RETURN:                  
+```json     
+{
+    "code": 0,
+    "message": "success",    
+    "data": "null"
+}
+```         
+
+## query all channel list                                       
+URL：http://ip:port/api/v1/querychannel                                 
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/querychannel                                           
+request parameter:            
+```json    
+{
+	"BlockChainId": "6f2Wq0Hy5LSYpSt0yvmTd1XD2XEn3Hdr",
+	"OrgName": "Org1"
+}
+``` 
+API RETURN:                  
+```json     
+{
+    "code": 0,
+    "message": "success",    
+    "data": {
+        "channels": [
+            {
+                "channel_id": "mychannel"
+            }
+        ]
+    }
+}
+```         
+
+## query transaction info                                             
+URL：http://ip:port/api/v1/querytxinfo                                    
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/querytxinfo                                                  
+request parameter:            
+```json    
+{
+	"BlockChainId": "1m4MJ3U0avy8VLWkQeXCtgN8M3384TAd",
+	"OrgName": "Org1",
+	"ChannelId": "mychannel",
+	"TxId": "4cb2d7db491f8f9c517e89e1332f539f4d5d8c335d6def0a4c18facb32a53c23" 
+}
+``` 
+API RETURN:                  
+```json     
+{
+    "code": 0,
+    "message": "success",    
+     "data": {
+        "signature": "MEUCIQDkm4uM4KO67eiPKQjF7Bir9ycFo+N4WZznAfqwbxRRHQIgdAZI/+g1oJjPXcqgBcgQBlfdjrTfnDH/JD16vllCKBE=",
+        "channel_header": {
+            "type": 3,
+            "channel_id": "mychannel",
+            "tx_id": "4cb2d7db491f8f9c517e89e1332f539f4d5d8c335d6def0a4c18facb32a53c23",
+            "chaincode_id": {
+                "name": "cctest"
+            }
+        },
+        "signature_header": {
+            "Certificate": {
+                "Raw": "MIICvDCCAmKgAwIBAgIUURtISOgT2ZyyoVYdpaicqfdgw3cwCgYIKoZIzj0EAwIwezELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBGcmFuY2lzY28xHTAbBgNVBAoTFE9yZzEuZmFicmljLmJhYXMueHl6MSAwHgYDVQQDExdjYS5PcmcxLmZhYnJpYy5iYWFzLnh5ejAeFw0yMDA1MDYwMTE0MDBaFw0yMTA1MDYwMTE5MDBaMEExLjALBgNVBAsTBHVzZXIwCwYDVQQLEwRvcmcxMBIGA1UECxMLZGVwYXJ0bWVudDExDzANBgNVBAMTBmNodXNlcjBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABEoxdRDaQflbiibhX/L2eyaJyila9DhFjZrP0DuQg6mU+leKSdmMZXngJDGAf3CkU22BkRM6Wki33j/GG8lvXgajgf0wgfowDgYDVR0PAQH/BAQDAgeAMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFN46QltTS47uQacqRnJfdcYwEaENMCsGA1UdIwQkMCKAIDIcSAqtJUYNoKJUIuN652nHnULplRCzxv1XSscEbuI+MCUGA1UdEQQeMByCGmNxeWNzeGZkZU1hY0Jvb2stUHJvLmxvY2FsMGcGCCoDBAUGBwgBBFt7ImF0dHJzIjp7ImhmLkFmZmlsaWF0aW9uIjoib3JnMS5kZXBhcnRtZW50MSIsImhmLkVucm9sbG1lbnRJRCI6ImNodXNlciIsImhmLlR5cGUiOiJ1c2VyIn19MAoGCCqGSM49BAMCA0gAMEUCIQClqEDU7TVZwT3D0xCLprb11lVE9QrBz1ycbKaPsCLqEwIgaVrICuRgc/4HdT7Y0TubJGVfOwXXDMrSODPRHzwaOsk=",
+                "RawTBSCertificate": "MIICYqADAgECAhRRG0hI6BPZnLKhVh2lqJyp92DDdzAKBggqhkjOPQQDAjB7MQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZyYW5jaXNjbzEdMBsGA1UEChMUT3JnMS5mYWJyaWMuYmFhcy54eXoxIDAeBgNVBAMTF2NhLk9yZzEuZmFicmljLmJhYXMueHl6MB4XDTIwMDUwNjAxMTQwMFoXDTIxMDUwNjAxMTkwMFowQTEuMAsGA1UECxMEdXNlcjALBgNVBAsTBG9yZzEwEgYDVQQLEwtkZXBhcnRtZW50MTEPMA0GA1UEAxMGY2h1c2VyMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAESjF1ENpB+VuKJuFf8vZ7JonKKVr0OEWNms/QO5CDqZT6V4pJ2YxleeAkMYB/cKRTbYGREzpaSLfeP8YbyW9eBqOB/TCB+jAOBgNVHQ8BAf8EBAMCB4AwDAYDVR0TAQH/BAIwADAdBgNVHQ4EFgQU3jpCW1NLju5BpypGcl91xjARoQ0wKwYDVR0jBCQwIoAgMhxICq0lRg2golQi43rnacedQumVELPG/VdKxwRu4j4wJQYDVR0RBB4wHIIaY3F5Y3N4ZmRlTWFjQm9vay1Qcm8ubG9jYWwwZwYIKgMEBQYHCAEEW3siYXR0cnMiOnsiaGYuQWZmaWxpYXRpb24iOiJvcmcxLmRlcGFydG1lbnQxIiwiaGYuRW5yb2xsbWVudElEIjoiY2h1c2VyIiwiaGYuVHlwZSI6InVzZXIifX0=",
+                "RawSubjectPublicKeyInfo": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAESjF1ENpB+VuKJuFf8vZ7JonKKVr0OEWNms/QO5CDqZT6V4pJ2YxleeAkMYB/cKRTbYGREzpaSLfeP8YbyW9eBg==",
+                "RawSubject": "MEExLjALBgNVBAsTBHVzZXIwCwYDVQQLEwRvcmcxMBIGA1UECxMLZGVwYXJ0bWVudDExDzANBgNVBAMTBmNodXNlcg==",
+                "RawIssuer": "MHsxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJhbmNpc2NvMR0wGwYDVQQKExRPcmcxLmZhYnJpYy5iYWFzLnh5ejEgMB4GA1UEAxMXY2EuT3JnMS5mYWJyaWMuYmFhcy54eXo=",
+                "Signature": "MEUCIQClqEDU7TVZwT3D0xCLprb11lVE9QrBz1ycbKaPsCLqEwIgaVrICuRgc/4HdT7Y0TubJGVfOwXXDMrSODPRHzwaOsk=",
+                "SignatureAlgorithm": 10,
+                "PublicKeyAlgorithm": 3,
+                "PublicKey": {
+                    "Curve": {
+                        "P": 1.15792089210356248762697446949407573530086143415290314195533631308867097853951e+77,
+                        "N": 1.15792089210356248762697446949407573529996955224135760342422259061068512044369e+77,
+                        "B": 4.1058363725152142129326129780047268409114441015993725554835256314039467401291e+76,
+                        "Gx": 4.8439561293906451759052585252797914202762949526041747995844080717082404635286e+76,
+                        "Gy": 3.6134250956749795798585127919587881956611106672985015071877198253568414405109e+76,
+                        "BitSize": 256,
+                        "Name": "P-256"
+                    },
+                    "X": 3.3558534260002794477127624873681564286798929101483351952104778506033896335764e+76,
+                    "Y": 1.13232882272434803347155020456148948598479428090050511070716500975209826704902e+77
+                },
+                "Version": 3,
+                "SerialNumber": 4.63036669450492795693207409130645271472699917175e+47,
+                "Issuer": {
+                    "Country": [
+                        "US"
+                    ],
+                    "Organization": [
+                        "Org1.fabric.baas.xyz"
+                    ],
+                    "OrganizationalUnit": null,
+                    "Locality": [
+                        "San Francisco"
+                    ],
+                    "Province": [
+                        "California"
+                    ],
+                    "StreetAddress": null,
+                    "PostalCode": null,
+                    "SerialNumber": "",
+                    "CommonName": "ca.Org1.fabric.baas.xyz",
+                    "Names": [
+                        {
+                            "Type": [
+                                2,
+                                5,
+                                4,
+                                6
+                            ],
+                            "Value": "US"
+                        },
+                        {
+                            "Type": [
+                                2,
+                                5,
+                                4,
+                                8
+                            ],
+                            "Value": "California"
+                        },
+                        {
+                            "Type": [
+                                2,
+                                5,
+                                4,
+                                7
+                            ],
+                            "Value": "San Francisco"
+                        },
+                        {
+                            "Type": [
+                                2,
+                                5,
+                                4,
+                                10
+                            ],
+                            "Value": "Org1.fabric.baas.xyz"
+                        },
+                        {
+                            "Type": [
+                                2,
+                                5,
+                                4,
+                                3
+                            ],
+                            "Value": "ca.Org1.fabric.baas.xyz"
+                        }
+                    ],
+                    "ExtraNames": null
+                },
+                "Subject": {
+                    "Country": null,
+                    "Organization": null,
+                    "OrganizationalUnit": [
+                        "user",
+                        "org1",
+                        "department1"
+                    ],
+                    "Locality": null,
+                    "Province": null,
+                    "StreetAddress": null,
+                    "PostalCode": null,
+                    "SerialNumber": "",
+                    "CommonName": "chuser",
+                    "Names": [
+                        {
+                            "Type": [
+                                2,
+                                5,
+                                4,
+                                11
+                            ],
+                            "Value": "user"
+                        },
+                        {
+                            "Type": [
+                                2,
+                                5,
+                                4,
+                                11
+                            ],
+                            "Value": "org1"
+                        },
+                        {
+                            "Type": [
+                                2,
+                                5,
+                                4,
+                                11
+                            ],
+                            "Value": "department1"
+                        },
+                        {
+                            "Type": [
+                                2,
+                                5,
+                                4,
+                                3
+                            ],
+                            "Value": "chuser"
+                        }
+                    ],
+                    "ExtraNames": null
+                },
+                "NotBefore": "2020-05-06T01:14:00Z",
+                "NotAfter": "2021-05-06T01:19:00Z",
+                "KeyUsage": 1,
+                "Extensions": [
+                    {
+                        "Id": [
+                            2,
+                            5,
+                            29,
+                            15
+                        ],
+                        "Critical": true,
+                        "Value": "AwIHgA=="
+                    },
+                    {
+                        "Id": [
+                            2,
+                            5,
+                            29,
+                            19
+                        ],
+                        "Critical": true,
+                        "Value": "MAA="
+                    },
+                    {
+                        "Id": [
+                            2,
+                            5,
+                            29,
+                            14
+                        ],
+                        "Critical": false,
+                        "Value": "BBTeOkJbU0uO7kGnKkZyX3XGMBGhDQ=="
+                    },
+                    {
+                        "Id": [
+                            2,
+                            5,
+                            29,
+                            35
+                        ],
+                        "Critical": false,
+                        "Value": "MCKAIDIcSAqtJUYNoKJUIuN652nHnULplRCzxv1XSscEbuI+"
+                    },
+                    {
+                        "Id": [
+                            2,
+                            5,
+                            29,
+                            17
+                        ],
+                        "Critical": false,
+                        "Value": "MByCGmNxeWNzeGZkZU1hY0Jvb2stUHJvLmxvY2Fs"
+                    },
+                    {
+                        "Id": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            1
+                        ],
+                        "Critical": false,
+                        "Value": "eyJhdHRycyI6eyJoZi5BZmZpbGlhdGlvbiI6Im9yZzEuZGVwYXJ0bWVudDEiLCJoZi5FbnJvbGxtZW50SUQiOiJjaHVzZXIiLCJoZi5UeXBlIjoidXNlciJ9fQ=="
+                    }
+                ],
+                "ExtraExtensions": null,
+                "UnhandledCriticalExtensions": null,
+                "ExtKeyUsage": null,
+                "UnknownExtKeyUsage": null,
+                "BasicConstraintsValid": true,
+                "IsCA": false,
+                "MaxPathLen": -1,
+                "MaxPathLenZero": false,
+                "SubjectKeyId": "3jpCW1NLju5BpypGcl91xjARoQ0=",
+                "AuthorityKeyId": "MhxICq0lRg2golQi43rnacedQumVELPG/VdKxwRu4j4=",
+                "OCSPServer": null,
+                "IssuingCertificateURL": null,
+                "DNSNames": [
+                    "cqycsxfdeMacBook-Pro.local"
+                ],
+                "EmailAddresses": null,
+                "IPAddresses": null,
+                "URIs": null,
+                "PermittedDNSDomainsCritical": false,
+                "PermittedDNSDomains": null,
+                "ExcludedDNSDomains": null,
+                "PermittedIPRanges": null,
+                "ExcludedIPRanges": null,
+                "PermittedEmailAddresses": null,
+                "ExcludedEmailAddresses": null,
+                "PermittedURIDomains": null,
+                "ExcludedURIDomains": null,
+                "CRLDistributionPoints": null,
+                "PolicyIdentifiers": null
+            },
+            "nonce": "JU2AL0bE28bNwBEP/vlB3riu/Js6Tgz6"
+        },
+        "tx_action_signature_header": {
+            "Certificate": {
+                "Raw": "MIICvDCCAmKgAwIBAgIUURtISOgT2ZyyoVYdpaicqfdgw3cwCgYIKoZIzj0EAwIwezELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBGcmFuY2lzY28xHTAbBgNVBAoTFE9yZzEuZmFicmljLmJhYXMueHl6MSAwHgYDVQQDExdjYS5PcmcxLmZhYnJpYy5iYWFzLnh5ejAeFw0yMDA1MDYwMTE0MDBaFw0yMTA1MDYwMTE5MDBaMEExLjALBgNVBAsTBHVzZXIwCwYDVQQLEwRvcmcxMBIGA1UECxMLZGVwYXJ0bWVudDExDzANBgNVBAMTBmNodXNlcjBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABEoxdRDaQflbiibhX/L2eyaJyila9DhFjZrP0DuQg6mU+leKSdmMZXngJDGAf3CkU22BkRM6Wki33j/GG8lvXgajgf0wgfowDgYDVR0PAQH/BAQDAgeAMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFN46QltTS47uQacqRnJfdcYwEaENMCsGA1UdIwQkMCKAIDIcSAqtJUYNoKJUIuN652nHnULplRCzxv1XSscEbuI+MCUGA1UdEQQeMByCGmNxeWNzeGZkZU1hY0Jvb2stUHJvLmxvY2FsMGcGCCoDBAUGBwgBBFt7ImF0dHJzIjp7ImhmLkFmZmlsaWF0aW9uIjoib3JnMS5kZXBhcnRtZW50MSIsImhmLkVucm9sbG1lbnRJRCI6ImNodXNlciIsImhmLlR5cGUiOiJ1c2VyIn19MAoGCCqGSM49BAMCA0gAMEUCIQClqEDU7TVZwT3D0xCLprb11lVE9QrBz1ycbKaPsCLqEwIgaVrICuRgc/4HdT7Y0TubJGVfOwXXDMrSODPRHzwaOsk=",
+                "RawTBSCertificate": "MIICYqADAgECAhRRG0hI6BPZnLKhVh2lqJyp92DDdzAKBggqhkjOPQQDAjB7MQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZyYW5jaXNjbzEdMBsGA1UEChMUT3JnMS5mYWJyaWMuYmFhcy54eXoxIDAeBgNVBAMTF2NhLk9yZzEuZmFicmljLmJhYXMueHl6MB4XDTIwMDUwNjAxMTQwMFoXDTIxMDUwNjAxMTkwMFowQTEuMAsGA1UECxMEdXNlcjALBgNVBAsTBG9yZzEwEgYDVQQLEwtkZXBhcnRtZW50MTEPMA0GA1UEAxMGY2h1c2VyMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAESjF1ENpB+VuKJuFf8vZ7JonKKVr0OEWNms/QO5CDqZT6V4pJ2YxleeAkMYB/cKRTbYGREzpaSLfeP8YbyW9eBqOB/TCB+jAOBgNVHQ8BAf8EBAMCB4AwDAYDVR0TAQH/BAIwADAdBgNVHQ4EFgQU3jpCW1NLju5BpypGcl91xjARoQ0wKwYDVR0jBCQwIoAgMhxICq0lRg2golQi43rnacedQumVELPG/VdKxwRu4j4wJQYDVR0RBB4wHIIaY3F5Y3N4ZmRlTWFjQm9vay1Qcm8ubG9jYWwwZwYIKgMEBQYHCAEEW3siYXR0cnMiOnsiaGYuQWZmaWxpYXRpb24iOiJvcmcxLmRlcGFydG1lbnQxIiwiaGYuRW5yb2xsbWVudElEIjoiY2h1c2VyIiwiaGYuVHlwZSI6InVzZXIifX0=",
+                "RawSubjectPublicKeyInfo": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAESjF1ENpB+VuKJuFf8vZ7JonKKVr0OEWNms/QO5CDqZT6V4pJ2YxleeAkMYB/cKRTbYGREzpaSLfeP8YbyW9eBg==",
+                "RawSubject": "MEExLjALBgNVBAsTBHVzZXIwCwYDVQQLEwRvcmcxMBIGA1UECxMLZGVwYXJ0bWVudDExDzANBgNVBAMTBmNodXNlcg==",
+                "RawIssuer": "MHsxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQHEw1TYW4gRnJhbmNpc2NvMR0wGwYDVQQKExRPcmcxLmZhYnJpYy5iYWFzLnh5ejEgMB4GA1UEAxMXY2EuT3JnMS5mYWJyaWMuYmFhcy54eXo=",
+                "Signature": "MEUCIQClqEDU7TVZwT3D0xCLprb11lVE9QrBz1ycbKaPsCLqEwIgaVrICuRgc/4HdT7Y0TubJGVfOwXXDMrSODPRHzwaOsk=",
+                "SignatureAlgorithm": 10,
+                "PublicKeyAlgorithm": 3,
+                "PublicKey": {
+                    "Curve": {
+                        "P": 1.15792089210356248762697446949407573530086143415290314195533631308867097853951e+77,
+                        "N": 1.15792089210356248762697446949407573529996955224135760342422259061068512044369e+77,
+                        "B": 4.1058363725152142129326129780047268409114441015993725554835256314039467401291e+76,
+                        "Gx": 4.8439561293906451759052585252797914202762949526041747995844080717082404635286e+76,
+                        "Gy": 3.6134250956749795798585127919587881956611106672985015071877198253568414405109e+76,
+                        "BitSize": 256,
+                        "Name": "P-256"
+                    },
+                    "X": 3.3558534260002794477127624873681564286798929101483351952104778506033896335764e+76,
+                    "Y": 1.13232882272434803347155020456148948598479428090050511070716500975209826704902e+77
+                },
+                "Version": 3,
+                "SerialNumber": 4.63036669450492795693207409130645271472699917175e+47,
+                "Issuer": {
+                    "Country": [
+                        "US"
+                    ],
+                    "Organization": [
+                        "Org1.fabric.baas.xyz"
+                    ],
+                    "OrganizationalUnit": null,
+                    "Locality": [
+                        "San Francisco"
+                    ],
+                    "Province": [
+                        "California"
+                    ],
+                    "StreetAddress": null,
+                    "PostalCode": null,
+                    "SerialNumber": "",
+                    "CommonName": "ca.Org1.fabric.baas.xyz",
+                    "Names": [
+                        {
+                            "Type": [
+                                2,
+                                5,
+                                4,
+                                6
+                            ],
+                            "Value": "US"
+                        },
+                        {
+                            "Type": [
+                                2,
+                                5,
+                                4,
+                                8
+                            ],
+                            "Value": "California"
+                        },
+                        {
+                            "Type": [
+                                2,
+                                5,
+                                4,
+                                7
+                            ],
+                            "Value": "San Francisco"
+                        },
+                        {
+                            "Type": [
+                                2,
+                                5,
+                                4,
+                                10
+                            ],
+                            "Value": "Org1.fabric.baas.xyz"
+                        },
+                        {
+                            "Type": [
+                                2,
+                                5,
+                                4,
+                                3
+                            ],
+                            "Value": "ca.Org1.fabric.baas.xyz"
+                        }
+                    ],
+                    "ExtraNames": null
+                },
+                "Subject": {
+                    "Country": null,
+                    "Organization": null,
+                    "OrganizationalUnit": [
+                        "user",
+                        "org1",
+                        "department1"
+                    ],
+                    "Locality": null,
+                    "Province": null,
+                    "StreetAddress": null,
+                    "PostalCode": null,
+                    "SerialNumber": "",
+                    "CommonName": "chuser",
+                    "Names": [
+                        {
+                            "Type": [
+                                2,
+                                5,
+                                4,
+                                11
+                            ],
+                            "Value": "user"
+                        },
+                        {
+                            "Type": [
+                                2,
+                                5,
+                                4,
+                                11
+                            ],
+                            "Value": "org1"
+                        },
+                        {
+                            "Type": [
+                                2,
+                                5,
+                                4,
+                                11
+                            ],
+                            "Value": "department1"
+                        },
+                        {
+                            "Type": [
+                                2,
+                                5,
+                                4,
+                                3
+                            ],
+                            "Value": "chuser"
+                        }
+                    ],
+                    "ExtraNames": null
+                },
+                "NotBefore": "2020-05-06T01:14:00Z",
+                "NotAfter": "2021-05-06T01:19:00Z",
+                "KeyUsage": 1,
+                "Extensions": [
+                    {
+                        "Id": [
+                            2,
+                            5,
+                            29,
+                            15
+                        ],
+                        "Critical": true,
+                        "Value": "AwIHgA=="
+                    },
+                    {
+                        "Id": [
+                            2,
+                            5,
+                            29,
+                            19
+                        ],
+                        "Critical": true,
+                        "Value": "MAA="
+                    },
+                    {
+                        "Id": [
+                            2,
+                            5,
+                            29,
+                            14
+                        ],
+                        "Critical": false,
+                        "Value": "BBTeOkJbU0uO7kGnKkZyX3XGMBGhDQ=="
+                    },
+                    {
+                        "Id": [
+                            2,
+                            5,
+                            29,
+                            35
+                        ],
+                        "Critical": false,
+                        "Value": "MCKAIDIcSAqtJUYNoKJUIuN652nHnULplRCzxv1XSscEbuI+"
+                    },
+                    {
+                        "Id": [
+                            2,
+                            5,
+                            29,
+                            17
+                        ],
+                        "Critical": false,
+                        "Value": "MByCGmNxeWNzeGZkZU1hY0Jvb2stUHJvLmxvY2Fs"
+                    },
+                    {
+                        "Id": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            6,
+                            7,
+                            8,
+                            1
+                        ],
+                        "Critical": false,
+                        "Value": "eyJhdHRycyI6eyJoZi5BZmZpbGlhdGlvbiI6Im9yZzEuZGVwYXJ0bWVudDEiLCJoZi5FbnJvbGxtZW50SUQiOiJjaHVzZXIiLCJoZi5UeXBlIjoidXNlciJ9fQ=="
+                    }
+                ],
+                "ExtraExtensions": null,
+                "UnhandledCriticalExtensions": null,
+                "ExtKeyUsage": null,
+                "UnknownExtKeyUsage": null,
+                "BasicConstraintsValid": true,
+                "IsCA": false,
+                "MaxPathLen": -1,
+                "MaxPathLenZero": false,
+                "SubjectKeyId": "3jpCW1NLju5BpypGcl91xjARoQ0=",
+                "AuthorityKeyId": "MhxICq0lRg2golQi43rnacedQumVELPG/VdKxwRu4j4=",
+                "OCSPServer": null,
+                "IssuingCertificateURL": null,
+                "DNSNames": [
+                    "cqycsxfdeMacBook-Pro.local"
+                ],
+                "EmailAddresses": null,
+                "IPAddresses": null,
+                "URIs": null,
+                "PermittedDNSDomainsCritical": false,
+                "PermittedDNSDomains": null,
+                "ExcludedDNSDomains": null,
+                "PermittedIPRanges": null,
+                "ExcludedIPRanges": null,
+                "PermittedEmailAddresses": null,
+                "ExcludedEmailAddresses": null,
+                "PermittedURIDomains": null,
+                "ExcludedURIDomains": null,
+                "CRLDistributionPoints": null,
+                "PolicyIdentifiers": null
+            },
+            "nonce": "JU2AL0bE28bNwBEP/vlB3riu/Js6Tgz6"
+        },
+        "chaincode_spec": {
+            "type": 1,
+            "chaincode_id": {
+                "name": "cctest"
+            },
+            "input": {
+                "Args": [
+                    "invoke",
+                    "a",
+                    "b",
+                    "10"
+                ]
+            }
+        },
+        "endorsements": [
+            {
+                "signature_header": {
+                    "Certificate": null,
+                    "nonce": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUNLVENDQWRDZ0F3SUJBZ0lRRUY1ajIwWHBWdkhWWnBjd09UMUpyekFLQmdncWhrak9QUVFEQWpCN01Rc3cKQ1FZRFZRUUdFd0pWVXpFVE1CRUdBMVVFQ0JNS1EyRnNhV1p2Y201cFlURVdNQlFHQTFVRUJ4TU5VMkZ1SUVaeQpZVzVqYVhOamJ6RWRNQnNHQTFVRUNoTVVUM0puTVM1bVlXSnlhV011WW1GaGN5NTRlWG94SURBZUJnTlZCQU1UCkYyTmhMazl5WnpFdVptRmljbWxqTG1KaFlYTXVlSGw2TUI0WERUSXdNRFV3TmpBeE1Ea3hNVm9YRFRNd01EVXcKTkRBeE1Ea3hNVm93WkRFTE1Ba0dBMVVFQmhNQ1ZWTXhFekFSQmdOVkJBZ1RDa05oYkdsbWIzSnVhV0V4RmpBVQpCZ05WQkFjVERWTmhiaUJHY21GdVkybHpZMjh4S0RBbUJnTlZCQU1USDNCbFpYSXdMVzl5WnpFdVQzSm5NUzVtCllXSnlhV011WW1GaGN5NTRlWG93V1RBVEJnY3Foa2pPUFFJQkJnZ3Foa2pPUFFNQkJ3TkNBQVF1eFZCTC8zNVAKdytNbHRrVCtnZkM3NEZKb1dWNisweVBWM0dDbzVteXRHbHhqd2U4aE9ZR2RlRFZETHRNTE8vRUwwZmZBMnF4QgpORnFCWlRhOWhLU2RvMDB3U3pBT0JnTlZIUThCQWY4RUJBTUNCNEF3REFZRFZSMFRBUUgvQkFJd0FEQXJCZ05WCkhTTUVKREFpZ0NBeUhFZ0tyU1ZHRGFDaVZDTGpldWRweDUxQzZaVVFzOGI5VjBySEJHN2lQakFLQmdncWhrak8KUFFRREFnTkhBREJFQWlCYW5TQktEdTB6K3FNR3AyNnNHQVVVV2ZJWmZBK1k1OXpBNURiZXFtL04zZ0lnRzZUdwpta2thcnhhTzZkS1hWb2lpaUJiQVc5dTRKNXIwU2VjRk11czcrR2M9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K"
+                },
+                "signature": "MEQCIFxfz2C1YqbQQt7eQwSNGrNcygMb64U8pt+V8xXlKAG/AiAv7YK27caRlSWZfyp+MNGG6OW7OHOpdjGRkACuLciHAg=="
+            },
+            {
+                "signature_header": {
+                    "Certificate": null,
+                    "nonce": "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUNLVENDQWRDZ0F3SUJBZ0lRZHJ4QmdmeTFZLzlFdzlyUXFtYjJSakFLQmdncWhrak9QUVFEQWpCN01Rc3cKQ1FZRFZRUUdFd0pWVXpFVE1CRUdBMVVFQ0JNS1EyRnNhV1p2Y201cFlURVdNQlFHQTFVRUJ4TU5VMkZ1SUVaeQpZVzVqYVhOamJ6RWRNQnNHQTFVRUNoTVVUM0puTVM1bVlXSnlhV011WW1GaGN5NTRlWG94SURBZUJnTlZCQU1UCkYyTmhMazl5WnpFdVptRmljbWxqTG1KaFlYTXVlSGw2TUI0WERUSXdNRFV3TmpBeE1Ea3hNVm9YRFRNd01EVXcKTkRBeE1Ea3hNVm93WkRFTE1Ba0dBMVVFQmhNQ1ZWTXhFekFSQmdOVkJBZ1RDa05oYkdsbWIzSnVhV0V4RmpBVQpCZ05WQkFjVERWTmhiaUJHY21GdVkybHpZMjh4S0RBbUJnTlZCQU1USDNCbFpYSXhMVzl5WnpFdVQzSm5NUzVtCllXSnlhV011WW1GaGN5NTRlWG93V1RBVEJnY3Foa2pPUFFJQkJnZ3Foa2pPUFFNQkJ3TkNBQVNNUjNKbmFPckcKSm1CYXpUeE5rbHdHcWhSdTZKUGtya2ExKzJlazV6WmdZY1FvVlI5YXhnM3R0cFdjU2RqZFVGOEtUc3FVL2ZnWgpSL3pTY1JWSVNMNUhvMDB3U3pBT0JnTlZIUThCQWY4RUJBTUNCNEF3REFZRFZSMFRBUUgvQkFJd0FEQXJCZ05WCkhTTUVKREFpZ0NBeUhFZ0tyU1ZHRGFDaVZDTGpldWRweDUxQzZaVVFzOGI5VjBySEJHN2lQakFLQmdncWhrak8KUFFRREFnTkhBREJFQWlCc2FiZzNBK01sVWdNdTRnRndyUDlZTFVINnc5YnE4ME5RODRHVkFudFhwQUlnQWdxRQpMQ0MyRWRYaWRadTBNZzMrbFRydDk5U3NEZWM3UnRQazQxNStXMGs9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K"
+                },
+                "signature": "MEUCIQCyfJcZMNzRTpGCRNGd4ILGFo+wxB/cWRlkLud+QWZ4AwIgL1UoDJjEK7R+r6b/4iHYJGX2cfOyQ6GFn49vuN3zmJ8="
+            }
+        ],
+        "proposal_hash": "LjF6cJEmGwzN2r2z79lnA8VBoM8HuRxaJUKsHBdUCks=",
+        "events": {},
+        "response": {
+            "status": 200
+        },
+        "ns_read_write_Set": [
+            {
+                "Namespace": "cctest",
+                "KVRWSet": {
+                    "reads": [
+                        {
+                            "key": "a",
+                            "version": {
+                                "block_num": 3
+                            }
+                        },
+                        {
+                            "key": "b",
+                            "version": {
+                                "block_num": 3
+                            }
+                        }
+                    ],
+                    "writes": [
+                        {
+                            "key": "a",
+                            "value": "MTcw"
+                        },
+                        {
+                            "key": "b",
+                            "value": "MjMw"
+                        }
+                    ]
+                }
+            },
+            {
+                "Namespace": "lscc",
+                "KVRWSet": {
+                    "reads": [
+                        {
+                            "key": "cctest",
+                            "version": {
+                                "block_num": 1
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "validation_code": 0,
+        "validation_code_name": "VALID"
+    }
+}
+```        
+
+## query block info                                           
+URL：http://ip:port/api/v1/queryblockinfo                                     
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/queryblockinfo                                                 
+request parameter:            
+```json    
+{
+	"BlockChainId": "1m4MJ3U0avy8VLWkQeXCtgN8M3384TAd",
+	"OrgName": "Org1",
+	"ChannelId": "mychannel",
+	"BlockId": 2 
+}
+``` 
+API RETURN:                  
+```json     
+{
+    "code": 0,
+    "message": "success",    
+    "data": "null"
+}
+```          
+
+## query block hight                                               
+URL：http://ip:port/api/v1/queryblock                                          
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/queryblock                                                       
+request parameter:            
+```json    
+{
+	"BlockChainId": "1m4MJ3U0avy8VLWkQeXCtgN8M3384TAd",
+	"OrgName": "Org1",
+	"ChannelId": "mychannel"
+}
+``` 
+API RETURN:                  
+```json     
+{
+    "code": 0,
+    "message": "success",    
+     "data": {
+        "Height": 5,
+        "CurrentBlockHash": "9e96727d60e134b9e2b3f9147451a7bef8df6087aa947d43b28205fbcf4104d7",
+        "PreviousBlockHash": "d329e68c1a07eafa5bec591a8a6f2d900cccb62ee7b3dc8496636cd5e1996e77"
+    }
+}
+```          
+

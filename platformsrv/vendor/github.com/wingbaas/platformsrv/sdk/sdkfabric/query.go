@@ -3,15 +3,14 @@ package sdkfabric
 
 import (
 	"fmt"
-	//"encoding/json"
 	"github.com/wingbaas/platformsrv/logger"
 	"github.com/hyperledger/fabric-sdk-go/pkg/client/channel"
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/errors/retry"
 	"github.com/hyperledger/fabric-sdk-go/pkg/fabsdk"
 	"github.com/hyperledger/fabric-sdk-go/pkg/client/ledger"
 	"github.com/hyperledger/fabric-sdk-go/pkg/client/resmgmt"
-	// "github.com/hyperledger/fabric-sdk-go/pkg/common/providers/fab"
-	// pb "github.com/hyperledger/fabric-sdk-go/third_party/github.com/hyperledger/fabric/protos/peer"
+	"github.com/hyperledger/fabric-sdk-go/pkg/common/providers/fab"
+	pb "github.com/hyperledger/fabric/protos/peer"
 )
 
 type ChainInfo struct {
@@ -33,34 +32,44 @@ func (setup *FabricSetup) QueryCC(ccId string, fcn string, paras []string, peer 
 	return response.Payload,nil  
 }
 
-// // query block by block number
-// func (setup *FabricSetup)QueryBlockByNumber(blockID uint64, peer string) ([]byte,error) {
-// 	block, err := setup.chClient.QueryBlock(blockID, ledger.WithTargetEndpoints(peer))
-// 	if err != nil {
-// 		logger.Errorf("QueryBlockByNumber failed, err=%s", err)
-// 		return nil,fmt.Errorf("QueryBlockByNumber failed, err=%s", err)
-// 	}
-// 	if block.Data == nil {
-// 		logger.Errorf("QueryBlockByNumber block data is null")
-// 		return nil,fmt.Errorf("QueryBlockByNumber block data is null")
-// 	}
-// 	return processBlock(block),nil
-// }
+// query block by block number
+func (setup *FabricSetup) QueryBlockById(userName string,blockId uint64, peer string) (interface{},error) {
+	channelContext := setup.Sdk.ChannelContext(setup.ChannelId,fabsdk.WithUser(userName),fabsdk.WithOrg(setup.OrgName))
+	client,err := ledger.New(channelContext)
+	if err != nil {
+		logger.Errorf("QueryBlockByNumber: Failed to create new ledger client: %s", err)
+		return nil,fmt.Errorf("QueryBlockByNumber: Failed to create new ledger client")
+	}
+	block, err := client.QueryBlock(blockId,ledger.WithTargetEndpoints(peer))
+	if err != nil {
+		logger.Errorf("QueryBlockByNumber failed, err=%s", err)
+		return nil,fmt.Errorf("QueryBlockByNumber failed, err=%s", err)
+	}
+	if block.Data == nil {
+		logger.Errorf("QueryBlockByNumber block data is null")
+		return nil,fmt.Errorf("QueryBlockByNumber block data is null")
+	}
+	return processBlock(block),nil 
+}
 
-// //get transaction by transaction ID
-// func QueryTransactionByID(txid string, peer string) ([]byte,error) {
-// 	processedTransaction, err := setup.chClient.QueryTransaction(fab.TransactionID(txid), ledger.WithTargetEndpoints(peer))
-// 	if err != nil {
-// 		logger.Errorf("QueryTransactionByID failed, err=%s", err)
-// 		return nil,fmt.Errorf("QueryTransactionByID failed, err=%s", err)
-// 	}
-// 	transaction := processTransaction(processedTransaction.GetTransactionEnvelope())
-// 	transaction.ValidationCode = uint8(processedTransaction.GetValidationCode())
-// 	transaction.ValidationCodeName = pb.TxValidationCode_name[int32(transaction.ValidationCode)]
-// 	transactionJSON, _ := json.Marshal(transaction)
-// 	transactionJSONString, _ := Prettyprint(transactionJSON)
-// 	return transactionJSONString,nil
-// }
+//get transaction by transaction ID
+func (setup *FabricSetup) QueryTransactionByID(userName string,txId string, peer string) (interface{},error) {
+	channelContext := setup.Sdk.ChannelContext(setup.ChannelId,fabsdk.WithUser(userName),fabsdk.WithOrg(setup.OrgName))
+	client,err := ledger.New(channelContext)
+	if err != nil {
+		logger.Errorf("QueryTransactionByID: Failed to create new ledger client: %s", err)
+		return nil,fmt.Errorf("QueryTransactionByID: Failed to create new ledger client")
+	}
+	processedTransaction, err := client.QueryTransaction(fab.TransactionID(txId), ledger.WithTargetEndpoints(peer))
+	if err != nil {
+		logger.Errorf("QueryTransactionByID failed, err=%s", err)
+		return nil,fmt.Errorf("QueryTransactionByID failed, err=%s", err)
+	}
+	transaction := processTransaction2(processedTransaction.GetTransactionEnvelope())
+	transaction.ValidationCode = uint8(processedTransaction.GetValidationCode()) 
+	transaction.ValidationCodeName = pb.TxValidationCode_name[int32(transaction.ValidationCode)]
+	return transaction,nil 
+}
 
 //Query blockchain info
 func (setup *FabricSetup) QueryChainInfo(usrName string,peer string) (interface{},error) { 
@@ -108,6 +117,6 @@ func (setup *FabricSetup) QueryChannels(peer string) (interface{},error) {
 	if err != nil {
 		logger.Errorf("QueryChannels: Failed %s", err)
 		return nil,fmt.Errorf("QueryChannels failed")
-	}
+	} 
 	return channelQueryRes,nil
 }
