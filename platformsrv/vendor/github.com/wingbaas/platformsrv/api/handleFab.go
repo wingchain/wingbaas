@@ -380,7 +380,7 @@ func queryBlock(c echo.Context) error {
 	type ReqPara struct {
 		BlockChainId string `json:"BlockChainId"`
 		OrgName string `json:"OrgName"`
-		ChannelId string `json:"ChannelId"`
+		ChannelId string `json:"ChannelId"` 
 	}
 	var d ReqPara
     err = json.Unmarshal(result, &d)

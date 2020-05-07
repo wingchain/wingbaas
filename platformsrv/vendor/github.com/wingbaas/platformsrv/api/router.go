@@ -26,11 +26,11 @@ func Start(port string) {
 	r.POST("/api/v1/callcc",chaincodeCall)
 	r.POST("/api/v1/querycc",chaincodeQuery)
 	r.POST("/api/v1/queryinstatialcc",queryInstatialCC)
-	r.POST("/api/v1/queryinstalledcc",queryInstalledCC) 
+	//r.POST("/api/v1/queryinstalledcc",queryInstalledCC) 
 	r.POST("/api/v1/querychannel",queryChannel)
 	r.POST("/api/v1/querytxinfo",queryTxInfo)
 	r.POST("/api/v1/queryblockinfo",queryBlockInfo)
-	r.POST("/api/v1/queryblock",queryBlock)
+	r.POST("/api/v1/queryblock",queryBlock) 
 
 
 	// Start server
