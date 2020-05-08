@@ -9,11 +9,11 @@ package fsblkstorage
 import (
 	"os"
 
-	"github.com/hyperledger/fabric/common/ledger/blkstorage"
-	"github.com/hyperledger/fabric/common/ledger/dataformat"
-	"github.com/hyperledger/fabric/common/ledger/util"
-	"github.com/hyperledger/fabric/common/ledger/util/leveldbhelper"
-	"github.com/hyperledger/fabric/common/metrics"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/ledger/blkstorage"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/ledger/dataformat"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/ledger/util"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/ledger/util/leveldbhelper"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/metrics"
 	"github.com/pkg/errors"
 )
 

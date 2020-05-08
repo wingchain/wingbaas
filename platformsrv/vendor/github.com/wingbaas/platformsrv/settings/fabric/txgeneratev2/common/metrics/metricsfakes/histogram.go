@@ -4,7 +4,7 @@ package metricsfakes
 import (
 	"sync"
 
-	"github.com/hyperledger/fabric/common/metrics"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/metrics"
 )
 
 type Histogram struct {

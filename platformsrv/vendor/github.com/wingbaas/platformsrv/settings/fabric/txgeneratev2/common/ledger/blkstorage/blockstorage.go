@@ -9,8 +9,8 @@ package blkstorage
 import (
 	"github.com/hyperledger/fabric-protos-go/common"
 	"github.com/hyperledger/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/common/ledger"
-	l "github.com/hyperledger/fabric/core/ledger"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/ledger"
+	l "github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/core/ledger"
 	"github.com/pkg/errors"
 )
 

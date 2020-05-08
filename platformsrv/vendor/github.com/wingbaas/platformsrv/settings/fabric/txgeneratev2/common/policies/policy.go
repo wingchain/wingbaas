@@ -13,9 +13,9 @@ import (
 	"github.com/golang/protobuf/proto"
 	cb "github.com/hyperledger/fabric-protos-go/common"
 	"github.com/hyperledger/fabric-protos-go/msp"
-	"github.com/hyperledger/fabric/common/flogging"
-	mspi "github.com/hyperledger/fabric/msp"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/flogging"
+	mspi "github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/msp"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/protoutil"
 	"github.com/pkg/errors"
 	"go.uber.org/zap/zapcore"
 )

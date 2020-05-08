@@ -12,10 +12,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
 	cb "github.com/hyperledger/fabric-protos-go/common"
 	ab "github.com/hyperledger/fabric-protos-go/orderer"
-	"github.com/hyperledger/fabric/common/capabilities"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/capabilities"
 	"github.com/pkg/errors"
 )
 

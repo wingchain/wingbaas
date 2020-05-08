@@ -13,8 +13,8 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes/timestamp"
-	"github.com/hyperledger/fabric/bccsp"
-	"github.com/hyperledger/fabric/bccsp/factory"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/bccsp"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/bccsp/factory"
 )
 
 // ComputeSHA256 returns SHA2-256 on data

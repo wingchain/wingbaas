@@ -17,11 +17,11 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric-protos-go/common"
 	"github.com/hyperledger/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/common/ledger/blkstorage"
-	"github.com/hyperledger/fabric/common/ledger/util"
-	"github.com/hyperledger/fabric/common/ledger/util/leveldbhelper"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/flogging"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/ledger/blkstorage"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/ledger/util"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/ledger/util/leveldbhelper"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/protoutil"
 	"github.com/pkg/errors"
 )
 

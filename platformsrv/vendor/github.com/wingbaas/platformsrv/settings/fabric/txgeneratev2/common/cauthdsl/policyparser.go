@@ -12,11 +12,10 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-
 	"github.com/Knetic/govaluate"
 	"github.com/hyperledger/fabric-protos-go/common"
 	"github.com/hyperledger/fabric-protos-go/msp"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/protoutil"
 )
 
 // Gate values

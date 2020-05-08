@@ -11,8 +11,8 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/common/ledger/util"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/flogging"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/ledger/util"
 	"github.com/pkg/errors"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/iterator"

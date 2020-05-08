@@ -8,13 +8,13 @@ package channelconfig
 
 import (
 	cb "github.com/hyperledger/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/bccsp"
-	"github.com/hyperledger/fabric/common/cauthdsl"
-	"github.com/hyperledger/fabric/common/configtx"
-	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/common/policies"
-	"github.com/hyperledger/fabric/msp"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/bccsp"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/cauthdsl"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/configtx"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/flogging"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/policies"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/msp"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/protoutil"
 	"github.com/pkg/errors"
 )
 

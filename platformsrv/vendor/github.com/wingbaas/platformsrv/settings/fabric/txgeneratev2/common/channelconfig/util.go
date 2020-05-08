@@ -10,15 +10,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math"
-
 	"github.com/golang/protobuf/proto"
 	cb "github.com/hyperledger/fabric-protos-go/common"
 	mspprotos "github.com/hyperledger/fabric-protos-go/msp"
 	ab "github.com/hyperledger/fabric-protos-go/orderer"
 	"github.com/hyperledger/fabric-protos-go/orderer/etcdraft"
 	pb "github.com/hyperledger/fabric-protos-go/peer"
-	"github.com/hyperledger/fabric/bccsp"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/bccsp"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/protoutil"
 	"github.com/pkg/errors"
 )
 

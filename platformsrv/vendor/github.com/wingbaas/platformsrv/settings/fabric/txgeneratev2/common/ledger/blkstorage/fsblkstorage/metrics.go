@@ -9,7 +9,7 @@ package fsblkstorage
 import (
 	"time"
 
-	"github.com/hyperledger/fabric/common/metrics"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/metrics"
 )
 
 type stats struct {

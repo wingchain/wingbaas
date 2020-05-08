@@ -26,6 +26,17 @@ func LoadFile(fileName string) ([]byte, error) {
 	return bytes, nil
 }
 
+func ReadFileBytes(fileName string) []byte {
+	fileLocker.Lock()
+	bytes, err := ioutil.ReadFile(fileName) //read file
+	fileLocker.Unlock()
+	if err != nil {
+		logger.Errorf("ReadFileBytes: read file error,%v", err)
+		return nil
+	}
+	return bytes
+}
+
 func PathExists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {

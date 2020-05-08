@@ -5,8 +5,8 @@ import (
 	"sync"
 
 	"github.com/hyperledger/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/common/deliver"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/deliver"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/protoutil"
 )
 
 type FilteredResponseSender struct {

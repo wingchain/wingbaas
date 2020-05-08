@@ -9,13 +9,12 @@ package genesisconfig
 import (
 	"path/filepath"
 	"time"
-
 	"github.com/hyperledger/fabric-protos-go/orderer/etcdraft"
-	"github.com/hyperledger/fabric/common/flogging"
-	"github.com/hyperledger/fabric/common/policies"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/flogging"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/policies"
 	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/viperutil"
-	cf "github.com/hyperledger/fabric/core/config"
-	"github.com/hyperledger/fabric/msp"
+	cf "github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/core/config"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/msp"
 	"github.com/spf13/viper"
 )
 
@@ -86,7 +85,7 @@ type Profile struct {
 	Consortiums  map[string]*Consortium `yaml:"Consortiums"`
 	Capabilities map[string]bool        `yaml:"Capabilities"`
 	Policies     map[string]*Policy     `yaml:"Policies"`
-}
+} 
 
 // Policy encodes a channel config policy
 type Policy struct {

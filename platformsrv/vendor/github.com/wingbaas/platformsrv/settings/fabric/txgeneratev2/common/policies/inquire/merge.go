@@ -9,7 +9,7 @@ package inquire
 import (
 	"reflect"
 
-	"github.com/hyperledger/fabric/common/policies"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/policies"
 )
 
 // ComparablePrincipalSets aggregate ComparablePrincipalSets

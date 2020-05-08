@@ -19,10 +19,10 @@ package fileledger
 import (
 	"sync"
 
-	"github.com/hyperledger/fabric/common/ledger/blkstorage"
-	"github.com/hyperledger/fabric/common/ledger/blkstorage/fsblkstorage"
-	"github.com/hyperledger/fabric/common/ledger/blockledger"
-	"github.com/hyperledger/fabric/common/metrics"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/ledger/blkstorage"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/ledger/blkstorage/fsblkstorage"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/ledger/blockledger"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/metrics"
 )
 
 type fileLedgerFactory struct {

@@ -4,7 +4,7 @@ package mocks
 
 import (
 	common "github.com/hyperledger/fabric-protos-go/common"
-	blockledger "github.com/hyperledger/fabric/common/ledger/blockledger"
+	blockledger "github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/ledger/blockledger"
 
 	mock "github.com/stretchr/testify/mock"
 

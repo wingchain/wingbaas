@@ -5,7 +5,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/hyperledger/fabric/common/grpclogging/testpb"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/grpclogging/testpb"
 )
 
 type EchoServiceServer struct {

@@ -12,8 +12,8 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric-protos-go/common"
 	"github.com/hyperledger/fabric-protos-go/msp"
-	"github.com/hyperledger/fabric/common/tools/protolator/protoext/ordererext"
-	"github.com/hyperledger/fabric/common/tools/protolator/protoext/peerext"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/tools/protolator/protoext/ordererext"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/tools/protolator/protoext/peerext"
 
 	"github.com/pkg/errors"
 )

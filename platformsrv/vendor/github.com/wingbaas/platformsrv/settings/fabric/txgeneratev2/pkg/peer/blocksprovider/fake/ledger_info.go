@@ -4,7 +4,7 @@ package fake
 import (
 	"sync"
 
-	"github.com/hyperledger/fabric/internal/pkg/peer/blocksprovider"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/internal/pkg/peer/blocksprovider"
 )
 
 type LedgerInfo struct {

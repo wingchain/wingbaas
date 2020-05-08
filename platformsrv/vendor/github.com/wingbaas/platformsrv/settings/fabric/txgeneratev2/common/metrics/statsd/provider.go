@@ -8,8 +8,8 @@ package statsd
 
 import (
 	"github.com/go-kit/kit/metrics/statsd"
-	"github.com/hyperledger/fabric/common/metrics"
-	"github.com/hyperledger/fabric/common/metrics/internal/namer"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/metrics"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/metrics/internal/namer"
 )
 
 const defaultFormat = "%{#fqname}"

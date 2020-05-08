@@ -8,7 +8,6 @@ package chaincode
 
 import (
 	"sync"
-
 	"github.com/hyperledger/fabric-protos-go/gossip"
 	"github.com/hyperledger/fabric-protos-go/peer"
 )

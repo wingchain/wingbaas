@@ -4,7 +4,7 @@ package mock
 import (
 	"sync"
 
-	"github.com/hyperledger/fabric/common/deliver"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/deliver"
 )
 
 type ChainManager struct {

@@ -5,8 +5,8 @@ import (
 	"sync"
 
 	commona "github.com/hyperledger/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/gossip/common"
-	"github.com/hyperledger/fabric/internal/pkg/peer/blocksprovider"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/gossip/common"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/internal/pkg/peer/blocksprovider"
 )
 
 type BlockVerifier struct {

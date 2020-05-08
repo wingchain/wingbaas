@@ -9,7 +9,6 @@ package update
 import (
 	"bytes"
 	"fmt"
-
 	"github.com/golang/protobuf/proto"
 	cb "github.com/hyperledger/fabric-protos-go/common"
 	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/protoutil"

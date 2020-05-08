@@ -8,7 +8,7 @@ package policies
 
 import (
 	cb "github.com/hyperledger/fabric-protos-go/common"
-	"github.com/hyperledger/fabric/protoutil"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/protoutil"
 )
 
 // ImplicitMetaPolicyWithSubPolicy creates an implicitmeta policy

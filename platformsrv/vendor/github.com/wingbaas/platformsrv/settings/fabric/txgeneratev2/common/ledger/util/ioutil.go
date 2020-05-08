@@ -13,7 +13,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/hyperledger/fabric/common/flogging"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/flogging"
 	"github.com/pkg/errors"
 )
 
