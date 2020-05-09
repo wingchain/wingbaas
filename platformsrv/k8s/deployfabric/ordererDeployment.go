@@ -179,19 +179,19 @@ func CreateOrderKafkaDeployment(clusterId string,node string,namespaceId string,
 					RestartPolicy: "Always", 
 					//Hostname: orderName,
 					Volumes: []interface{}{
-						// VolumeSpecTemplateSt{
-						// 	Name: "order-cert",
-						// 	Nfs: NfsVolumeSpecTemplateSt{
-						// 		Server: utils.BAAS_CFG.NfsInternalAddr,
-						// 		Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId, 
-						// 	},
-						// },
-						VolumeSpecTemplateHostSt{
+						VolumeSpecTemplateSt{
 							Name: "order-cert",
-							HostPath: HostPathVolumeSpecTemplateSt{
-								Path: "/home/nfs/" + chainId, 
-							}, 
+							Nfs: NfsVolumeSpecTemplateSt{
+								Server: utils.BAAS_CFG.NfsInternalAddr,
+								Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId, 
+							},
 						},
+						// VolumeSpecTemplateHostSt{
+						// 	Name: "order-cert",
+						// 	HostPath: HostPathVolumeSpecTemplateSt{
+						// 		Path: "/home/nfs/" + chainId, 
+						// 	}, 
+						// },
 						// VolumeSpecTemplateHostSt{
 						// 	Name: "host-vol-var-run",
 						// 	HostPath: HostPathVolumeSpecTemplateSt{
@@ -214,16 +214,19 @@ func CreateOrderKafkaDeployment(clusterId string,node string,namespaceId string,
 	return bytes,err
 }
 
-func CreateOrderSoloDeployment(clusterId string,namespaceId string,chainId string,image string,orderName string,orderDomain string)([]byte,error) {
-	orderSoloDeployMent :=  OrderDeployMent {
+func CreateOrderRaftDeployment(clusterId string,node string,namespaceId string,chainId string,image string,orderName string,orderDomain string)([]byte,error) {
+	orderRaftDeployMent :=  OrderDeployMent {
 		APIVersion: "apps/v1",
 		Kind: "Deployment",
 		Metadata: MetadataDeployMent{
 			Name: orderName,
+			Labels: LabelsSt{
+				App: orderName, 
+			},
 		},
 		Spec: SpecSt{
 			Selector: SelectorSt{
-				MatchLabels: LabelsSt{
+				MatchLabels: LabelsSt{ 
 					App: orderName,
 				},
 			},
@@ -238,9 +241,7 @@ func CreateOrderSoloDeployment(clusterId string,namespaceId string,chainId strin
 					},
 				},
 				Spec: SpecTemplateSt{
-					// NodeSelector: NodeSelectorSpecTemplateSt{
-					// 	KubernetesIoHostname: "deploy host",
-					// },
+					NodeName: node,
 					Containers: []ContainerSpecTemplateSt{ 
 						{
 							Name: orderName,
@@ -254,6 +255,10 @@ func CreateOrderSoloDeployment(clusterId string,namespaceId string,chainId strin
 							},
 							Args: []string{"sh","-c","cp -a /var/data/. " + "/cert; exec orderer"},
 							Env: []EnvContainerSpecTemplateSt{
+								// {
+								// 	Name: "ORDERER_GENERAL_BATCHTIMEOUT",
+								// 	Value: "2s",
+								// },
 								{
 									Name: "ORDERER_GENERAL_GENESISFILE",
 									Value: "/cert/channel-artifacts/genesis.block",
@@ -262,14 +267,18 @@ func CreateOrderSoloDeployment(clusterId string,namespaceId string,chainId strin
 									Name: "ORDERER_GENERAL_GENESISMETHOD",
 									Value: "file",
 								},
+								// {
+								// 	Name: "ORDERER_GENERAL_LEDGERTYPE",
+								// 	Value: "file",
+								// },
 								{
 									Name: "ORDERER_GENERAL_LISTENADDRESS",
 									Value: "0.0.0.0",
 								},
-								{
-									Name: "ORDERER_GENERAL_LISTENPORT",
-									Value: "7050",
-								}, 
+								// {
+								// 	Name: "ORDERER_GENERAL_LISTENPORT",
+								// 	Value: "7050",
+								// }, 
 								{
 									Name: "ORDERER_GENERAL_LOCALMSPDIR", 
 									Value: "/cert/crypto-config/ordererOrganizations/" + orderDomain + "/orderers/" + orderName + "." + orderDomain + "/msp",
@@ -282,9 +291,21 @@ func CreateOrderSoloDeployment(clusterId string,namespaceId string,chainId strin
 									Name: "ORDERER_GENERAL_LOGLEVEL",
 									Value: "DEBUG", 
 								},
+								// {
+								// 	Name: "ORDERER_GENERAL_MAXMESSAGECOUNT",
+								// 	Value: "10",
+								// },
+								// {
+								// 	Name: "ORDERER_GENERAL_MAXWINDOWSIZE",
+								// 	Value: "1000",
+								// },
+								// {
+								// 	Name: "ORDERER_FILELEDGER_LOCATION",
+								// 	Value: "/var/fabric/production/orderer",
+								// },
 								{
-									Name: "ORDERER_FILELEDGER_LOCATION",
-									Value: "/var/fabric/production/orderer",
+									Name: "ORDERER_GENERAL_TLS_ENABLED",
+									Value: "true",
 								},
 								{
 									Name: "ORDERER_GENERAL_TLS_CERTIFICATE",
@@ -296,8 +317,20 @@ func CreateOrderSoloDeployment(clusterId string,namespaceId string,chainId strin
 								}, 
 								{
 									Name: "ORDERER_GENERAL_TLS_ROOTCAS",
-									Value: "[/cert/crypto-config/ordererOrganizations/" + orderDomain + "/orderers/" + orderName + "."  + orderDomain + "tls/ca.crt]",
+									Value: "[/cert/crypto-config/ordererOrganizations/" + orderDomain + "/orderers/" + orderName + "."  + orderDomain + "/tls/ca.crt]",
 								},
+								{
+									Name: "ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE",
+									Value: "/cert/crypto-config/ordererOrganizations/" + orderDomain + "/orderers/" + orderName + "."  + orderDomain + "/tls/server.crt",
+								},
+								{
+									Name: "ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY",
+									Value: "/cert/crypto-config/ordererOrganizations/" + orderDomain + "/orderers/" + orderName + "."  + orderDomain + "/tls/server.key",
+								},
+								{
+									Name: "ORDERER_GENERAL_CLUSTER_ROOTCAS",
+									Value: "[/cert/crypto-config/ordererOrganizations/" + orderDomain + "/orderers/" + orderName + "."  + orderDomain + "/tls/ca.crt]",
+								},  
 							},
 							Ports: []PortContainerSpecTemplateSt{
 								{
@@ -308,27 +341,44 @@ func CreateOrderSoloDeployment(clusterId string,namespaceId string,chainId strin
 							VolumeMounts: []VolumeContainerSpecTemplateSt{ 
 								{
 									MountPath: "/var/data",
-									Name: "order-cert-store",
+									Name: "order-cert",
 									//SubPath: clusterId + "/" + chainId + "/DataStore/" + orderName + "/data",
 								}, 
+								// {
+								// 	MountPath: "/host/var/run/",
+								// 	Name: "host-vol-var-run",
+								// }, 
 							},    
 						},
 					},
-					RestartPolicy: "Always",
+					RestartPolicy: "Always", 
+					//Hostname: orderName,
 					Volumes: []interface{}{
 						VolumeSpecTemplateSt{
-							Name: "order-cert-store",
+							Name: "order-cert",
 							Nfs: NfsVolumeSpecTemplateSt{
 								Server: utils.BAAS_CFG.NfsInternalAddr,
-								Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId,
+								Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId, 
 							},
 						},
+						// VolumeSpecTemplateHostSt{
+						// 	Name: "order-cert",
+						// 	HostPath: HostPathVolumeSpecTemplateSt{
+						// 		Path: "/home/nfs/" + chainId, 
+						// 	}, 
+						// },
+						// VolumeSpecTemplateHostSt{
+						// 	Name: "host-vol-var-run",
+						// 	HostPath: HostPathVolumeSpecTemplateSt{
+						// 		Path: "/var/run/",  
+						// 	}, 
+						// },
 					},
 				},
 			},
 		},
 	}
-	bytes, err := CreateDeployment(clusterId,namespaceId,orderSoloDeployMent)
+	bytes, err := CreateDeployment(clusterId,namespaceId,orderRaftDeployMent)
 	if err != nil {
 		certPath := utils.BAAS_CFG.BlockNetCfgBasePath + chainId
 		nfsPath :=  utils.BAAS_CFG.NfsLocalRootDir + chainId

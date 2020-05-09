@@ -18,7 +18,8 @@ import (
 )
 
 const (
-	DefaultChannel	string	=	"mychannel" 
+	//DefaultChannel	string	=	"mychannel" 
+	DefaultChannel	string	=	"baaschannel"
 )
 
 // FabricSetup implementation

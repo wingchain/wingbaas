@@ -182,10 +182,10 @@ func dirExists(path string) (bool, error) {
 func CreateGenesisBlock(cfgTxPath string,channelName string,outputPath string)bool {
 	factory.InitFactories(nil)
 	var profileConfig *genesisconfig.Profile
-	profileConfig = genesisconfig.Load("TwoOrgsOrdererGenesis",cfgTxPath)
+	profileConfig = genesisconfig.Load("TwoOrgsOrdererGenesis",cfgTxPath) 
 	err := doOutputBlock(profileConfig,"testchainid", outputPath + "/genesis.block")
 	if err != nil {
-		logger.Errorf("CreateGenesisBlock failed")
+		logger.Errorf("CreateGenesisBlock failed,err=%s",err.Error())
 		return false
 	}
 	return true 

@@ -10,7 +10,7 @@ import (
 	"io/ioutil"
 
 	"github.com/hyperledger/fabric/protoutil"
-	"github.com/spf13/cobra"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/cobra"
 )
 
 func signconfigtxCmd(cf *ChannelCmdFactory) *cobra.Command {

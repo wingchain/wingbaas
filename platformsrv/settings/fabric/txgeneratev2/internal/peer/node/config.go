@@ -12,7 +12,7 @@ import (
 	coreconfig "github.com/hyperledger/fabric/core/config"
 	"github.com/hyperledger/fabric/core/ledger"
 	"github.com/hyperledger/fabric/core/ledger/util/couchdb"
-	"github.com/spf13/viper"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/viper"
 )
 
 func ledgerConfig() *ledger.Config {

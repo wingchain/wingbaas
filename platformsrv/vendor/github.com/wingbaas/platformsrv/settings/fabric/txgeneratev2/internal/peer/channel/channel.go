@@ -16,8 +16,8 @@ import (
 	"github.com/hyperledger/fabric/internal/peer/common"
 	"github.com/hyperledger/fabric/msp"
 	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/cobra"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/pflag"
 )
 
 var logger = flogging.MustGetLogger("channelCmd")

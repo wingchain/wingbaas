@@ -8,8 +8,8 @@ package common
 import (
 	"time"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/cobra"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/viper"
 )
 
 var (

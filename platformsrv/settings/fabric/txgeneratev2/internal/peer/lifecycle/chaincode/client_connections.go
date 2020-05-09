@@ -14,7 +14,7 @@ import (
 	"github.com/hyperledger/fabric/internal/peer/common"
 	"github.com/hyperledger/fabric/internal/pkg/identity"
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/viper"
 )
 
 // ClientConnections holds the clients for connecting to the various

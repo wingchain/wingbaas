@@ -29,8 +29,8 @@ import (
 	"github.com/hyperledger/fabric/protoutil"
 	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/cobra"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/viper"
 )
 
 // UndefinedParamValue defines what undefined parameters in the command line will initialise to

@@ -16,7 +16,7 @@ import (
 	docker "github.com/fsouza/go-dockerclient"
 	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/flogging"
 	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/metadata"
-	"github.com/spf13/viper"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/viper"
 )
 
 var logger = flogging.MustGetLogger("chaincode.platform.util")

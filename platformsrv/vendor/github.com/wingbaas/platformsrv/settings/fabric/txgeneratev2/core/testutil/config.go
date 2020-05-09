@@ -16,7 +16,7 @@ import (
 	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/flogging"
 	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/core/config/configtest"
 	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/msp"
-	"github.com/spf13/viper"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/viper"
 )
 
 var configLogger = flogging.MustGetLogger("config")

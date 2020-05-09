@@ -11,7 +11,7 @@ import (
 	"runtime"
 
 	"github.com/hyperledger/fabric/common/metadata"
-	"github.com/spf13/cobra"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/cobra"
 )
 
 // Program name

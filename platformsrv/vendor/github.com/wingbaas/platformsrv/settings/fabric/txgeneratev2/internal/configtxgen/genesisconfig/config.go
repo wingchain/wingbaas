@@ -16,7 +16,7 @@ import (
 	"github.com/hyperledger/fabric/common/viperutil"
 	cf "github.com/hyperledger/fabric/core/config"
 	"github.com/hyperledger/fabric/msp"
-	"github.com/spf13/viper"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/viper"
 )
 
 const (

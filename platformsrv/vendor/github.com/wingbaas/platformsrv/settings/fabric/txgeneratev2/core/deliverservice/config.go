@@ -16,7 +16,7 @@ import (
 	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/internal/pkg/peer/orderers"
 
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/viper"
 )
 
 const (

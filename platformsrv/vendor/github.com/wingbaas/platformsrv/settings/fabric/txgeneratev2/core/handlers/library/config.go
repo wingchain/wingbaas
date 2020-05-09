@@ -8,7 +8,7 @@ package library
 
 import (
 	"github.com/mitchellh/mapstructure"
-	"github.com/spf13/viper"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/viper"
 )
 
 // Config configures the factory methods

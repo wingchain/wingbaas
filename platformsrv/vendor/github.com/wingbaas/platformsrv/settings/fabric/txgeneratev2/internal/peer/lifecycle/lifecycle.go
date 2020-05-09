@@ -9,7 +9,7 @@ package lifecycle
 import (
 	"github.com/hyperledger/fabric/bccsp"
 	"github.com/hyperledger/fabric/internal/peer/lifecycle/chaincode"
-	"github.com/spf13/cobra"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/cobra"
 )
 
 // Cmd returns the cobra command for lifecycle

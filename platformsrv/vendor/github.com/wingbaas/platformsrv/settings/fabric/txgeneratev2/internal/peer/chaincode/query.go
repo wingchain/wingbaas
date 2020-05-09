@@ -11,7 +11,7 @@ import (
 	"fmt"
 
 	"github.com/hyperledger/fabric/bccsp"
-	"github.com/spf13/cobra"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/cobra"
 )
 
 var chaincodeQueryCmd *cobra.Command

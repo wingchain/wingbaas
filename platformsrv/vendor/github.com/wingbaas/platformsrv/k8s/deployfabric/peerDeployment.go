@@ -246,19 +246,19 @@ func CreatePeerDeployment(clusterId string,node string,namespaceId string,chainI
 					RestartPolicy: "Always",
 					Hostname: p.PeerName,
 					Volumes: []interface{}{
-						// VolumeSpecTemplateSt{
-						// 	Name: "peer-cert",
-						// 	Nfs: NfsVolumeSpecTemplateSt{
-						// 		Server: utils.BAAS_CFG.NfsInternalAddr,
-						// 		Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId,
-						// 	},
-						// },
-						VolumeSpecTemplateHostSt{
+						VolumeSpecTemplateSt{
 							Name: "peer-cert",
-							HostPath: HostPathVolumeSpecTemplateSt{
-								Path: "/home/nfs/" + chainId, 
-							}, 
+							Nfs: NfsVolumeSpecTemplateSt{
+								Server: utils.BAAS_CFG.NfsInternalAddr,
+								Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId,
+							},
 						},
+						// VolumeSpecTemplateHostSt{
+						// 	Name: "peer-cert",
+						// 	HostPath: HostPathVolumeSpecTemplateSt{
+						// 		Path: "/home/nfs/" + chainId, 
+						// 	}, 
+						// },
 						VolumeSpecTemplateHostSt{
 							Name: "host-vol-var-run",
 							HostPath: HostPathVolumeSpecTemplateSt{

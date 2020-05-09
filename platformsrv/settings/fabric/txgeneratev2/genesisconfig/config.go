@@ -15,7 +15,7 @@ import (
 	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/viperutil"
 	cf "github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/core/config"
 	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/msp"
-	"github.com/spf13/viper"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/viper"
 )
 
 const (

@@ -130,7 +130,7 @@ func GenerateGenesisBlockRaft(serviceRootPath string,deployConf public.DeployNet
 			order.Addresses = append(order.Addresses,h.Hostname/* + "." + org.Domain*/ + ":7050")
 		}
 	}
-	order.BatchTimeout = 2
+	order.BatchTimeout = 2000000
 	order.BatchSize = genesisconfigraft.BatchSize{
 		MaxMessageCount: 10,
 		AbsoluteMaxBytes: 99*1024*1024,
@@ -157,7 +157,7 @@ func GenerateGenesisBlockRaft(serviceRootPath string,deployConf public.DeployNet
 			consent.Host = h.Hostname /*+ "." + org.Domain*/ 
 			consent.Port = 7050
 			certPath := serviceRootPath + "/crypto-config/ordererOrganizations/" + org.Domain + "/orderers/" + h.Hostname + "." + org.Domain + "/tls/server.crt"
-			consent.ClientTlsCert = utils.ReadFileBytes(certPath)
+			consent.ClientTlsCert = []byte(certPath)
 			consent.ServerTlsCert = consent.ClientTlsCert
 			raft.Consenters = append(raft.Consenters,&consent)
 		}
@@ -185,8 +185,12 @@ func GenerateGenesisBlockRaft(serviceRootPath string,deployConf public.DeployNet
 	twoOrgsOrdererGenesisProfile.Orderer = &order
 	twoOrgsOrdererGenesisProfile.Consortiums = make(map[string]*genesisconfigraft.Consortium)
 	var consortium genesisconfigraft.Consortium
+	//logger.Debug("consortium organizations=")
 	for _,org := range orgArray {
-		consortium.Organizations = append(consortium.Organizations,&org)
+		var og genesisconfigraft.Organization
+		og = org
+		consortium.Organizations = append(consortium.Organizations,&og)
+		//logger.Debug(og)
 	}
 	twoOrgsOrdererGenesisProfile.Consortiums["SampleConsortium"] = &consortium
 	txCfg.Profiles = make(map[string]*genesisconfigraft.Profile)

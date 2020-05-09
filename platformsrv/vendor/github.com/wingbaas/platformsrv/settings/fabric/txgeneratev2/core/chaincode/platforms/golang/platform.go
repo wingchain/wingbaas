@@ -26,7 +26,7 @@ import (
 	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/core/chaincode/platforms/util"
 	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/internal/ccmetadata"
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/viper"
 )
 
 // Platform for chaincodes written in Go

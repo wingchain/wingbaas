@@ -182,7 +182,11 @@ func DeployComponets(p public.DeployPara,chainName string,chainId string,chainTy
 		domain := org.Domain
 		for _,spec := range org.Specs {
 			orderName := spec.Hostname
-			_,err = deployfabric.CreateOrderKafkaDeployment(p.ClusterId,org.DeployNode,chainName,chainId,orderImage,orderName,domain) 
+			if consensusType == public.KAFKA_FABRIC {
+				_,err = deployfabric.CreateOrderKafkaDeployment(p.ClusterId,org.DeployNode,chainName,chainId,orderImage,orderName,domain) 
+			}else{
+				_,err = deployfabric.CreateOrderRaftDeployment(p.ClusterId,org.DeployNode,chainName,chainId,orderImage,orderName,domain)
+			}
 			if err != nil {
 				logger.Errorf("DeployComponets: CreateOrderKafkaDeployment error=%s orderName=%s",err.Error(),orderName)
 				return "",fmt.Errorf("DeployComponets: CreateOrderKafkaDeployment error=%s orderName=%s",err.Error(),orderName)

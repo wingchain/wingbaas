@@ -118,19 +118,19 @@ func CreateCaDeployment(clusterId string,node string,namespaceId string,chainId 
 					// DnsPolicy: "ClusterFirstWithHostNet", 
 					//Subdomain: caName, 
 					Volumes: []interface{}{ 
-						// VolumeSpecTemplateSt{
-						// 	Name: "ca-cert",
-						// 	Nfs: NfsVolumeSpecTemplateSt{
-						// 		Server: utils.BAAS_CFG.NfsInternalAddr,
-						// 		Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId,
-						// 	},
-						// },
-						VolumeSpecTemplateHostSt{
+						VolumeSpecTemplateSt{
 							Name: "ca-cert",
-							HostPath: HostPathVolumeSpecTemplateSt{
-								Path: "/home/nfs/" + chainId,
-							}, 
+							Nfs: NfsVolumeSpecTemplateSt{
+								Server: utils.BAAS_CFG.NfsInternalAddr,
+								Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId,
+							},
 						},
+						// VolumeSpecTemplateHostSt{
+						// 	Name: "ca-cert",
+						// 	HostPath: HostPathVolumeSpecTemplateSt{
+						// 		Path: "/home/nfs/" + chainId,
+						// 	}, 
+						// },
 					 },
 				},
 			},

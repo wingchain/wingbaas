@@ -13,7 +13,7 @@ import (
 
 	"github.com/hyperledger/fabric/internal/peer/common"
 	"github.com/hyperledger/fabric/protoutil"
-	"github.com/spf13/cobra"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/cobra"
 )
 
 func updateCmd(cf *ChannelCmdFactory) *cobra.Command {

@@ -17,7 +17,7 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/persistence"
 	"github.com/hyperledger/fabric/internal/peer/packaging"
 	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/cobra"
 )
 
 // PlatformRegistry defines the interface to get the code bytes

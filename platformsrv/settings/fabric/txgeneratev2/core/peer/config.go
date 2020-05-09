@@ -31,7 +31,7 @@ import (
 	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/core/comm"
 	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/core/config"
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
+	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/spf13/viper"
 )
 
 // ExternalBuilder represents the configuration structure of
