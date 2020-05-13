@@ -81,7 +81,7 @@ func AddHosts(hostName string, ip string) bool {
 	fileLocker.Lock()
 	bl, text := ReadFileLine("/etc/hosts")
 	fileLocker.Unlock()
-	if false == bl {
+	if !bl {
 		logger.Errorf("AddHosts:Read file Failed")
 		return false
 	}
@@ -89,14 +89,12 @@ func AddHosts(hostName string, ip string) bool {
 	newHost := ip + " " + hostName + "\n"
 	for i := 0; i < len(text); i++ {
 		hosts := string([]byte(text[i])[strings.LastIndex(text[i], " ")+1:])
-		if hosts == hostName+"\n" {
-			text[i] = newHost
+		if strings.Contains(hosts,hostName) {
 			exits = true
 			break
 		}
 	}
-	text = append(text,newHost)
-	if false == exits {
+	if !exits {
 		text = append(text,newHost)
 	}
 	bl = ReWriteFileLine("/etc/hosts", text)

@@ -201,9 +201,9 @@ func (m *SignedTransaction) GetSignature() []byte {
 // transaction Envelope is not modified, the ProcessedTransaction wrapper is returned.
 type ProcessedTransaction struct {
 	// An Envelope which includes a processed transaction
-	TransactionEnvelope *common.Envelope `protobuf:"bytes,1,opt,name=transactionEnvelope" json:"transactionEnvelope,omitempty"`
+	TransactionEnvelope *common.Envelope `protobuf:"bytes,1,opt,name=transactionEnvelope,proto3" json:"transactionEnvelope,omitempty"`
 	// An indication of whether the transaction was validated or invalidated by committing peer
-	ValidationCode       int32    `protobuf:"varint,2,opt,name=validationCode" json:"validationCode,omitempty"`
+	ValidationCode       int32    `protobuf:"varint,2,opt,name=validationCode,proto3" json:"validationCode,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -262,7 +262,7 @@ func (m *ProcessedTransaction) GetValidationCode() int32 {
 type Transaction struct {
 	// The payload is an array of TransactionAction. An array is necessary to
 	// accommodate multiple actions per transaction
-	Actions              []*TransactionAction `protobuf:"bytes,1,rep,name=actions" json:"actions,omitempty"`
+	Actions              []*TransactionAction `protobuf:"bytes,1,rep,name=actions,proto3" json:"actions,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
 	XXX_unrecognized     []byte               `json:"-"`
 	XXX_sizecache        int32                `json:"-"`
@@ -365,7 +365,7 @@ type ChaincodeActionPayload struct {
 	// f(ChaincodeProposalPayload)) where f is the visibility function.
 	ChaincodeProposalPayload []byte `protobuf:"bytes,1,opt,name=chaincode_proposal_payload,json=chaincodeProposalPayload,proto3" json:"chaincode_proposal_payload,omitempty"`
 	// The list of actions to apply to the ledger
-	Action               *ChaincodeEndorsedAction `protobuf:"bytes,2,opt,name=action" json:"action,omitempty"`
+	Action               *ChaincodeEndorsedAction `protobuf:"bytes,2,opt,name=action,proto3" json:"action,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}                 `json:"-"`
 	XXX_unrecognized     []byte                   `json:"-"`
 	XXX_sizecache        int32                    `json:"-"`
@@ -418,7 +418,7 @@ type ChaincodeEndorsedAction struct {
 	ProposalResponsePayload []byte `protobuf:"bytes,1,opt,name=proposal_response_payload,json=proposalResponsePayload,proto3" json:"proposal_response_payload,omitempty"`
 	// The endorsement of the proposal, basically the endorser's signature over
 	// proposalResponsePayload
-	Endorsements         []*Endorsement `protobuf:"bytes,2,rep,name=endorsements" json:"endorsements,omitempty"`
+	Endorsements         []*Endorsement `protobuf:"bytes,2,rep,name=endorsements,proto3" json:"endorsements,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -462,18 +462,18 @@ func (m *ChaincodeEndorsedAction) GetEndorsements() []*Endorsement {
 	return nil
 }
 
-func init() {
-	proto.RegisterType((*SignedTransaction)(nil), "protos.SignedTransaction")
-	proto.RegisterType((*ProcessedTransaction)(nil), "protos.ProcessedTransaction")
-	proto.RegisterType((*Transaction)(nil), "protos.Transaction")
-	proto.RegisterType((*TransactionAction)(nil), "protos.TransactionAction")
-	proto.RegisterType((*ChaincodeActionPayload)(nil), "protos.ChaincodeActionPayload")
-	proto.RegisterType((*ChaincodeEndorsedAction)(nil), "protos.ChaincodeEndorsedAction")
-	proto.RegisterEnum("protos.TxValidationCode", TxValidationCode_name, TxValidationCode_value)
-	proto.RegisterEnum("protos.MetaDataKeys", MetaDataKeys_name, MetaDataKeys_value)
-}
+// func init() {
+// 	proto.RegisterType((*SignedTransaction)(nil), "protos.SignedTransaction")
+// 	proto.RegisterType((*ProcessedTransaction)(nil), "protos.ProcessedTransaction")
+// 	proto.RegisterType((*Transaction)(nil), "protos.Transaction")
+// 	proto.RegisterType((*TransactionAction)(nil), "protos.TransactionAction")
+// 	proto.RegisterType((*ChaincodeActionPayload)(nil), "protos.ChaincodeActionPayload")
+// 	proto.RegisterType((*ChaincodeEndorsedAction)(nil), "protos.ChaincodeEndorsedAction")
+// 	proto.RegisterEnum("protos.TxValidationCode", TxValidationCode_name, TxValidationCode_value)
+// 	proto.RegisterEnum("protos.MetaDataKeys", MetaDataKeys_name, MetaDataKeys_value)
+// }
 
-func init() { proto.RegisterFile("peer/transaction.proto", fileDescriptor_transaction_4fbd1a0e1a50cfab) }
+// func init() { proto.RegisterFile("peer/transaction.proto", fileDescriptor_transaction_4fbd1a0e1a50cfab) }
 
 var fileDescriptor_transaction_4fbd1a0e1a50cfab = []byte{
 	// 877 bytes of a gzipped FileDescriptorProto

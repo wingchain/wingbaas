@@ -30,7 +30,7 @@ type SignedChaincodeDeploymentSpec struct {
 	InstantiationPolicy []byte `protobuf:"bytes,2,opt,name=instantiation_policy,json=instantiationPolicy,proto3" json:"instantiation_policy,omitempty"`
 	// The endorsements of the above deployment spec, the owner's signature over
 	// chaincode_deployment_spec and Endorsement.endorser.
-	OwnerEndorsements    []*Endorsement `protobuf:"bytes,3,rep,name=owner_endorsements,json=ownerEndorsements" json:"owner_endorsements,omitempty"`
+	OwnerEndorsements    []*Endorsement `protobuf:"bytes,3,rep,name=owner_endorsements,json=ownerEndorsements,proto3" json:"owner_endorsements,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
 	XXX_unrecognized     []byte         `json:"-"`
 	XXX_sizecache        int32          `json:"-"`
@@ -81,13 +81,13 @@ func (m *SignedChaincodeDeploymentSpec) GetOwnerEndorsements() []*Endorsement {
 	return nil
 }
 
-func init() {
-	proto.RegisterType((*SignedChaincodeDeploymentSpec)(nil), "protos.SignedChaincodeDeploymentSpec")
-}
+// func init() {
+// 	proto.RegisterType((*SignedChaincodeDeploymentSpec)(nil), "protos.SignedChaincodeDeploymentSpec")
+// }
 
-func init() {
-	proto.RegisterFile("peer/signed_cc_dep_spec.proto", fileDescriptor_signed_cc_dep_spec_80ee01f5d5123140)
-}
+// func init() {
+// 	proto.RegisterFile("peer/signed_cc_dep_spec.proto", fileDescriptor_signed_cc_dep_spec_80ee01f5d5123140)
+// }
 
 var fileDescriptor_signed_cc_dep_spec_80ee01f5d5123140 = []byte{
 	// 255 bytes of a gzipped FileDescriptorProto

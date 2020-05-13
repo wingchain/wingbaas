@@ -17,23 +17,23 @@ package sw
 
 import (
 	"bytes"
-	"io/ioutil"
-	"os"
-	"sync"
-	"errors"
-	"strings"
 	"crypto/ecdsa"
 	"crypto/rsa"
-	"crypto/sm"
 	"encoding/hex"
+	"errors"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"path/filepath"
+	"strings"
+	"sync"
+
 	"github.com/hyperledger/fabric/bccsp"
 	"github.com/hyperledger/fabric/bccsp/utils"
 )
 
 // NewFileBasedKeyStore instantiated a file-based key store at a given position.
-// The key store can be encrypted if a non-empty password is specifiec.
+// The key store can be encrypted if a non-empty password is specified.
 // It can be also be set as read only. In this case, any store operation
 // will be forbidden
 func NewFileBasedKeyStore(pwd []byte, path string, readOnly bool) (bccsp.KeyStore, error) {
@@ -49,15 +49,15 @@ func NewFileBasedKeyStore(pwd []byte, path string, readOnly bool) (bccsp.KeyStor
 // is used to encrypt and decrypt the files storing the keys.
 // A KeyStore can be read only to avoid the overwriting of keys.
 type fileBasedKeyStore struct {
-	path     string
+	path string
 
 	readOnly bool
 	isOpen   bool
 
-	pwd      []byte
+	pwd []byte
 
 	// Sync
-	m        sync.Mutex
+	m sync.Mutex
 }
 
 // Init initializes this KeyStore with a password, a path to a folder
@@ -110,7 +110,7 @@ func (ks *fileBasedKeyStore) ReadOnly() bool {
 }
 
 // GetKey returns a key object whose SKI is the one passed.
-func (ks *fileBasedKeyStore) GetKey(ski []byte) (k bccsp.Key, err error) {
+func (ks *fileBasedKeyStore) GetKey(ski []byte) (bccsp.Key, error) {
 	// Validate arguments
 	if len(ski) == 0 {
 		return nil, errors.New("Invalid SKI. Cannot be of zero length.")
@@ -137,8 +137,6 @@ func (ks *fileBasedKeyStore) GetKey(ski []byte) (k bccsp.Key, err error) {
 		switch key.(type) {
 		case *ecdsa.PrivateKey:
 			return &ecdsaPrivateKey{key.(*ecdsa.PrivateKey)}, nil
-		case *sm.PrivateKey:
-			return &sm2PrivateKey{key.(*sm.PrivateKey)}, nil
 		case *rsa.PrivateKey:
 			return &rsaPrivateKey{key.(*rsa.PrivateKey)}, nil
 		default:
@@ -154,8 +152,6 @@ func (ks *fileBasedKeyStore) GetKey(ski []byte) (k bccsp.Key, err error) {
 		switch key.(type) {
 		case *ecdsa.PublicKey:
 			return &ecdsaPublicKey{key.(*ecdsa.PublicKey)}, nil
-		case *sm.PublicKey:
-			return &sm2PublicKey{key.(*sm.PublicKey)}, nil
 		case *rsa.PublicKey:
 			return &rsaPublicKey{key.(*rsa.PublicKey)}, nil
 		default:
@@ -209,22 +205,6 @@ func (ks *fileBasedKeyStore) StoreKey(k bccsp.Key) (err error) {
 			return fmt.Errorf("Failed storing RSA public key [%s]", err)
 		}
 
-	case *sm2PrivateKey:
-		kk := k.(*sm2PrivateKey)
-
-		err = ks.storePrivateKey(hex.EncodeToString(k.SKI()), kk.privKey)
-		if err != nil {
-			return fmt.Errorf("Failed storing RSA private key [%s]", err)
-		}
-
-	case *sm2PublicKey:
-		kk := k.(*sm2PublicKey)
-
-		err = ks.storePublicKey(hex.EncodeToString(k.SKI()), kk.pubKey)
-		if err != nil {
-			return fmt.Errorf("Failed storing RSA public key [%s]", err)
-		}
-
 	case *aesPrivateKey:
 		kk := k.(*aesPrivateKey)
 
@@ -267,8 +247,6 @@ func (ks *fileBasedKeyStore) searchKeystoreForSKI(ski []byte) (k bccsp.Key, err 
 			k = &ecdsaPrivateKey{key.(*ecdsa.PrivateKey)}
 		case *rsa.PrivateKey:
 			k = &rsaPrivateKey{key.(*rsa.PrivateKey)}
-		case *sm.PrivateKey:
-			k = &sm2PrivateKey{key.(*sm.PrivateKey)}
 		default:
 			continue
 		}
@@ -420,11 +398,7 @@ func (ks *fileBasedKeyStore) createKeyStoreIfNotExists() error {
 	if missing {
 		logger.Debugf("KeyStore path [%s] missing [%t]: [%s]", ksPath, missing, utils.ErrToString(err))
 
-		err := ks.createKeyStore()
-		if err != nil {
-			logger.Errorf("Failed creating KeyStore At [%s]: [%s]", ksPath, err.Error())
-			return nil
-		}
+		return ks.createKeyStore()
 	}
 
 	return nil
@@ -433,11 +407,14 @@ func (ks *fileBasedKeyStore) createKeyStoreIfNotExists() error {
 func (ks *fileBasedKeyStore) createKeyStore() error {
 	// Create keystore directory root if it doesn't exist yet
 	ksPath := ks.path
-	logger.Debugf("Creating KeyStore at [%s]...", ksPath)
+	logger.Debugf("Creating KeyStore at [%s]", ksPath)
 
-	os.MkdirAll(ksPath, 0755)
+	if err := os.MkdirAll(ksPath, 0755); err != nil {
+		logger.Errorf("Failed creating KeyStore at [%s]: [%s]", ksPath, err.Error())
+		return err
+	}
 
-	logger.Debugf("KeyStore created at [%s].", ksPath)
+	logger.Debugf("KeyStore created at [%s]", ksPath)
 	return nil
 }
 
@@ -445,8 +422,8 @@ func (ks *fileBasedKeyStore) openKeyStore() error {
 	if ks.isOpen {
 		return nil
 	}
-
-	logger.Debugf("KeyStore opened at [%s]...done", ks.path)
+	ks.isOpen = true
+	logger.Debugf("KeyStore opened at [%s]", ks.path)
 
 	return nil
 }

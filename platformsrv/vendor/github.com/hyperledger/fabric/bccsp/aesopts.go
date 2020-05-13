@@ -66,39 +66,6 @@ func (opts *AES256KeyGenOpts) Ephemeral() bool {
 	return opts.Temporary
 }
 
-// AESKeyGenOpts contains options for AES key generation at default security level
-type AESKeyGenOpts struct {
-	Temporary bool
-}
-
-// Algorithm returns the key generation algorithm identifier (to be used).
-func (opts *AESKeyGenOpts) Algorithm() string {
-	return AES
-}
-
-// Ephemeral returns true if the key to generate has to be ephemeral,
-// false otherwise.
-func (opts *AESKeyGenOpts) Ephemeral() bool {
-	return opts.Temporary
-}
-
-
-// AES256ImportKeyOpts contains options for importing AES 256 keys.
-type AES256ImportKeyOpts struct {
-	Temporary bool
-}
-
-// Algorithm returns the key importation algorithm identifier (to be used).
-func (opts *AES256ImportKeyOpts) Algorithm() string {
-	return AES
-}
-
-// Ephemeral returns true if the key generated has to be ephemeral,
-// false otherwise.
-func (opts *AES256ImportKeyOpts) Ephemeral() bool {
-	return opts.Temporary
-}
-
 // AESCBCPKCS7ModeOpts contains options for AES encryption in CBC mode
 // with PKCS7 padding.
 // Notice that both IV and PRNG can be nil. In that case, the BCCSP implementation

@@ -92,8 +92,8 @@ func GeneratePrivateKey(keystorePath string,cryptoType string) (bccsp.Key,
 	csp, err := factory.GetBCCSPFromOpts(opts)
 	if err == nil {
 		switch cryptoType {
-			case bccsp.SM2 :
-		  		priv, err = csp.KeyGen(&bccsp.SM2KeyGenOpts{Temporary: false})
+			// case bccsp.SM2 :
+		  	// 	priv, err = csp.KeyGen(&bccsp.SM2KeyGenOpts{Temporary: false})
 			case  bccsp.ECDSA:
 		  		priv, err = csp.KeyGen(&bccsp.ECDSAP256KeyGenOpts{Temporary: false})
 			default:

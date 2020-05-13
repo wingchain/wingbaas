@@ -10,12 +10,10 @@ import (
 	"bytes"
 	"io"
 	"strings"
-
-	"github.com/spf13/viper"
-
-	"github.com/hyperledger/fabric-sdk-go/pkg/common/logging"
+	//"github.com/hyperledger/fabric-sdk-go/third_party/spf13/viper"
+	"github.com/hyperledger/fabric-sdk-go/third_party/spf13/viper"
+	"github.com/hyperledger/fabric-sdk-go/pkg/common/logging" 
 	"github.com/pkg/errors"
-
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/providers/core"
 )
 

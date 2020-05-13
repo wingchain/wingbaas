@@ -21,37 +21,36 @@ import (
 	"fmt"
 
 	"github.com/hyperledger/fabric/bccsp"
-	"github.com/syndtr/goleveldb/leveldb/errors"
-	"crypto/sm"
+	"github.com/hyperledger/fabric/bccsp/utils"
 )
 
-func signECDSA(k *ecdsa.PrivateKey, digest []byte, opts bccsp.SignerOpts) (signature []byte, err error) {
+func signECDSA(k *ecdsa.PrivateKey, digest []byte, opts bccsp.SignerOpts) ([]byte, error) {
 	r, s, err := ecdsa.Sign(rand.Reader, k, digest)
 	if err != nil {
 		return nil, err
 	}
 
-	s, _, err = ToLowS(&k.PublicKey, s)
+	s, err = utils.ToLowS(&k.PublicKey, s)
 	if err != nil {
 		return nil, err
 	}
 
-	return MarshalSignature(r, s)
+	return utils.MarshalECDSASignature(r, s)
 }
 
-func verifyECDSA(k *ecdsa.PublicKey, signature, digest []byte, opts bccsp.SignerOpts) (valid bool, err error) {
-	r, s, err := UnmarshalSignature(signature)
+func verifyECDSA(k *ecdsa.PublicKey, signature, digest []byte, opts bccsp.SignerOpts) (bool, error) {
+	r, s, err := utils.UnmarshalECDSASignature(signature)
 	if err != nil {
 		return false, fmt.Errorf("Failed unmashalling signature [%s]", err)
 	}
 
-	lowS, err := IsLowS(k, s)
+	lowS, err := utils.IsLowS(k, s)
 	if err != nil {
 		return false, err
 	}
 
 	if !lowS {
-		return false, fmt.Errorf("Invalid S. Must be smaller than half the order [%s][%s].", s, curveHalfOrders[k.Curve])
+		return false, fmt.Errorf("Invalid S. Must be smaller than half the order [%s][%s].", s, utils.GetCurveHalfOrdersAt(k.Curve))
 	}
 
 	return ecdsa.Verify(k, digest, r, s), nil
@@ -59,80 +58,18 @@ func verifyECDSA(k *ecdsa.PublicKey, signature, digest []byte, opts bccsp.Signer
 
 type ecdsaSigner struct{}
 
-func (s *ecdsaSigner) Sign(k bccsp.Key, digest []byte, opts bccsp.SignerOpts) (signature []byte, err error) {
-	switch k.(type) {
-	case *ecdsaPrivateKey:
-		eCurve := k.(*ecdsaPrivateKey).privKey.PublicKey.Curve
-		if eCurve.Params().Gx == sm.P256Sm2().Params().Gx &&
-					eCurve.Params().Gy == sm.P256Sm2().Params().Gy &&
-					eCurve.Params().B == sm.P256Sm2().Params().B &&
-					eCurve.Params().BitSize == sm.P256Sm2().Params().BitSize &&
-					eCurve.Params().N == sm.P256Sm2().Params().N &&
-					eCurve.Params().Name == sm.P256Sm2().Params().Name &&
-					eCurve.Params().P == sm.P256Sm2().Params().P {
-			smpriv := &sm.PrivateKey{
-				PublicKey: sm.PublicKey{
-					Curve: sm.P256Sm2(),
-					X:     k.(*ecdsaPrivateKey).privKey.PublicKey.X,
-					Y:     k.(*ecdsaPrivateKey).privKey.PublicKey.Y,
-				},
-				D: k.(*ecdsaPrivateKey).privKey.D,
-			}
-			return signSM2(smpriv, digest, opts)
-		}
-		return signECDSA(k.(*ecdsaPrivateKey).privKey, digest, opts)
-	case *sm2PrivateKey:
-		return signSM2(k.(*sm2PrivateKey).privKey, digest, opts)
-	default:
-		return nil, errors.New("key type not found")
-	}
+func (s *ecdsaSigner) Sign(k bccsp.Key, digest []byte, opts bccsp.SignerOpts) ([]byte, error) {
+	return signECDSA(k.(*ecdsaPrivateKey).privKey, digest, opts)
 }
 
 type ecdsaPrivateKeyVerifier struct{}
 
-func (v *ecdsaPrivateKeyVerifier) Verify(k bccsp.Key, signature, digest []byte, opts bccsp.SignerOpts) (valid bool, err error) {
-	switch k.(type) {
-	case *ecdsaPrivateKey:
-		eCurve := k.(*ecdsaPrivateKey).privKey.PublicKey.Curve
-		if eCurve.Params().Gx == sm.P256Sm2().Params().Gx &&
-			eCurve.Params().Gy == sm.P256Sm2().Params().Gy &&
-			eCurve.Params().B == sm.P256Sm2().Params().B &&
-			eCurve.Params().BitSize == sm.P256Sm2().Params().BitSize &&
-			eCurve.Params().N == sm.P256Sm2().Params().N &&
-			eCurve.Params().Name == sm.P256Sm2().Params().Name &&
-			eCurve.Params().P == sm.P256Sm2().Params().P {
-			smpub := &sm.PublicKey{
-				Curve: sm.P256Sm2(),
-				X:     k.(*ecdsaPrivateKey).privKey.PublicKey.X,
-				Y:     k.(*ecdsaPrivateKey).privKey.PublicKey.Y,
-			}
-			return verifySM2(smpub, signature, digest, opts)
-		}
-		return verifyECDSA(&(k.(*ecdsaPrivateKey).privKey.PublicKey), signature, digest, opts)
-	case *sm2PrivateKey:
-		return verifySM2(&(k.(*sm2PrivateKey).privKey.PublicKey), signature, digest, opts)
-	default:
-		return false, errors.New("key type not found")
-	}
+func (v *ecdsaPrivateKeyVerifier) Verify(k bccsp.Key, signature, digest []byte, opts bccsp.SignerOpts) (bool, error) {
+	return verifyECDSA(&(k.(*ecdsaPrivateKey).privKey.PublicKey), signature, digest, opts)
 }
 
 type ecdsaPublicKeyKeyVerifier struct{}
 
-func (v *ecdsaPublicKeyKeyVerifier) Verify(k bccsp.Key, signature, digest []byte, opts bccsp.SignerOpts) (valid bool, err error) {
-	switch k.(type) {
-	case *ecdsaPublicKey:
-		if k.(*ecdsaPublicKey).pubKey.Curve == sm.P256Sm2() {
-			smpub := &sm.PublicKey{
-				Curve: sm.P256Sm2(),
-				X:     k.(*ecdsaPublicKey).pubKey.X,
-				Y:     k.(*ecdsaPublicKey).pubKey.Y,
-			}
-			return verifySM2(smpub, signature, digest, opts)
-		}
-		return verifyECDSA(k.(*ecdsaPublicKey).pubKey, signature, digest, opts)
-	case *sm2PublicKey:
-		return verifySM2(k.(*sm2PublicKey).pubKey, signature, digest, opts)
-	default:
-		return false, errors.New("key type not found")
-	}
+func (v *ecdsaPublicKeyKeyVerifier) Verify(k bccsp.Key, signature, digest []byte, opts bccsp.SignerOpts) (bool, error) {
+	return verifyECDSA(k.(*ecdsaPublicKey).pubKey, signature, digest, opts)
 }

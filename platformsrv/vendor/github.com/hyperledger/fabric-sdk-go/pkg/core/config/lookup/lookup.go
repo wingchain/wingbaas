@@ -13,7 +13,7 @@ import (
 
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/providers/core"
 	"github.com/mitchellh/mapstructure"
-	"github.com/spf13/cast"
+	"github.com/hyperledger/fabric-sdk-go/third_party/spf13/cast"
 )
 
 //New providers lookup wrapper around given backend

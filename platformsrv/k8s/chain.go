@@ -80,8 +80,8 @@ func GetChains(clusterId string)([]Chain,error) {
 			return nil,fmt.Errorf("%v", err)
 		}
 	}else {
-		logger.Errorf("GetChains: not find chain list file")
-		return nil,fmt.Errorf("%s", "GetChains:  not find chain list file")
+		logger.Debug("GetChains: not find chain list file")
+		return nil,fmt.Errorf("%s", "GetChains:not find chain list file")
 	}
 }
 
@@ -103,7 +103,7 @@ func GetChain(chainId string,clusterId string) (*Chain,error) {
 func GetChainByName(chainName string,clusterId string) (*Chain,error) { 
 	chains,err := GetChains(clusterId)
 	if err != nil {
-		logger.Errorf("GetChainByName: get chains error,%v", err)
+		logger.Debug("GetChainByName: chain not find")
 		return nil,fmt.Errorf("%v", err)
 	}
 	for _,c := range chains {

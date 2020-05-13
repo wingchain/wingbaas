@@ -23,7 +23,7 @@ const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 // to serialize it and deserialize it
 type SerializedIdentity struct {
 	// The identifier of the associated membership service provider
-	Mspid string `protobuf:"bytes,1,opt,name=mspid" json:"mspid,omitempty"`
+	Mspid string `protobuf:"bytes,1,opt,name=mspid,proto3" json:"mspid,omitempty"`
 	// the Identity, serialized according to the rules of its MPS
 	IdBytes              []byte   `protobuf:"bytes,2,opt,name=id_bytes,json=idBytes,proto3" json:"id_bytes,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -152,12 +152,12 @@ func (m *SerializedIdemixIdentity) GetProof() []byte {
 	return nil
 }
 
-func init() {
-	proto.RegisterType((*SerializedIdentity)(nil), "msp.SerializedIdentity")
-	proto.RegisterType((*SerializedIdemixIdentity)(nil), "msp.SerializedIdemixIdentity")
-}
+// func init() {
+// 	proto.RegisterType((*SerializedIdentity)(nil), "msp.SerializedIdentity")
+// 	proto.RegisterType((*SerializedIdemixIdentity)(nil), "msp.SerializedIdemixIdentity")
+// }
 
-func init() { proto.RegisterFile("msp/identities.proto", fileDescriptor_identities_8fa8af3e5bf2070a) }
+// func init() { proto.RegisterFile("msp/identities.proto", fileDescriptor_identities_8fa8af3e5bf2070a) }
 
 var fileDescriptor_identities_8fa8af3e5bf2070a = []byte{
 	// 238 bytes of a gzipped FileDescriptorProto

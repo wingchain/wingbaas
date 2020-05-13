@@ -21,17 +21,18 @@ import (
 )
 
 const (
-	pkgLogID                = "common/tools/configtxgen/encoder"
+	//pkgLogID                = "common/tools/configtxgen/encoder"
+	pkgLogID                = "txgen"
 	ordererAdminsPolicyName = "/Channel/Orderer/Admins"
 
 	msgVersion = int32(0)
 	epoch      = 0
 )
 
-var logger = flogging.MustGetLogger(pkgLogID)
+var logger = flogging.MustGetLogger(pkgLogID) 
 
 func init() {
-	flogging.SetModuleLevel(pkgLogID, "info")
+	//flogging.SetModuleLevel(pkgLogID, "info") 
 }
 
 const (
@@ -468,18 +469,24 @@ func New(config *genesisconfig.Profile) *Bootstrapper {
 
 // GenesisBlock produces a genesis block for the default test chain id
 func (bs *Bootstrapper) GenesisBlock() *cb.Block {
-	block, err := genesis.NewFactoryImpl(bs.channelGroup).Block(genesisconfig.TestChainID)
-	if err != nil {
-		logger.Panicf("Error creating genesis block from channel group: %s", err)
-	}
+	// block, err := genesis.NewFactoryImpl(bs.channelGroup).Block(genesisconfig.TestChainID)
+	// if err != nil {
+	// 	logger.Panicf("Error creating genesis block from channel group: %s", err)
+	// }
+	// return block
+
+	block := genesis.NewFactoryImpl(bs.channelGroup).Block(genesisconfig.TestChainID)
 	return block
 }
 
 // GenesisBlockForChannel produces a genesis block for a given channel ID
 func (bs *Bootstrapper) GenesisBlockForChannel(channelID string) *cb.Block {
-	block, err := genesis.NewFactoryImpl(bs.channelGroup).Block(channelID)
-	if err != nil {
-		logger.Panicf("Error creating genesis block from channel group: %s", err)
-	}
+	// block, err := genesis.NewFactoryImpl(bs.channelGroup).Block(channelID)
+	// if err != nil {
+	// 	logger.Panicf("Error creating genesis block from channel group: %s", err)
+	// }
+	// return block
+
+	block := genesis.NewFactoryImpl(bs.channelGroup).Block(channelID)
 	return block
 }

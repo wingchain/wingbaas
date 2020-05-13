@@ -58,19 +58,21 @@ func GenerateGenesisBlockRaft(serviceRootPath string,deployConf public.DeployNet
 		var policyR genesisconfigraft.Policy
 		var policyW genesisconfigraft.Policy
 		var policyA genesisconfigraft.Policy
-		var policyE genesisconfigraft.Policy
+		//var policyE genesisconfigraft.Policy
 		policyR.Type = "Signature"
-		policyR.Rule = "OR('" + og.ID + ".admin', " + "'" + og.ID + ".peer', " + "'" + og.ID + ".client')"
+		//policyR.Rule = "OR('" + og.ID + ".admin', " + "'" + og.ID + ".peer', " + "'" + og.ID + ".client')"
+		policyR.Rule = "OR('" + og.ID + ".member')"
 		policyW.Type = "Signature"
-		policyW.Rule = "OR('" + og.ID + ".admin', " + "'" + og.ID + ".client')"
+		//policyW.Rule = "OR('" + og.ID + ".admin', " + "'" + og.ID + ".client')"
+		policyW.Rule = "OR('" + og.ID + ".member')"
 		policyA.Type = "Signature"
 		policyA.Rule = "OR('" + og.ID + ".admin')"
-		policyE.Type = "Signature"
-		policyE.Rule = "OR('" + og.ID + ".peer')"
+		// policyE.Type = "Signature"
+		// policyE.Rule = "OR('" + og.ID + ".peer')"
 		ogPolicy["Readers"] = &policyR
 		ogPolicy["Writers"] = &policyW
 		ogPolicy["Admins"] = &policyA
-		ogPolicy["Endorsement"] = &policyE
+		//ogPolicy["Endorsement"] = &policyE
 		og.Policies = ogPolicy
 
 		var anchorPeer genesisconfigraft.AnchorPeer
@@ -108,9 +110,11 @@ func GenerateGenesisBlockRaft(serviceRootPath string,deployConf public.DeployNet
 	policyAppA.Type = "ImplicitMeta"
 	policyAppA.Rule = "MAJORITY Admins"
 	policyAppL.Type = "ImplicitMeta"
-	policyAppL.Rule = "MAJORITY Endorsement"
+	//policyAppL.Rule = "MAJORITY Endorsement"
+	policyAppL.Rule = "ANY Writers"
 	policyAppE.Type = "ImplicitMeta"
-	policyAppE.Rule = "MAJORITY Endorsement"
+	//policyAppE.Rule = "MAJORITY Endorsement"
+	policyAppE.Rule = "ANY Writers"
 
 	app.Policies = make(map[string]*genesisconfigraft.Policy)
 	app.Policies["Readers"] = &policyAppR

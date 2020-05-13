@@ -23,7 +23,6 @@ import (
 	"hash"
 
 	"golang.org/x/crypto/sha3"
-	"crypto/sm"
 )
 
 type config struct {
@@ -31,8 +30,6 @@ type config struct {
 	hashFunction  func() hash.Hash
 	aesBitLength  int
 	rsaBitLength  int
-	sm2BitLength  int
-	sm4BitLength  int
 }
 
 func (conf *config) setSecurityLevel(securityLevel int, hashFamily string) (err error) {
@@ -41,8 +38,6 @@ func (conf *config) setSecurityLevel(securityLevel int, hashFamily string) (err 
 		err = conf.setSecurityLevelSHA2(securityLevel)
 	case "SHA3":
 		err = conf.setSecurityLevelSHA3(securityLevel)
-	case "SM3":
-		err = conf.setSecurityLevelSM3(securityLevel)
 	default:
 		err = fmt.Errorf("Hash Family not supported [%s]", hashFamily)
 	}
@@ -79,22 +74,6 @@ func (conf *config) setSecurityLevelSHA3(level int) (err error) {
 		conf.hashFunction = sha3.New384
 		conf.rsaBitLength = 3072
 		conf.aesBitLength = 32
-	default:
-		err = fmt.Errorf("Security level not supported [%d]", level)
-	}
-	return
-}
-
-func (conf *config) setSecurityLevelSM3(level int) (err error) {
-	switch level {
-	case 256:
-		conf.ellipticCurve = sm.P256Sm2()
-		conf.hashFunction = sm.New
-		conf.hashFunction = sha256.New
-		conf.rsaBitLength = 2048
-		conf.aesBitLength = 32
-		conf.sm2BitLength = 256
-		conf.sm4BitLength = 32
 	default:
 		err = fmt.Errorf("Security level not supported [%d]", level)
 	}

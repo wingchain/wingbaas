@@ -13,6 +13,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/hyperledger/fabric/common/crypto"
+	"github.com/hyperledger/fabric/protos/common"
 	cb "github.com/hyperledger/fabric/protos/common"
 	pb "github.com/hyperledger/fabric/protos/peer"
 	"github.com/pkg/errors"
@@ -196,7 +197,7 @@ func MakeSignatureHeader(serializedCreatorCertChain []byte, nonce []byte) *cb.Si
 // SetTxID generates a transaction id based on the provided signature header
 // and sets the TxId field in the channel header
 func SetTxID(channelHeader *cb.ChannelHeader, signatureHeader *cb.SignatureHeader) error {
-	txid, err := ComputeProposalTxID(
+	txid, err := ComputeTxID(
 		signatureHeader.Nonce,
 		signatureHeader.Creator,
 	)
@@ -225,6 +226,7 @@ func NewSignatureHeaderOrPanic(signer crypto.LocalSigner) *cb.SignatureHeader {
 	if err != nil {
 		panic(fmt.Errorf("failed generating a new SignatureHeader: %s", err))
 	}
+
 	return signatureHeader
 }
 
@@ -269,6 +271,24 @@ func UnmarshalChaincodeID(bytes []byte) (*pb.ChaincodeID, error) {
 	return ccid, nil
 }
 
+// UnmarshalSignatureHeader unmarshals bytes to a SignatureHeader.
+func UnmarshalSignatureHeader(bytes []byte) (*cb.SignatureHeader, error) {
+	sh := &common.SignatureHeader{}
+	if err := proto.Unmarshal(bytes, sh); err != nil {
+		return nil, errors.Wrap(err, "error unmarshaling SignatureHeader")
+	}
+	return sh, nil
+}
+
+// UnmarshalSignatureHeaderOrPanic unmarshals bytes to a SignatureHeader.
+func UnmarshalSignatureHeaderOrPanic(bytes []byte) *cb.SignatureHeader {
+	sighdr, err := UnmarshalSignatureHeader(bytes)
+	if err != nil {
+		panic(err)
+	}
+	return sighdr
+}
+
 // IsConfigBlock validates whenever given block contains configuration
 // update transaction
 func IsConfigBlock(block *cb.Block) bool {
@@ -291,7 +311,7 @@ func IsConfigBlock(block *cb.Block) bool {
 		return false
 	}
 
-	return cb.HeaderType(hdr.Type) == cb.HeaderType_CONFIG
+	return cb.HeaderType(hdr.Type) == cb.HeaderType_CONFIG || cb.HeaderType(hdr.Type) == cb.HeaderType_ORDERER_TRANSACTION
 }
 
 // ChannelHeader returns the *cb.ChannelHeader for a given *cb.Envelope.
@@ -325,4 +345,15 @@ func ChannelID(env *cb.Envelope) (string, error) {
 	}
 
 	return chdr.ChannelId, nil
+}
+
+// EnvelopeToConfigUpdate is used to extract a ConfigUpdateEnvelope from an envelope of
+// type CONFIG_UPDATE
+func EnvelopeToConfigUpdate(configtx *cb.Envelope) (*cb.ConfigUpdateEnvelope, error) {
+	configUpdateEnv := &cb.ConfigUpdateEnvelope{}
+	_, err := UnmarshalEnvelopeOfType(configtx, cb.HeaderType_CONFIG_UPDATE, configUpdateEnv)
+	if err != nil {
+		return nil, err
+	}
+	return configUpdateEnv, nil
 }

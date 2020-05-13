@@ -107,6 +107,10 @@ func CreatePeerDeployment(clusterId string,node string,namespaceId string,chainI
 									Value: "debug",
 								},
 								{
+									Name: "FABRIC_LOGGING_SPEC", 
+									Value: "debug",
+								},
+								{
 									Name: "CORE_PEER_ID", 
 									Value: p.PeerName,
 								},

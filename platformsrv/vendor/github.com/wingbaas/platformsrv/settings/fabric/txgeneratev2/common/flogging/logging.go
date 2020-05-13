@@ -11,7 +11,6 @@ import (
 	"io"
 	"os"
 	"sync"
-
 	"github.com/wingbaas/platformsrv/settings/fabric/txgeneratev2/common/flogging/fabenc"
 	zaplogfmt "github.com/sykesm/zap-logfmt"
 	"go.uber.org/zap"

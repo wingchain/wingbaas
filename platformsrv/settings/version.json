@@ -23,7 +23,16 @@
             "ccenv": "registry.wingbaas.cn:5000/fabric-ccenv:2.0.0",
             "orderer": "registry.wingbaas.cn:5000/fabric-orderer:2.0.0",
             "peer": "registry.wingbaas.cn:5000/fabric-peer:2.0.0",
-            "baseos": "registry.wingbaas.cn:5000/fabric-baseos:amd64-2.0.0"
+            "baseos": "registry.wingbaas.cn:5000/fabric-baseos:2.0.0",
+            "tools": "registry.wingbaas.cn:5000/fabric-tools:2.0"
+        },
+        "2.1":{
+            "ca": "registry.wingbaas.cn:5000/fabric-ca:1.4",
+            "ccenv": "registry.wingbaas.cn:5000/fabric-ccenv:2.1",
+            "orderer": "registry.wingbaas.cn:5000/fabric-orderer:2.1",
+            "peer": "registry.wingbaas.cn:5000/fabric-peer:2.1",
+            "baseos": "registry.wingbaas.cn:5000/fabric-baseos:2.1",
+            "tools": "registry.wingbaas.cn:5000/fabric-tools:2.1"
         }
     },
     "wingchain":{

@@ -11,7 +11,7 @@ import (
 
 	"crypto/x509"
 
-	"github.com/spf13/cast"
+	"github.com/hyperledger/fabric-sdk-go/third_party/spf13/cast"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 

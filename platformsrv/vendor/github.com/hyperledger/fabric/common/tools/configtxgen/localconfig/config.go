@@ -18,23 +18,16 @@ import (
 	cf "github.com/hyperledger/fabric/core/config"
 	"github.com/hyperledger/fabric/msp"
 	"github.com/hyperledger/fabric/protos/orderer/etcdraft"
-
 	"github.com/spf13/viper"
 )
 
 const (
-	pkgLogID = "common/tools/configtxgen/localconfig"
-
 	// Prefix identifies the prefix for the configtxgen-related ENV vars.
 	Prefix string = "CONFIGTX"
 )
 
-var logger = flogging.MustGetLogger(pkgLogID)
+var logger = flogging.MustGetLogger("common.tools.configtxgen.localconfig")
 var configName = strings.ToLower(Prefix)
-
-func init() {
-	flogging.SetModuleLevel(pkgLogID, "error")
-}
 
 const (
 	// TestChainID is the channel name used for testing purposes when one is
@@ -50,15 +43,6 @@ const (
 	// SampleSingleMSPSoloProfile references the sample profile which includes
 	// only the sample MSP and uses solo for ordering.
 	SampleSingleMSPSoloProfile = "SampleSingleMSPSolo"
-
-	//JCS: my options
-	// SampleInsecureBFTsmartProfile references the sample profile which does not include any MSPs and uses BFT-SMaRt for ordering.
-	SampleInsecureBFTsmartProfile = "SampleInsecureBFTsmart"
-	// SampleDevModeBFTsmartProfile references the sample profile which requires
-	// only basic membership for admin privileges and uses BFT-SMaRt for ordering.
-	SampleDevModeBFTsmartProfile = "SampleDevModeBFTsmart"
-	// SampleSingleMSPBFTsmartProfile references the sample profile which includes only the sample MSP and uses BFT-SMaRt for ordering.
-	SampleSingleMSPBFTsmartProfile = "SampleSingleMSPBFTsmart"
 
 	// SampleInsecureKafkaProfile references the sample profile which does not
 	// include any MSPs and uses Kafka for ordering.
@@ -154,7 +138,8 @@ type Organization struct {
 	// Note: Viper deserialization does not seem to care for
 	// embedding of types, so we use one organization struct
 	// for both orderers and applications.
-	AnchorPeers []*AnchorPeer `yaml:"AnchorPeers"`
+	AnchorPeers      []*AnchorPeer `yaml:"AnchorPeers"`
+	OrdererEndpoints []string      `yaml:"OrdererEndpoints"`
 
 	// AdminPrincipal is deprecated and may be removed in a future release
 	// it was used for modifying the default policy generation, but policies
@@ -171,17 +156,16 @@ type AnchorPeer struct {
 // Orderer contains configuration which is used for the
 // bootstrapping of an orderer by the provisional bootstrapper.
 type Orderer struct {
-	OrdererType   string             `yaml:"OrdererType"`
-	Addresses     []string           `yaml:"Addresses"`
-	BatchTimeout  time.Duration      `yaml:"BatchTimeout"`
-	BatchSize     BatchSize          `yaml:"BatchSize"`
-	Kafka         Kafka              `yaml:"Kafka"`
-	BFTsmart      BFTsmart           `yaml:"BFTsmart"` //JCS: my own options
-	EtcdRaft      *etcdraft.Metadata `yaml:"EtcdRaft"`
-	Organizations []*Organization    `yaml:"Organizations"`
-	MaxChannels   uint64             `yaml:"MaxChannels"`
-	Capabilities  map[string]bool    `yaml:"Capabilities"`
-	Policies      map[string]*Policy `yaml:"Policies"`
+	OrdererType   string                   `yaml:"OrdererType"`
+	Addresses     []string                 `yaml:"Addresses"`
+	BatchTimeout  time.Duration            `yaml:"BatchTimeout"`
+	BatchSize     BatchSize                `yaml:"BatchSize"`
+	Kafka         Kafka                    `yaml:"Kafka"`
+	EtcdRaft      *etcdraft.ConfigMetadata `yaml:"EtcdRaft"`
+	Organizations []*Organization          `yaml:"Organizations"`
+	MaxChannels   uint64                   `yaml:"MaxChannels"`
+	Capabilities  map[string]bool          `yaml:"Capabilities"`
+	Policies      map[string]*Policy       `yaml:"Policies"`
 }
 
 // BatchSize contains configuration affecting the size of batches.
@@ -196,28 +180,27 @@ type Kafka struct {
 	Brokers []string `yaml:"Brokers"`
 }
 
-//JCS: BFTsmart contains config for the BFT-SMaRt orderer
-type BFTsmart struct {
-	ConnectionPoolSize uint
-	RecvPort           uint
-}
-
 var genesisDefaults = TopLevel{
 	Orderer: &Orderer{
 		OrdererType:  "solo",
 		Addresses:    []string{"127.0.0.1:7050"},
 		BatchTimeout: 2 * time.Second,
 		BatchSize: BatchSize{
-			MaxMessageCount:   10,
+			MaxMessageCount:   500,
 			AbsoluteMaxBytes:  10 * 1024 * 1024,
-			PreferredMaxBytes: 512 * 1024,
+			PreferredMaxBytes: 2 * 1024 * 1024,
 		},
 		Kafka: Kafka{
 			Brokers: []string{"127.0.0.1:9092"},
 		},
-		BFTsmart: BFTsmart{ //JCS: my own options
-			ConnectionPoolSize: 20,
-			RecvPort:           9999,
+		EtcdRaft: &etcdraft.ConfigMetadata{
+			Options: &etcdraft.Options{
+				TickInterval:         "500ms",
+				ElectionTick:         10,
+				HeartbeatTick:        1,
+				MaxInflightBlocks:    5,
+				SnapshotIntervalSize: 20 * 1024 * 1024, // 20 MB
+			},
 		},
 	},
 }
@@ -399,29 +382,78 @@ loop:
 		}
 	}
 
+	logger.Infof("orderer type: %s", ord.OrdererType)
 	// Additional, consensus type-dependent initialization goes here
+	// Also using this to panic on unknown orderer type.
 	switch ord.OrdererType {
+	case "solo":
+		// nothing to be done here
 	case "kafka":
 		if ord.Kafka.Brokers == nil {
 			logger.Infof("Orderer.Kafka unset, setting to %v", genesisDefaults.Orderer.Kafka.Brokers)
 			ord.Kafka.Brokers = genesisDefaults.Orderer.Kafka.Brokers
 		}
-	case "bftsmart": //JCS: my own options
-		if ord.BFTsmart.ConnectionPoolSize == 0 {
-			logger.Infof("Orderer.BFTsmart.ConnectionPoolSize unset, setting to %v", genesisDefaults.Orderer.BFTsmart.ConnectionPoolSize)
-			ord.BFTsmart.ConnectionPoolSize = genesisDefaults.Orderer.BFTsmart.ConnectionPoolSize
-		}
-
-		if ord.BFTsmart.RecvPort == 0 {
-			logger.Infof("Orderer.BFTsmart.RecvPort unset, setting to %v", genesisDefaults.Orderer.BFTsmart.RecvPort)
-			ord.BFTsmart.RecvPort = genesisDefaults.Orderer.BFTsmart.RecvPort
-		}
-
 	case etcdraft.TypeKey:
 		if ord.EtcdRaft == nil {
 			logger.Panicf("%s raft configuration missing", etcdraft.TypeKey)
 		}
+		if ord.EtcdRaft.Options == nil {
+			logger.Infof("Orderer.EtcdRaft.Options unset, setting to %v", genesisDefaults.Orderer.EtcdRaft.Options)
+			ord.EtcdRaft.Options = genesisDefaults.Orderer.EtcdRaft.Options
+		}
+	second_loop:
+		for {
+			switch {
+			case ord.EtcdRaft.Options.TickInterval == "":
+				logger.Infof("Orderer.EtcdRaft.Options.TickInterval unset, setting to %v", genesisDefaults.Orderer.EtcdRaft.Options.TickInterval)
+				ord.EtcdRaft.Options.TickInterval = genesisDefaults.Orderer.EtcdRaft.Options.TickInterval
+
+			case ord.EtcdRaft.Options.ElectionTick == 0:
+				logger.Infof("Orderer.EtcdRaft.Options.ElectionTick unset, setting to %v", genesisDefaults.Orderer.EtcdRaft.Options.ElectionTick)
+				ord.EtcdRaft.Options.ElectionTick = genesisDefaults.Orderer.EtcdRaft.Options.ElectionTick
+
+			case ord.EtcdRaft.Options.HeartbeatTick == 0:
+				logger.Infof("Orderer.EtcdRaft.Options.HeartbeatTick unset, setting to %v", genesisDefaults.Orderer.EtcdRaft.Options.HeartbeatTick)
+				ord.EtcdRaft.Options.HeartbeatTick = genesisDefaults.Orderer.EtcdRaft.Options.HeartbeatTick
+
+			case ord.EtcdRaft.Options.MaxInflightBlocks == 0:
+				logger.Infof("Orderer.EtcdRaft.Options.MaxInflightBlocks unset, setting to %v", genesisDefaults.Orderer.EtcdRaft.Options.MaxInflightBlocks)
+				ord.EtcdRaft.Options.MaxInflightBlocks = genesisDefaults.Orderer.EtcdRaft.Options.MaxInflightBlocks
+
+			case ord.EtcdRaft.Options.SnapshotIntervalSize == 0:
+				logger.Infof("Orderer.EtcdRaft.Options.SnapshotIntervalSize unset, setting to %v", genesisDefaults.Orderer.EtcdRaft.Options.SnapshotIntervalSize)
+				ord.EtcdRaft.Options.SnapshotIntervalSize = genesisDefaults.Orderer.EtcdRaft.Options.SnapshotIntervalSize
+
+			case len(ord.EtcdRaft.Consenters) == 0:
+				logger.Panicf("%s configuration did not specify any consenter", etcdraft.TypeKey)
+
+			default:
+				break second_loop
+			}
+		}
+
+		if _, err := time.ParseDuration(ord.EtcdRaft.Options.TickInterval); err != nil {
+			logger.Panicf("Etcdraft TickInterval (%s) must be in time duration format", ord.EtcdRaft.Options.TickInterval)
+		}
+
+		// validate the specified members for Options
+		if ord.EtcdRaft.Options.ElectionTick <= ord.EtcdRaft.Options.HeartbeatTick {
+			logger.Panicf("election tick must be greater than heartbeat tick")
+		}
+
 		for _, c := range ord.EtcdRaft.GetConsenters() {
+			if c.Host == "" {
+				logger.Panicf("consenter info in %s configuration did not specify host", etcdraft.TypeKey)
+			}
+			if c.Port == 0 {
+				logger.Panicf("consenter info in %s configuration did not specify port", etcdraft.TypeKey)
+			}
+			if c.ClientTlsCert == nil {
+				logger.Panicf("consenter info in %s configuration did not specify client TLS cert", etcdraft.TypeKey)
+			}
+			if c.ServerTlsCert == nil {
+				logger.Panicf("consenter info in %s configuration did not specify server TLS cert", etcdraft.TypeKey)
+			}
 			clientCertPath := string(c.GetClientTlsCert())
 			cf.TranslatePathInPlace(configDir, &clientCertPath)
 			c.ClientTlsCert = []byte(clientCertPath)
@@ -429,6 +461,8 @@ loop:
 			cf.TranslatePathInPlace(configDir, &serverCertPath)
 			c.ServerTlsCert = []byte(serverCertPath)
 		}
+	default:
+		logger.Panicf("unknown orderer type: %s", ord.OrdererType)
 	}
 }
 

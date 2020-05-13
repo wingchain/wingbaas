@@ -26,18 +26,6 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-	"crypto/sm"
-	"crypto/x509/pkix"
-	"crypto/aes"
-	"crypto/cipher"
-	"crypto/sha1"
-	"hash"
-	"crypto/hmac"
-	"crypto/sha256"
-	"crypto/sha512"
-	"reflect"
-	"math/big"
-	"crypto/md5"
 )
 
 // struct to hold info required for PKCS#8
@@ -54,77 +42,14 @@ type ecPrivateKey struct {
 	PublicKey     asn1.BitString        `asn1:"optional,explicit,tag:1"`
 }
 
-type pkcs8 struct {
-	Version    int
-	Algo       pkix.AlgorithmIdentifier
-	PrivateKey []byte
-}
-
-type sm2PrivateKey struct {
-	Version       int
-	PrivateKey    []byte
-	NamedCurveOID asn1.ObjectIdentifier `asn1:"optional,explicit,tag:0"`
-	PublicKey     asn1.BitString        `asn1:"optional,explicit,tag:1"`
-}
-
-// reference to https://www.rfc-editor.org/rfc/rfc5958.txt
-type EncryptedPrivateKeyInfo struct {
-	EncryptionAlgorithm Pbes2Algorithms
-	EncryptedData       []byte
-}
-
-// reference to https://www.ietf.org/rfc/rfc2898.txt
-type Pbes2Algorithms struct {
-	IdPBES2     asn1.ObjectIdentifier
-	Pbes2Params Pbes2Params
-}
-
-// reference to https://www.ietf.org/rfc/rfc2898.txt
-type Pbes2Params struct {
-	KeyDerivationFunc Pbes2KDfs // PBES2-KDFs
-	EncryptionScheme  Pbes2Encs // PBES2-Encs
-}
-
-// reference to https://www.ietf.org/rfc/rfc2898.txt
-type Pbes2KDfs struct {
-	IdPBKDF2    asn1.ObjectIdentifier
-	Pkdf2Params Pkdf2Params
-}
-
-type Pbes2Encs struct {
-	EncryAlgo asn1.ObjectIdentifier
-	IV        []byte
-}
-
-// reference to https://www.ietf.org/rfc/rfc2898.txt
-type Pkdf2Params struct {
-	Salt           []byte
-	IterationCount int
-	Prf            pkix.AlgorithmIdentifier
-}
-
 var (
-	oidNamedCurveP224    = asn1.ObjectIdentifier{1, 3, 132, 0, 33}
-	oidNamedCurveP256    = asn1.ObjectIdentifier{1, 2, 840, 10045, 3, 1, 7}
-	oidNamedCurveP384    = asn1.ObjectIdentifier{1, 3, 132, 0, 34}
-	oidNamedCurveP521    = asn1.ObjectIdentifier{1, 3, 132, 0, 35}
-	oidNamedCurveP256SM2 = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 301}
-
-	oidPBES1  = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 3}  // pbeWithMD5AndDES-CBC(PBES1)
-	oidPBES2  = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 13} // id-PBES2(PBES2)
-	oidPBKDF2 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 12} // id-PBKDF2
-
-	oidKEYMD5    = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 5}
-	oidKEYSHA1   = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 7}
-	oidKEYSHA256 = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 9}
-	oidKEYSHA512 = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 11}
-
-	oidAES128CBC = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 2}
-	oidAES256CBC = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 42}
+	oidNamedCurveP224 = asn1.ObjectIdentifier{1, 3, 132, 0, 33}
+	oidNamedCurveP256 = asn1.ObjectIdentifier{1, 2, 840, 10045, 3, 1, 7}
+	oidNamedCurveP384 = asn1.ObjectIdentifier{1, 3, 132, 0, 34}
+	oidNamedCurveP521 = asn1.ObjectIdentifier{1, 3, 132, 0, 35}
 )
 
 var oidPublicKeyECDSA = asn1.ObjectIdentifier{1, 2, 840, 10045, 2, 1}
-var oidSM2 = asn1.ObjectIdentifier{1, 2, 840, 10045, 2, 1}
 
 func oidFromNamedCurve(curve elliptic.Curve) (asn1.ObjectIdentifier, bool) {
 	switch curve {
@@ -136,8 +61,6 @@ func oidFromNamedCurve(curve elliptic.Curve) (asn1.ObjectIdentifier, bool) {
 		return oidNamedCurveP384, true
 	case elliptic.P521():
 		return oidNamedCurveP521, true
-	case sm.P256Sm2():
-		return oidNamedCurveP256SM2, true
 	}
 	return nil, false
 }
@@ -156,63 +79,36 @@ func PrivateKeyToDER(privateKey *ecdsa.PrivateKey) ([]byte, error) {
 // RSA private keys are converted to PKCS#1 format.
 func PrivateKeyToPEM(privateKey interface{}, pwd []byte) ([]byte, error) {
 	// Validate inputs
-	if (pwd == nil || len(pwd) == 0) {
-		pwd = nil
-	}
 	if len(pwd) != 0 {
 		return PrivateKeyToEncryptedPEM(privateKey, pwd)
 	}
-
 	if privateKey == nil {
 		return nil, errors.New("Invalid key. It must be different from nil.")
 	}
 
 	switch k := privateKey.(type) {
-	case *ecdsa.PrivateKey, *sm.PrivateKey:
+	case *ecdsa.PrivateKey:
 		if k == nil {
 			return nil, errors.New("Invalid ecdsa private key. It must be different from nil.")
 		}
 
-		var oidNamedCurve asn1.ObjectIdentifier
-		var ok bool
-		var err error
-		var asn1Bytes []byte
-		switch k := privateKey.(type) {
-		case *sm.PrivateKey:
-			// get the oid for the curve
-			oidNamedCurve, ok = oidFromNamedCurve(k.Curve)
-			if !ok {
-				return nil, errors.New("unknown elliptic curve")
-			}
-
-			// based on https://golang.org/src/crypto/x509/sec1.go
-			privateKeyBytes := k.D.Bytes()
-			paddedPrivateKey := make([]byte, (k.Curve.Params().N.BitLen()+7)/8)
-			copy(paddedPrivateKey[len(paddedPrivateKey)-len(privateKeyBytes):], privateKeyBytes)
-			// omit NamedCurveOID for compatibility as it's optional
-			asn1Bytes, err = asn1.Marshal(ecPrivateKey{
-				Version:    1,
-				PrivateKey: paddedPrivateKey,
-				PublicKey:  asn1.BitString{Bytes: elliptic.Marshal(k.Curve, k.X, k.Y)},
-			})
-		case *ecdsa.PrivateKey:
-			// get the oid for the curve
-			oidNamedCurve, ok = oidFromNamedCurve(k.Curve)
-			if !ok {
-				return nil, errors.New("unknown elliptic curve")
-			}
-
-			// based on https://golang.org/src/crypto/x509/sec1.go
-			privateKeyBytes := k.D.Bytes()
-			paddedPrivateKey := make([]byte, (k.Curve.Params().N.BitLen()+7)/8)
-			copy(paddedPrivateKey[len(paddedPrivateKey)-len(privateKeyBytes):], privateKeyBytes)
-			// omit NamedCurveOID for compatibility as it's optional
-			asn1Bytes, err = asn1.Marshal(ecPrivateKey{
-				Version:    1,
-				PrivateKey: paddedPrivateKey,
-				PublicKey:  asn1.BitString{Bytes: elliptic.Marshal(k.Curve, k.X, k.Y)},
-			})
+		// get the oid for the curve
+		oidNamedCurve, ok := oidFromNamedCurve(k.Curve)
+		if !ok {
+			return nil, errors.New("unknown elliptic curve")
 		}
+
+		// based on https://golang.org/src/crypto/x509/sec1.go
+		privateKeyBytes := k.D.Bytes()
+		paddedPrivateKey := make([]byte, (k.Curve.Params().N.BitLen()+7)/8)
+		copy(paddedPrivateKey[len(paddedPrivateKey)-len(privateKeyBytes):], privateKeyBytes)
+		// omit NamedCurveOID for compatibility as it's optional
+		asn1Bytes, err := asn1.Marshal(ecPrivateKey{
+			Version:    1,
+			PrivateKey: paddedPrivateKey,
+			PublicKey:  asn1.BitString{Bytes: elliptic.Marshal(k.Curve, k.X, k.Y)},
+		})
+
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling EC key to asn1 [%s]", err)
 		}
@@ -251,44 +147,6 @@ func PrivateKeyToPEM(privateKey interface{}, pwd []byte) ([]byte, error) {
 	}
 }
 
-// copy from crypto/pbkdf2.go
-func pbkdf(password, salt []byte, iter, keyLen int, h func() hash.Hash) []byte {
-	prf := hmac.New(h, password)
-	hashLen := prf.Size()
-	numBlocks := (keyLen + hashLen - 1) / hashLen
-
-	var buf [4]byte
-	dk := make([]byte, 0, numBlocks*hashLen)
-	U := make([]byte, hashLen)
-	for block := 1; block <= numBlocks; block++ {
-		// N.B.: || means concatenation, ^ means XOR
-		// for each block T_i = U_1 ^ U_2 ^ ... ^ U_iter
-		// U_1 = PRF(password, salt || uint(i))
-		prf.Reset()
-		prf.Write(salt)
-		buf[0] = byte(block >> 24)
-		buf[1] = byte(block >> 16)
-		buf[2] = byte(block >> 8)
-		buf[3] = byte(block)
-		prf.Write(buf[:4])
-		dk = prf.Sum(dk)
-		T := dk[len(dk)-hashLen:]
-		copy(U, T)
-
-		// U_n = PRF(password, U_(n-1))
-		for n := 2; n <= iter; n++ {
-			prf.Reset()
-			prf.Write(U)
-			U = U[:0]
-			U = prf.Sum(U)
-			for x := range U {
-				T[x] ^= U[x]
-			}
-		}
-	}
-	return dk[:keyLen]
-}
-
 // PrivateKeyToEncryptedPEM converts a private key to an encrypted PEM
 func PrivateKeyToEncryptedPEM(privateKey interface{}, pwd []byte) ([]byte, error) {
 	if privateKey == nil {
@@ -296,16 +154,11 @@ func PrivateKeyToEncryptedPEM(privateKey interface{}, pwd []byte) ([]byte, error
 	}
 
 	switch k := privateKey.(type) {
-	case *ecdsa.PrivateKey,*sm.PrivateKey:
-
+	case *ecdsa.PrivateKey:
 		if k == nil {
 			return nil, errors.New("Invalid ecdsa private key. It must be different from nil.")
 		}
-		var raw []byte
-		var err error
-		if key,ok:=k.(*ecdsa.PrivateKey);ok{
-			raw, err = x509.MarshalECPrivateKey(key)
-		}
+		raw, err := x509.MarshalECPrivateKey(k)
 
 		if err != nil {
 			return nil, err
@@ -323,6 +176,7 @@ func PrivateKeyToEncryptedPEM(privateKey interface{}, pwd []byte) ([]byte, error
 		}
 
 		return pem.EncodeToMemory(block), nil
+
 	default:
 		return nil, errors.New("Invalid key type. It must be *ecdsa.PrivateKey")
 	}
@@ -337,7 +191,7 @@ func DERToPrivateKey(der []byte) (key interface{}, err error) {
 
 	if key, err = x509.ParsePKCS8PrivateKey(der); err == nil {
 		switch key.(type) {
-		case *rsa.PrivateKey, *ecdsa.PrivateKey, *sm.PrivateKey:
+		case *rsa.PrivateKey, *ecdsa.PrivateKey:
 			return
 		default:
 			return nil, errors.New("Found unknown private key type in PKCS#8 wrapping")
@@ -451,7 +305,7 @@ func PublicKeyToPEM(publicKey interface{}, pwd []byte) ([]byte, error) {
 	}
 
 	switch k := publicKey.(type) {
-	case *ecdsa.PublicKey, *sm.PublicKey:
+	case *ecdsa.PublicKey:
 		if k == nil {
 			return nil, errors.New("Invalid ecdsa public key. It must be different from nil.")
 		}
@@ -481,6 +335,7 @@ func PublicKeyToPEM(publicKey interface{}, pwd []byte) ([]byte, error) {
 				Bytes: PubASN1,
 			},
 		), nil
+
 	default:
 		return nil, errors.New("Invalid key type. It must be *ecdsa.PublicKey or *rsa.PublicKey")
 	}
@@ -493,7 +348,7 @@ func PublicKeyToDER(publicKey interface{}) ([]byte, error) {
 	}
 
 	switch k := publicKey.(type) {
-	case *ecdsa.PublicKey, *sm.PublicKey:
+	case *ecdsa.PublicKey:
 		if k == nil {
 			return nil, errors.New("Invalid ecdsa public key. It must be different from nil.")
 		}
@@ -530,7 +385,7 @@ func PublicKeyToEncryptedPEM(publicKey interface{}, pwd []byte) ([]byte, error) 
 	}
 
 	switch k := publicKey.(type) {
-	case *ecdsa.PublicKey, *sm.PublicKey:
+	case *ecdsa.PublicKey:
 		if k == nil {
 			return nil, errors.New("Invalid ecdsa public key. It must be different from nil.")
 		}
@@ -601,105 +456,4 @@ func DERToPublicKey(raw []byte) (pub interface{}, err error) {
 	key, err := x509.ParsePKIXPublicKey(raw)
 
 	return key, err
-}
-
-
-func ParseSm2PrivateKey(der []byte) (*sm.PrivateKey, error) {
-	var privKey sm2PrivateKey
-
-	if _, err := asn1.Unmarshal(der, &privKey); err != nil {
-		return nil, errors.New("x509: failed to parse SM2 private key: " + err.Error())
-	}
-	curve := sm.P256Sm2()
-	k := new(big.Int).SetBytes(privKey.PrivateKey)
-	curveOrder := curve.Params().N
-	if k.Cmp(curveOrder) >= 0 {
-		return nil, errors.New("x509: invalid elliptic curve private key value")
-	}
-	priv := new(sm.PrivateKey)
-	priv.Curve = curve
-	priv.D = k
-	privateKey := make([]byte, (curveOrder.BitLen()+7)/8)
-	for len(privKey.PrivateKey) > len(privateKey) {
-		if privKey.PrivateKey[0] != 0 {
-			return nil, errors.New("x509: invalid private key length")
-		}
-		privKey.PrivateKey = privKey.PrivateKey[1:]
-	}
-	copy(privateKey[len(privateKey)-len(privKey.PrivateKey):], privKey.PrivateKey)
-	priv.X, priv.Y = curve.ScalarBaseMult(privateKey)
-	return priv, nil
-}
-
-func ParsePKCS8UnecryptedPrivateKey(der []byte) (*sm.PrivateKey, error) {
-	var privKey pkcs8
-
-	if _, err := asn1.Unmarshal(der, &privKey); err != nil {
-		return nil, err
-	}
-	if !reflect.DeepEqual(privKey.Algo.Algorithm, oidSM2) {
-		return nil, errors.New("x509: not sm2 elliptic curve")
-	}
-	return ParseSm2PrivateKey(privKey.PrivateKey)
-}
-
-func ParsePKCS8EcryptedPrivateKey(der, pwd []byte) (*sm.PrivateKey, error) {
-	var keyInfo EncryptedPrivateKeyInfo
-
-	_, err := asn1.Unmarshal(der, &keyInfo)
-	if err != nil {
-		return nil, errors.New("x509: unknown format")
-	}
-	if !reflect.DeepEqual(keyInfo.EncryptionAlgorithm.IdPBES2, oidPBES2) {
-		return nil, errors.New("x509: only support PBES2")
-	}
-	encryptionScheme := keyInfo.EncryptionAlgorithm.Pbes2Params.EncryptionScheme
-	keyDerivationFunc := keyInfo.EncryptionAlgorithm.Pbes2Params.KeyDerivationFunc
-	if !reflect.DeepEqual(keyDerivationFunc.IdPBKDF2, oidPBKDF2) {
-		return nil, errors.New("x509: only support PBKDF2")
-	}
-	pkdf2Params := keyDerivationFunc.Pkdf2Params
-	if !reflect.DeepEqual(encryptionScheme.EncryAlgo, oidAES128CBC) &&
-		!reflect.DeepEqual(encryptionScheme.EncryAlgo, oidAES256CBC) {
-		return nil, errors.New("x509: unknow encryption algorithm")
-	}
-	iv := encryptionScheme.IV
-	salt := pkdf2Params.Salt
-	iter := pkdf2Params.IterationCount
-	encryptedKey := keyInfo.EncryptedData
-	var key []byte
-	switch {
-	case pkdf2Params.Prf.Algorithm.Equal(oidKEYMD5):
-		key = pbkdf(pwd, salt, iter, 32, md5.New)
-		break
-	case pkdf2Params.Prf.Algorithm.Equal(oidKEYSHA1):
-		key = pbkdf(pwd, salt, iter, 32, sha1.New)
-		break
-	case pkdf2Params.Prf.Algorithm.Equal(oidKEYSHA256):
-		key = pbkdf(pwd, salt, iter, 32, sha256.New)
-		break
-	case pkdf2Params.Prf.Algorithm.Equal(oidKEYSHA512):
-		key = pbkdf(pwd, salt, iter, 32, sha512.New)
-		break
-	default:
-		return nil, errors.New("x509: unknown hash algorithm")
-	}
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		return nil, err
-	}
-	mode := cipher.NewCBCDecrypter(block, iv)
-	mode.CryptBlocks(encryptedKey, encryptedKey)
-	rKey, err := ParsePKCS8UnecryptedPrivateKey(encryptedKey)
-	if err != nil {
-		return nil, errors.New("pkcs8: incorrect password")
-	}
-	return rKey, nil
-}
-
-func ParsePKCS8PrivateKey(der, pwd []byte) (*sm.PrivateKey, error) {
-	if pwd == nil {
-		return ParsePKCS8UnecryptedPrivateKey(der)
-	}
-	return ParsePKCS8EcryptedPrivateKey(der, pwd)
 }

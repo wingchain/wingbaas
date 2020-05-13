@@ -12,7 +12,7 @@ import (
 
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/options"
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/providers/fab"
-	"github.com/spf13/cast"
+	"github.com/hyperledger/fabric-sdk-go/third_party/spf13/cast"
 	"google.golang.org/grpc/keepalive"
 )
 

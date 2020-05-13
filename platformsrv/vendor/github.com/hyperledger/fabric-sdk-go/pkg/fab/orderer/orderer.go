@@ -14,7 +14,7 @@ import (
 
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/errors/multi"
 	"github.com/pkg/errors"
-	"github.com/spf13/cast"
+	"github.com/hyperledger/fabric-sdk-go/third_party/spf13/cast"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/keepalive"
