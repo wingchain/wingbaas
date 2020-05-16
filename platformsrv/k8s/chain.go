@@ -13,6 +13,7 @@ type Chain struct {
 	BlockChainName  string 	`json:"BlockChainName"`
 	BlockChainType  string 	`json:"BlockChainType"`
 	ClusterId       string 	`json:"ClusterId"`
+	Version			string	`json:"Version"`
 }
 
 const (
@@ -97,7 +98,7 @@ func GetChain(chainId string,clusterId string) (*Chain,error) {
 		}
 	}
 	logger.Debug("GetChain: chain id not exsist") 
-	return nil,nil
+	return nil,nil 
 }
 
 func GetChainByName(chainName string,clusterId string) (*Chain,error) { 

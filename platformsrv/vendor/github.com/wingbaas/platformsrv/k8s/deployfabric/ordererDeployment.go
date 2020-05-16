@@ -255,10 +255,14 @@ func CreateOrderRaftDeployment(clusterId string,node string,namespaceId string,c
 							},
 							Args: []string{"sh","-c","cp -a /var/data/. " + "/cert; exec orderer"},
 							Env: []EnvContainerSpecTemplateSt{
-								// {
-								// 	Name: "ORDERER_GENERAL_BATCHTIMEOUT",
-								// 	Value: "2s",
-								// },
+								{
+									Name: "ORDERER_GENERAL_BATCHTIMEOUT",
+									Value: "2s",
+								},
+								{
+									Name: "CONFIGTX_ORDERER_ORDERERTYPE",
+									Value: "etcdraft",
+								},
 								{
 									Name: "ORDERER_GENERAL_GENESISFILE",
 									Value: "/cert/channel-artifacts/genesis.block",
@@ -267,18 +271,18 @@ func CreateOrderRaftDeployment(clusterId string,node string,namespaceId string,c
 									Name: "ORDERER_GENERAL_GENESISMETHOD",
 									Value: "file",
 								},
-								// {
-								// 	Name: "ORDERER_GENERAL_LEDGERTYPE",
-								// 	Value: "file",
-								// },
+								{
+									Name: "ORDERER_GENERAL_LEDGERTYPE",
+									Value: "file",
+								},
 								{
 									Name: "ORDERER_GENERAL_LISTENADDRESS",
 									Value: "0.0.0.0",
 								},
-								// {
-								// 	Name: "ORDERER_GENERAL_LISTENPORT",
-								// 	Value: "7050",
-								// }, 
+								{
+									Name: "ORDERER_GENERAL_LISTENPORT",
+									Value: "7050",
+								}, 
 								{
 									Name: "ORDERER_GENERAL_LOCALMSPDIR", 
 									Value: "/cert/crypto-config/ordererOrganizations/" + orderDomain + "/orderers/" + orderName + "." + orderDomain + "/msp",
@@ -291,14 +295,14 @@ func CreateOrderRaftDeployment(clusterId string,node string,namespaceId string,c
 									Name: "ORDERER_GENERAL_LOGLEVEL",
 									Value: "DEBUG", 
 								},
-								// {
-								// 	Name: "ORDERER_GENERAL_MAXMESSAGECOUNT",
-								// 	Value: "10",
-								// },
-								// {
-								// 	Name: "ORDERER_GENERAL_MAXWINDOWSIZE",
-								// 	Value: "1000",
-								// },
+								{
+									Name: "ORDERER_GENERAL_MAXMESSAGECOUNT",
+									Value: "10",
+								},
+								{
+									Name: "ORDERER_GENERAL_MAXWINDOWSIZE",
+									Value: "1000",
+								},
 								// {
 								// 	Name: "ORDERER_FILELEDGER_LOCATION",
 								// 	Value: "/var/fabric/production/orderer",

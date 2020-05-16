@@ -7,7 +7,7 @@
     "BlockChainVersionCfg": "settings/version.json",
     "NfsExternalAddr": "106.75.51.138",
     "NfsInternalAddr": "172.16.254.33",
-    "NfsBasePath": "/home/nfs",
+    "NfsBasePath": "/data/nfs",
     "NfsLocalRootDir": "nfs/",
     "keyStorePath": "tmp/" 
 }

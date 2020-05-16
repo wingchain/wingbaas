@@ -3,9 +3,10 @@ package api
 
 import (
 	"os"
+	"io"
+	"strings"
 	"encoding/json"
 	"net/http"
-	"io"
 	"io/ioutil"
 	"github.com/labstack/echo/v4"
 	"github.com/wingbaas/platformsrv/logger"
@@ -74,16 +75,22 @@ func orgJoinChannel(c echo.Context) error {
 	return c.JSON(http.StatusOK,ret)
 }
 
-func upChainCode(c echo.Context) error { 
+func upChainCode(c echo.Context) error {  
 	logger.Debug("upChainCode")
 	chainId := c.FormValue("BlockChainId")
 	ccId := c.FormValue("ChainCodeId")
 	ccVersion := c.FormValue("ChainCodeVersion")
+	cfg,err := sdkfabric.LoadChainCfg(chainId)
+	if err != nil {
+		msg := "upChainCode: not find this chain"
+		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	if strings.HasPrefix(cfg.Version,"2.") {
+		return upChainCodeV2(c,cfg)
+	}
 	file, err := c.FormFile("file") 
 	if err != nil {
-		// logger.Debug("para value=")
-		// logger.Debug("%s %s %s\n",chainId,ccId,ccVersion)
-		logger.Debug("err=%s",err)
 		msg := "get upload file error"
 		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
 		return c.JSON(http.StatusOK,ret)
@@ -95,7 +102,7 @@ func upChainCode(c echo.Context) error {
 		return c.JSON(http.StatusOK,ret)
 	}
 	defer src.Close()
-	rootPath,_ := utils.GetProcessRunRoot()
+	rootPath,_ := utils.GetProcessRunRoot() 
 	dstDir := rootPath + "/tmp/" + chainId + "/src/" + ccId + ccVersion + "/" 
 	bl,_ := utils.CreateDir(dstDir)
 	if !bl {
@@ -103,7 +110,7 @@ func upChainCode(c echo.Context) error {
 		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
 		return c.JSON(http.StatusOK,ret)
 	}  
-	dst, err := os.Create(dstDir + file.Filename)
+	dst, err := os.Create(dstDir + file.Filename) 
 	if err != nil {
 		msg := "create cc file error"
 		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
@@ -120,7 +127,7 @@ func upChainCode(c echo.Context) error {
 	return c.JSON(http.StatusOK,ret)
 }
 
-func orgDeployCC(c echo.Context) error {
+func orgDeployCC(c echo.Context) error { 
 	logger.Debug("orgDeployCC")
 	result, err := ioutil.ReadAll(c.Request().Body)
     if err != nil {
@@ -128,21 +135,21 @@ func orgDeployCC(c echo.Context) error {
 		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
 		return c.JSON(http.StatusOK,ret)
 	}
-
-	type ReqPara struct {
-		BlockChainId string `json:"BlockChainId"`
-		OrgName string `json:"OrgName"`
-		ChannelId string `json:"ChannelId"`
-		ChainCodeId string `json:"ChainCodeId"`
-		ChainCodeVersion string `json:"ChainCodeVersion"`
-		InitArgs []string `json:"InitArgs"`
-	}
-	var d ReqPara
+	var d FabricDeployCCPara
     err = json.Unmarshal(result, &d)
     if err != nil {
         msg := "body json Unmarshal err"
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
+	}
+	cfg,err := sdkfabric.LoadChainCfg(d.BlockChainId)
+	if err != nil {
+		msg := "orgDeployCC: not find this chain"
+		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	if strings.HasPrefix(cfg.Version,"2.") {
+		return orgDeployCCV2(c,cfg,d)
 	}
 	d.ChannelId = sdkfabric.DefaultChannel
 	err = fabric.OrgDeployChaiCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.ChainCodeVersion,d.InitArgs)

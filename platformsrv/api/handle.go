@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"io/ioutil"
+	"strings"
 	"github.com/labstack/echo/v4"
 	"github.com/wingbaas/platformsrv/logger"
 	"github.com/wingbaas/platformsrv/k8s"
@@ -127,7 +128,8 @@ func deployBlockChain(c echo.Context) error {
 	}
 	var blockId string
 	var clusterId string
-	if d.BlockChainType == "fabric" {
+	var version string
+	if d.BlockChainType == public.BLOCK_CHAIN_TYPE_FABRIC {
 		cfgMap, ok := d.DeployCfg.(map[string]interface{}) 
 		if !ok {
 			msg := "blockchain fabric deploy parameter error"
@@ -140,6 +142,20 @@ func deployBlockChain(c echo.Context) error {
 			msg := "blockchain fabric decode config map error"
         	ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 			return c.JSON(http.StatusOK,ret)
+		}
+		version = cfg.Version
+		if strings.HasPrefix(cfg.Version,"1.") {
+			if cfg.DeployType != public.KAFKA_FABRIC {
+				msg := "version 1.x only support deploy type KAFKA_FABRIC"
+        		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+				return c.JSON(http.StatusOK,ret)
+			}
+		}else if strings.HasPrefix(cfg.Version,"2."){
+			if cfg.DeployType != public.RAFT_FABRIC {
+				msg := "version 2.x only support deploy type RAFT_FABRIC"
+        		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+				return c.JSON(http.StatusOK,ret)
+			}
 		}
 		cn,_ := k8s.GetChainByName(d.BlockChainName,cfg.ClusterId)
 		if cn != nil {
@@ -167,6 +183,7 @@ func deployBlockChain(c echo.Context) error {
 	chain.BlockChainName = d.BlockChainName
 	chain.BlockChainType = d.BlockChainType
 	chain.ClusterId = clusterId
+	chain.Version = version
 	err = k8s.AddChain(chain)
 	if err != nil {
 		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)

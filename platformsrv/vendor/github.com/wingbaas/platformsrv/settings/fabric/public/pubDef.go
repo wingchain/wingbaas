@@ -2,11 +2,12 @@
 package public
 
 const (
-	SOLO_FABRIC     string = "SOLO_FABRIC"
-	KAFKA_FABRIC    string = "KAFKA_FABRIC"
-	RAFT_FABRIC     string = "RAFT_FABRIC"
-	ZOOK_COUNT      int    = 3
-	KAFKA_COUNT     int    = 4
+	BLOCK_CHAIN_TYPE_FABRIC 		string = "fabric"
+	SOLO_FABRIC     				string = "SOLO_FABRIC"
+	KAFKA_FABRIC    				string = "KAFKA_FABRIC"
+	RAFT_FABRIC     				string = "RAFT_FABRIC"
+	ZOOK_COUNT      				int    = 3
+	KAFKA_COUNT     				int    = 4 
 )
 
 type NodeSpec struct {
@@ -30,14 +31,11 @@ type DeployNetConfig struct {
 	PeerOrgs    []OrgSpec `json:"PeerOrgs"`
 	KafkaDeployNode	string `json:"KafkaDeployNode"`
 	ZookeeperDeployNode string `json:"ZookeeperDeployNode"` 
+	ToolsDeployNode string `json:"ToolsDeployNode"`
 }
 
-type DeployNodeInfo map[string]string
-type DeployNodeGroup map[string]DeployNodeInfo
-
 type DeployPara struct { 
-	DeployNetCfg        DeployNetConfig    	`json:"DeployNetCfg"`  
-	DeployHost       	DeployNodeGroup 	`json:"DeployHost"`
+	DeployNetCfg        DeployNetConfig    	`json:"DeployNetCfg"` 
 	DeployType       	string          	`json:"DeployType"`
 	Version    		 	string          	`json:"Version"`
 	CryptoType       	string          	`json:"CryptoType"`

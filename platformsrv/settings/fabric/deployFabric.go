@@ -240,6 +240,29 @@ func DeployComponets(p public.DeployPara,chainName string,chainId string,chainTy
 			}
 		}
 	}
+	if strings.HasPrefix(p.Version,"2.") {
+		toolsImage,err := utils.GetBlockImage(chainType,p.Version,"tools")
+		if err != nil {
+			logger.Errorf("DeployComponets: GetBlockImage tools error,chainType=%s version=%s",chainType,p.Version)
+			return "",fmt.Errorf("DeployComponets: GetBlockImage tools error,chainType=%s version=%s",chainType,p.Version)
+		}
+		var dp deployfabric.ToolsDeploymentPara
+		for _,org := range p.DeployNetCfg.PeerOrgs {
+			dp.PeerDomain = org.Domain 
+			dp.OrgName = org.Name
+			for _,spec :=  range org.Specs { 
+				dp.PeerName = spec.Hostname
+				break
+			}
+			break
+		}
+		dp.ToolsImage = toolsImage
+		_,err = deployfabric.CreateToolsDeployment(p.ClusterId,p.DeployNetCfg.ToolsDeployNode,chainName,chainId,dp)
+		if err != nil {
+			logger.Errorf("DeployComponets: CreateToolsDeployment error=%s",err.Error())
+			return "",fmt.Errorf("DeployComponets: CreateToolsDeployment error=%s",err.Error())
+		}
+	}
 	return "",nil
 }
 

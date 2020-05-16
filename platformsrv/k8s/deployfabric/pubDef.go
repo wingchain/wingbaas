@@ -177,13 +177,15 @@ type ContainerSpecTemplateSt struct {
 	Name string `json:"name"`
 	Image string `json:"image"`
 	ImagePullPolicy string `json:"imagePullPolicy"`
-	Resources ResourceContainerSpecTemplateSt `json:"resources"`
+	Resources ResourceContainerSpecTemplateSt `json:"resources"` 
 	Args []string `json:"args"`
 	Env []EnvContainerSpecTemplateSt `json:"env"`
 	Ports []PortContainerSpecTemplateSt `json:"ports"`
 	VolumeMounts []VolumeContainerSpecTemplateSt `json:"volumeMounts"`
 	WorkingDir string `json:"workingDir,omitempty"` 
 	Command []string `json:"command,omitempty"`
+	Tty bool `json:"tty,omitempty"` 
+	Stdin bool `json:"stdin,omitempty"`
 } 
 
 type ImagePullSecretSpecTemplateSt struct { 
@@ -306,6 +308,42 @@ func CreateDeployment(clusterId string,namespaceId string,deployObj interface{})
 		}
 	}
 	// logger.Debug("CreateDeployment: create success,result str=")
+	// logger.Debug(string(bytes))
+	return nil,nil
+}
+
+func PatchDeployment(clusterId string,namespaceId string,deploymentName string,deployObj interface{})([]byte,error) { 
+	mBytes, err := json.Marshal(deployObj) 
+	if err != nil {
+		logger.Errorf("PatchDeployment: Marshal deployment error,%v",err) 
+		return nil,fmt.Errorf("PatchDeployment: Marshal deployment error,%v",err)
+	}
+	cluster,_ := k8s.GetCluster(clusterId)
+	if cluster == nil {
+		logger.Errorf("PatchDeployment: cluster nil,cluster id =%s",clusterId)
+		return nil,fmt.Errorf("PatchDeployment: cluster nil,cluster id =%s",clusterId)
+	}
+	reqUrl := cluster.Addr + k8s.API_APP + k8s.NAMESPACES + "/" + namespaceId + "/" + k8s.DEPLOYMENTS +  "/" + deploymentName
+	bytes,err := utils.RequestWithCertAndBodyJsonHeader(reqUrl,utils.REQ_PATCH,cluster.Cert,cluster.Key,string(mBytes))
+	if err != nil { 
+		logger.Errorf("PatchDeployment: RequestWithCertAndBody err,%v", err)
+		return nil,fmt.Errorf("PatchDeployment: RequestWithCertAndBody err,%v", err)
+	}
+	var result DeployResult 
+	err = json.Unmarshal(bytes, &result) 
+	if err != nil { 
+		logger.Errorf("PatchDeployment: create result err,%v", err)
+		return nil,fmt.Errorf("PatchDeployment: create result err,%v", err)
+	}
+	status,ok := (result.Status).(string) 
+	if ok {
+		if status == KUBERNETES_DEPLOY_FAILED {
+			logger.Errorf("PatchDeployment: create failed,result=%s",string(bytes))
+			logger.Errorf("PatchDeployment: create failed,jsonstr=%s",string(mBytes))
+			return nil,fmt.Errorf("PatchDeployment: create failed")
+		}
+	}
+	// logger.Debug("PatchDeployment: create success,result str=")
 	// logger.Debug(string(bytes))
 	return nil,nil
 }

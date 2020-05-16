@@ -22,9 +22,17 @@ type ToolsDeploymentPara struct{
 	OrgName 	string
 } 
 
+type PathToolsDeploymentPara struct{
+	Args	  []string
+	ToolsImage	string
+	PeerName 	string
+	PeerDomain 	string
+	OrgName 	string
+} 
+
 func CreateToolsDeployment(clusterId string,node string,namespaceId string,chainId string,p ToolsDeploymentPara)([]byte,error) {
-	appName := "cli" + namespaceId
-	cluster,_ := k8s.GetCluster(clusterId)
+	appName := "cli"
+	cluster,_ := k8s.GetCluster(clusterId) 
 	if cluster == nil {
 		logger.Errorf("CreateToolsDeployment: get cluster failed,id=%s",clusterId)
 		return nil,fmt.Errorf("CreateToolsDeployment: get cluster failed,id=%s",clusterId)
@@ -67,7 +75,10 @@ func CreateToolsDeployment(clusterId string,node string,namespaceId string,chain
 									CPU: "128m",
 								},
 							},
-							Args: []string{"sh","-c","cp -a /var/data/. " + "/cert; exec peer node start"},
+							WorkingDir: "/opt/gopath/src/github.com/hyperledger/fabric/peer",
+							Tty : true,
+							Stdin: true,
+							Args: []string{"sh","-c","cp -a /var/data/. " + "/cert; /bin/bash"}, 
 							Env: []EnvContainerSpecTemplateSt{
 								{
 									Name: "FABRIC_LOGGING_SPEC", 
@@ -134,17 +145,6 @@ func CreateToolsDeployment(clusterId string,node string,namespaceId string,chain
 									Value: namespaceId + ".svc.cluster.local",
 								},
 							},
-							Ports: []PortContainerSpecTemplateSt{
-								{
-									ContainerPort: 7051,
-								},
-								{
-									ContainerPort: 7052,
-								},
-								{
-									ContainerPort: 7053,
-								},
-							},
 							VolumeMounts: []VolumeContainerSpecTemplateSt{ 
 								{
 									MountPath: "/var/data",
@@ -154,17 +154,21 @@ func CreateToolsDeployment(clusterId string,node string,namespaceId string,chain
 									MountPath: "/host/var/run/",
 									Name: "host-vol-var-run",
 								}, 
+								{
+									//MountPath: "/opt/gopath/src/github.com/chaincode/",
+									MountPath: "/data/ccbase/",
+									Name: "ccbase",
+								},  
 							},    
 						},
 					},
 					RestartPolicy: "Always",
-					Hostname: p.PeerName,
 					Volumes: []interface{}{
-						VolumeSpecTemplateSt{
+						VolumeSpecTemplateSt{ 
 							Name: "peer-cert",
 							Nfs: NfsVolumeSpecTemplateSt{
 								Server: utils.BAAS_CFG.NfsInternalAddr,
-								Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId,
+								Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId, 
 							},
 						},
 						// VolumeSpecTemplateHostSt{
@@ -179,12 +183,18 @@ func CreateToolsDeployment(clusterId string,node string,namespaceId string,chain
 								Path: "/var/run/",  
 							}, 
 						},
+						VolumeSpecTemplateHostSt{
+							Name: "ccbase",
+							HostPath: HostPathVolumeSpecTemplateSt{
+								Path: "/data/ccbase",
+							}, 
+						},
 					},
 				},
-			},
+			}, 
 		},
 	}
-	bytes, err := CreateDeployment(clusterId,namespaceId,toolsDeployMent)
+	bytes, err := CreateDeployment(clusterId,namespaceId,toolsDeployMent) 
 	if err != nil {
 		certPath := utils.BAAS_CFG.BlockNetCfgBasePath + chainId
 		nfsPath :=  utils.BAAS_CFG.NfsLocalRootDir + chainId
@@ -196,3 +206,167 @@ func CreateToolsDeployment(clusterId string,node string,namespaceId string,chain
 }
 
 
+func PatchToolsDeployment(clusterId string,node string,namespaceId string,chainId string,p PathToolsDeploymentPara)([]byte,error) {
+	appName := "cli"
+	cluster,_ := k8s.GetCluster(clusterId)
+	if cluster == nil {
+		logger.Errorf("PatchToolsDeployment: get cluster failed,id=%s",clusterId)
+		return nil,fmt.Errorf("PatchToolsDeployment: get cluster failed,id=%s",clusterId)
+	}
+	toolsDeployMent :=  ToolsDeployMent { 
+		APIVersion: "apps/v1",
+		Kind: "Deployment",
+		Metadata: MetadataDeployMent{
+			Name: appName,
+			Labels: LabelsSt{
+				App: appName, 
+			},
+		},
+		Spec: SpecSt{
+			Selector: SelectorSt{
+				MatchLabels: LabelsSt{
+					App: appName,
+				},
+			},
+			Replicas: 1,
+			Strategy: StrategySt{
+				Type: "Recreate",
+			},
+			Template: TemplateSt{
+				Metadata: MetadataTemplateSt{ 
+					Labels: LabelsSt{
+						App: appName,
+					},
+				},
+				Spec: SpecTemplateSt{
+					NodeName: node,
+					Containers: []ContainerSpecTemplateSt{ 
+						{
+							Name: appName, 
+							Image: p.ToolsImage,
+							ImagePullPolicy: "IfNotPresent",
+							Resources: ResourceContainerSpecTemplateSt{
+								Requests: RequestsResourceContainerSpecTemplateSt{
+									Memory: "768Mi",
+									CPU: "128m",
+								},
+							},
+							WorkingDir: "/opt/gopath/src/github.com/hyperledger/fabric/peer",
+							Tty : true,
+							Stdin: true, 
+							Args: p.Args, 
+							Env: []EnvContainerSpecTemplateSt{
+								{
+									Name: "FABRIC_LOGGING_SPEC", 
+									Value: "INFO",
+								},
+								{
+									Name: "GOPATH", 
+									Value: "/opt/gopath",
+								},
+								{
+									Name: "CORE_VM_ENDPOINT",
+									Value: "unix:///host/var/run/docker.sock",
+								},
+								{
+									Name: "CORE_PEER_ID", 
+									Value: appName,
+								},
+								{
+									Name: "CORE_PEER_ADDRESS",
+									Value: p.PeerName + ":7051",
+								},
+								{
+									Name: "CORE_PEER_LOCALMSPID",
+									Value: p.OrgName + "MSP",
+								},
+								{
+									Name: "CORE_PEER_NETWORKID",
+									Value: "dev-" + namespaceId,
+								},
+								{
+									Name: "CORE_PEER_MSPCONFIGPATH",
+									Value: "/cert/crypto-config/peerOrganizations/" + p.PeerDomain + "/users/Admin@" + p.PeerDomain + "/msp", 
+								},
+								{
+									Name: "CORE_PEER_TLS_ENABLED",
+									Value: "true",
+								},
+								{
+									Name: "CORE_PEER_TLS_CERT_FILE",
+									Value: "/cert/crypto-config/peerOrganizations/" + p.PeerDomain + "/peers/" + p.PeerName + "."  + p.PeerDomain + "/tls/server.crt",
+								},
+								{
+									Name: "CORE_PEER_TLS_KEY_FILE",
+									Value:  "/cert/crypto-config/peerOrganizations/" + p.PeerDomain + "/peers/" + p.PeerName + "."  + p.PeerDomain + "/tls/server.key",
+								}, 
+								{
+									Name: "CORE_PEER_TLS_ROOTCERT_FILE",
+									Value: "/cert/crypto-config/peerOrganizations/" + p.PeerDomain + "/peers/" + p.PeerName + "."  + p.PeerDomain + "/tls/ca.crt",
+								},
+								{
+									Name: "CORE_VM_DOCKER_ATTACHSTDOUT",
+									Value: "true",
+								},
+								{
+									Name: "CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE",
+									Value: "host",
+								},
+								// {
+								// 	Name: "CORE_PEER_ADDRESSAUTODETECT",
+								// 	Value: "true", 
+								// },
+								{
+									Name: "CORE_VM_DOCKER_HOSTCONFIG_DNSSEARCH",
+									Value: namespaceId + ".svc.cluster.local",
+								},
+							},
+							VolumeMounts: []VolumeContainerSpecTemplateSt{ 
+								{
+									MountPath: "/var/data",
+									Name: "peer-cert",
+								}, 
+								{
+									MountPath: "/host/var/run/",
+									Name: "host-vol-var-run",
+								}, 
+								{
+									MountPath: "/data/ccbase/",
+									Name: "ccbase",
+								},  
+							},    
+						},
+					},
+					RestartPolicy: "Always",
+					Volumes: []interface{}{
+						VolumeSpecTemplateSt{ 
+							Name: "peer-cert",
+							Nfs: NfsVolumeSpecTemplateSt{
+								Server: utils.BAAS_CFG.NfsInternalAddr,
+								Path: utils.BAAS_CFG.NfsBasePath + "/" + chainId, 
+							},
+						},
+						VolumeSpecTemplateHostSt{
+							Name: "host-vol-var-run",
+							HostPath: HostPathVolumeSpecTemplateSt{
+								Path: "/var/run/",  
+							}, 
+						},
+						VolumeSpecTemplateHostSt{
+							Name: "ccbase",
+							HostPath: HostPathVolumeSpecTemplateSt{
+								Path: "/data/ccbase",
+							}, 
+						},
+					},
+				},
+			}, 
+		},
+	}
+	bytes, err := PatchDeployment(clusterId,namespaceId,appName,toolsDeployMent) 
+	if err != nil {
+		logger.Debug("PatchToolsDeployment failed")
+		return nil,fmt.Errorf("PatchToolsDeployment failed") 
+	}
+	return bytes,err
+}

@@ -140,8 +140,8 @@ request parameter:
 		"DeployNetCfg": { 
 			"OrdererOrgs": [
 			{
-				"Name": "Orderer",
-				"Domain": "orderer.baas.xyz",
+				"Name": "Orderer",//const paramerter    
+				"Domain": "orderer.baas.xyz",//const parameter    
 				"DeployNode": "172-16-254-33",
 				"Specs": [
 					{
@@ -155,19 +155,19 @@ request parameter:
 		],
 			"PeerOrgs": [
 			{
-				"Name": "Org1",
+				"Name": "Org1", 
 				"Domain": "Org1.fabric.baas.xyz",
 				"DeployNode": "172-16-254-130",
 				"Specs": [
 					{
-						"Hostname": "peer0-org1"
+						"Hostname": "peer0-org1" //must abide by this rule,contains host symbol,link character '-' and org name       
 					},
 					{
-						"Hostname": "peer1-org1"
+						"Hostname": "peer1-org1"//must abide by this rule,contains host symbol,link character '-' and org name    
 					}
 				],
 				"Users": {
-					"Count": 1
+					"Count": 1//const parameter     
 				}
 			},
 			{
@@ -176,23 +176,24 @@ request parameter:
 				"DeployNode": "172-16-254-33",
 				"Specs": [
 					{
-						"Hostname": "peer0-org2"
+						"Hostname": "peer0-org2"//must abide by this rule,contains host symbol,link character '-' and org name     
 					},
 					{
-						"Hostname": "peer1-org2"
+						"Hostname": "peer1-org2"//must abide by this rule,contains host symbol,link character '-' and org name     
 					}
 				],
 				"Users": {
-					"Count": 1
+					"Count": 1//const parameter    
 				}
 			}
 		],
-		"KafkaDeployNode": "172-16-254-33",
-		"ZookeeperDeployNode": "172-16-254-130"
+		"KafkaDeployNode": "172-16-254-33",//only DeployType is KAFKA_FABRIC need 
+		"ZookeeperDeployNode": "172-16-254-130",//only DeployType is KAFKA_FABRIC need   
+		"ToolsDeployNode": "172-16-254-33"//only DeployType is RAFT_FABRIC need    
 		},
-		"DeployType": "KAFKA_FABRIC",
-		"Version": "1.3.0",
-		"CryptoType": "ECDSA",
+		"DeployType": "KAFKA_FABRIC",//KAFKA_FABRIC or RAFT_FABRIC         
+		"Version": "1.3.0",//if 1.x, parameter DeployType only KAFKA_FABRIC, 2.x, parameter DeployType only RAFT_FABRIC         
+		"CryptoType": "ECDSA",//const parameter       
 		"ClusterId": "test-cluster1"
 	}
 }
