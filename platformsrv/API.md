@@ -591,7 +591,7 @@ request parameter:
 	"BlockChainId": "6f2Wq0Hy5LSYpSt0yvmTd1XD2XEn3Hdr",
 	"OrgName": "Org1",
 	"ChannelId": "mychannel" ,
-	"ChainCodeID": "cctest",
+	"ChainCodeId": "cctest",
 	"Args": ["query","a"]
 }
 ``` 
@@ -618,16 +618,17 @@ request parameter:
 	"ChannelId": "mychannel" 
 }
 ``` 
-API RETURN:                  
+API RETURN (fabric v1.x):                  
 ```json     
 {
     "code": 0,
     "message": "success",    
     "data": {
-        "chaincodes": [
+        "chaincodes": [ 
             {
                 "name": "cctest",
-                "version": "10",
+				"version": "10",
+				"sequence": 1,
                 "path": "cctest10",
                 "input": "<nil>",
                 "escc": "escc",

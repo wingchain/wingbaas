@@ -170,22 +170,24 @@ func chaincodeCall(c echo.Context) error {
 		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
 		return c.JSON(http.StatusOK,ret)
 	}
-	type ReqPara struct {
-		BlockChainId string `json:"BlockChainId"`
-		OrgName string `json:"OrgName"`
-		ChannelId string `json:"ChannelId"`
-		ChainCodeID string `json:"ChainCodeID"`
-		Args []string `json:"Args"`
-	}
-	var d ReqPara
+	var d FabricCCCallPara
     err = json.Unmarshal(result, &d)
     if err != nil {
         msg := "body json Unmarshal err"
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
+	cfg,err := sdkfabric.LoadChainCfg(d.BlockChainId)
+	if err != nil {
+		msg := "fabric chaincodeCall: not find this chain"
+		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	if strings.HasPrefix(cfg.Version,"2.") {
+		return callCCV2(c,cfg,d)
+	}
 	d.ChannelId = sdkfabric.DefaultChannel 
-	cr,err := fabric.OrgInvokeChainCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeID,d.Args)
+	cr,err := fabric.OrgInvokeChainCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.Args)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
 		return c.JSON(http.StatusOK,ret)
@@ -202,22 +204,24 @@ func chaincodeQuery(c echo.Context) error {
 		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
 		return c.JSON(http.StatusOK,ret)
 	}
-	type ReqPara struct {
-		BlockChainId string `json:"BlockChainId"`
-		OrgName string `json:"OrgName"`
-		ChannelId string `json:"ChannelId"`
-		ChainCodeID string `json:"ChainCodeID"`
-		Args []string `json:"Args"`
-	}
-	var d ReqPara
+	var d FabricCCQueryPara
     err = json.Unmarshal(result, &d)
     if err != nil {
         msg := "body json Unmarshal err"
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
+	// cfg,err := sdkfabric.LoadChainCfg(d.BlockChainId)
+	// if err != nil {
+	// 	msg := "fabric chaincodeQuery: not find this chain"
+	// 	ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+	// 	return c.JSON(http.StatusOK,ret)
+	// }
+	// if strings.HasPrefix(cfg.Version,"2.") {
+	// 	return ccQueryV2(c,cfg,d)
+	// }
 	d.ChannelId = sdkfabric.DefaultChannel
-	qr,err := fabric.OrgQueryChainCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeID,d.Args)
+	qr,err := fabric.OrgQueryChainCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.Args)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
 		return c.JSON(http.StatusOK,ret)
@@ -234,17 +238,21 @@ func queryInstatialCC(c echo.Context) error {
 		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
 		return c.JSON(http.StatusOK,ret)
 	}
-	type ReqPara struct {
-		BlockChainId string `json:"BlockChainId"`
-		OrgName string `json:"OrgName"`
-		ChannelId string `json:"ChannelId"`
-	}
-	var d ReqPara
+	var d FabricInstantialCCPara 
     err = json.Unmarshal(result, &d)
     if err != nil {
         msg := "body json Unmarshal err"
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
+	}
+	cfg,err := sdkfabric.LoadChainCfg(d.BlockChainId)
+	if err != nil {
+		msg := "fabric queryInstatialCC: not find this chain"
+		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	if strings.HasPrefix(cfg.Version,"2.") {
+		return ccQueryInstatialV2(c,cfg,d) 
 	}
 	d.ChannelId = sdkfabric.DefaultChannel
 	qr,err := fabric.OrgQueryInstantiateCC(d.BlockChainId,d.OrgName,d.ChannelId)

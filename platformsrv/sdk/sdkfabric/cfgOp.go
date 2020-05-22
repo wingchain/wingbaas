@@ -16,13 +16,14 @@ import (
 )
 
 var fileLocker sync.Mutex //file locker
+var cfgFileLocker sync.Mutex //config file locker
 
 func LoadChainCfg(chainId string) (public.DeployPara, error) {
 	fileName := utils.BAAS_CFG.BlockNetCfgBasePath + chainId + ".json"
 	var obj public.DeployPara
-	fileLocker.Lock()
+	cfgFileLocker.Lock()
 	bytes, err := ioutil.ReadFile(fileName) //read file
-	fileLocker.Unlock()
+	cfgFileLocker.Unlock()
 	if err != nil {
 		logger.Errorf("LoadChainCfg: read cfg file error,%s", err) 
 		return obj, fmt.Errorf("%v", err) 
@@ -37,7 +38,7 @@ func LoadChainCfg(chainId string) (public.DeployPara, error) {
 
 func ReadFileLine(filePath string)(bool, []string ){
 	var content []string
-	file, err := os.OpenFile(filePath, os.O_RDONLY|os.O_CREATE, 0644)
+	file, err := os.OpenFile(filePath,os.O_RDONLY|os.O_CREATE,0644)
 	defer file.Close()
 	if err != nil {
 		logger.Errorf("Open File Failed, %v", err)
@@ -54,16 +55,35 @@ func ReadFileLine(filePath string)(bool, []string ){
         	break
         }
         if ( "\n" != line ){
-        	content = append( content ,line)
+        	content = append(content,line)
         }     
     }
 	return true,content
 }
 
-func ReWriteFileLine(filePath string,content []string)bool {
-	file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+func ReadFileLine2(filePath string)(bool, []string ){
+	fi, err := os.OpenFile(filePath,os.O_RDONLY,0666)
     if err != nil {
-    	logger.Errorf("Open File Failed, %v", err)
+        logger.Errorf("Read File Failed, %v", err)
+        return false,nil
+    }
+	defer fi.Close()
+	var as []string
+    br := bufio.NewReader(fi)
+    for {
+        a, _, c := br.ReadLine() 
+        if c == io.EOF {
+            break
+		}
+		as = append(as,string(a))
+	}
+	return true,as
+}
+
+func ReWriteFileLine(filePath string,content []string)bool {
+	file, err := os.OpenFile(filePath,os.O_WRONLY|os.O_CREATE|os.O_TRUNC,0644)
+    if err != nil {
+    	logger.Errorf("Open File Failed, %v", err) 
         return false
     }	
 	defer file.Close()
@@ -97,7 +117,9 @@ func AddHosts(hostName string, ip string) bool {
 	if !exits {
 		text = append(text,newHost)
 	}
+	fileLocker.Lock()
 	bl = ReWriteFileLine("/etc/hosts", text)
+	fileLocker.Unlock()
 	if !bl {
 		logger.Errorf("AddHosts:Write file Failed")
 	}

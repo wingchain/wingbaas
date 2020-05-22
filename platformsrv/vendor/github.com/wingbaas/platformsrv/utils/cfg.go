@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"bytes"
 	"os"
+	"runtime"
 	"os/exec"
 	"encoding/json"
 	"path/filepath"
@@ -106,15 +107,30 @@ func (cfg *BaasCfg) CfgPathInit() error {
 		logger.Errorf("CfgPathInit: keyStorePath init error")
 		return fmt.Errorf("%v", err)
 	}
-
-	cmd := "sudo mount -t nfs -o resvport " + cfg.NfsExternalAddr + ":" + cfg.NfsBasePath + " " + cfg.NfsLocalRootDir
-	//cmd := "mount -t nfs " + cfg.NfsInternalAddr + ":" + cfg.NfsBasePath + " " + cfg.NfsLocalRootDir
+	var cmd string
+	var cmd2 string
+	if runtime.GOOS == "darwin" {
+		cmd = "sudo mount -t nfs -o resvport " + cfg.NfsExternalAddr + ":" + cfg.NfsBasePath + " " + cfg.NfsLocalRootDir
+		cmd2 = "sudo chmod 0666 /etc/hosts"
+		logger.Debug("os type=",runtime.GOOS)
+	}else if runtime.GOOS == "linux" {
+		cmd = "mount -t nfs " + cfg.NfsInternalAddr + ":" + cfg.NfsBasePath + " " + cfg.NfsLocalRootDir
+		cmd2 = "chmod 0666 /etc/hosts"
+		logger.Debug("os type=",runtime.GOOS)
+	}else {
+		logger.Errorf("CfgPathInit: unsupported operation system")
+		return fmt.Errorf("CfgPathInit: unsupported operation system")
+	}
 	_,err = ExecShell(cmd)
 	if err != nil {
 		logger.Errorf("CfgPathInit: mount nfs error, %v",err)
 		return fmt.Errorf("CfgPathInit: mount nfs error, %v",err)
 	}
-	
+	_,err = ExecShell(cmd2)
+	if err != nil {
+		logger.Errorf("CfgPathInit: modify /etc/hosts permission error, %v",err)
+		return fmt.Errorf("CfgPathInit: modify /etc/hosts permission error, %v",err)
+	}
 	return nil 
 }
 
