@@ -64,8 +64,9 @@ func CreateNamespace(clusterId string,namespaceId string)([]byte,error) {
 		logger.Errorf("CreateNamespace: YAML obj marshal, err: %v", err)
 		return nil,fmt.Errorf("CreateNamespace: YAML obj marshal, err: %v", err)
 	}
-	reqUrl := cluster.Addr + k8s.API_V1 + k8s.NAMESPACES
-	bytes,err = utils.RequestWithCertAndBody(reqUrl,utils.REQ_POST,cluster.Cert,cluster.Key,string(bytes))
+	reqUrl := cluster.ApiUrl + k8s.API_V1 + k8s.NAMESPACES
+	cp := utils.BAAS_CFG.ClusterPkiBasePath
+	bytes,err = utils.RequestWithCertAndBody(reqUrl,utils.REQ_POST,cp + cluster.Cert,cp + cluster.Key,string(bytes))
 	if err != nil { 
 		logger.Errorf("CreateNamespace: RequestWithCertAndBody err,%v", err)
 		return nil,fmt.Errorf("CreateNamespace: RequestWithCertAndBody err,%v", err)
@@ -85,7 +86,7 @@ func DeleteNamespace(clusterId string,namespaceId string)([]byte,error) {
 		logger.Errorf("DeleteNamespace: cluser nil,cluser id =%s",clusterId)
 		return nil,fmt.Errorf("DeleteNamespace: cluster nil,cluster id =%s",clusterId)
 	}
-	reqUrl := cluster.Addr + k8s.API_V1 + k8s.NAMESPACES + "/" + namespaceId
+	reqUrl := cluster.ApiUrl + k8s.API_V1 + k8s.NAMESPACES + "/" + namespaceId
 	bytes,err := utils.RequestWithCert(reqUrl,utils.REQ_DELETE,cluster.Cert,cluster.Key)
 	if err != nil { 
 		logger.Errorf("DeleteNamespace: RequestWithCertAndBody err,%v", err)

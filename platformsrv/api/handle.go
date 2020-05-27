@@ -3,6 +3,7 @@ package api
 
 import (
 	"os"
+	"io"
 	"encoding/json"
 	"net/http"
 	"io/ioutil"
@@ -15,6 +16,7 @@ import (
 	"github.com/wingbaas/platformsrv/utils"
 	"github.com/wingbaas/platformsrv/settings/fabric"
 	"github.com/wingbaas/platformsrv/settings/fabric/public"
+	"github.com/wingbaas/platformsrv/sdk/sdkfabric"
 )
 
 const (
@@ -53,6 +55,41 @@ func getApiRet (code int, msg string, data interface{}) ApiRet {
 	return ret
 }
 
+func upLoadKeyFile(c echo.Context) error { 
+	logger.Debug("upLoadKeyFile")
+	file, err := c.FormFile("file") 
+	if err != nil {
+		msg := "get upLoadKeyFile error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	src, err := file.Open()
+	if err != nil {
+		msg := "open upLoadKeyFile error"
+		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	defer src.Close() 
+	dstDir := utils.BAAS_CFG.ClusterPkiBasePath
+	fileId := utils.GenerateRandomString(16)
+	dst, err := os.Create(dstDir + fileId)  
+	if err != nil {
+		msg := "create upLoadKeyFile error"
+		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	defer dst.Close()
+	_,err = io.Copy(dst, src)
+	if err != nil {
+		msg := "copy key file error"
+		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,fileId) 
+	return c.JSON(http.StatusOK,ret) 
+} 
+
+
 func addCluster(c echo.Context) error {
 	logger.Debug("addCluster")
 	var cluster k8s.Cluster
@@ -67,7 +104,13 @@ func addCluster(c echo.Context) error {
         msg := "body json Unmarshal err"
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret)
-    }
+	}
+	bl := sdkfabric.AddHosts(cluster.HostDomain,cluster.PublicIp)
+	if !bl {
+		msg := "add cluster domain to /etc/hosts failed"
+        ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
 	err = k8s.AddCluster(cluster)
 	if err != nil {
         msg := err.Error()
@@ -76,7 +119,7 @@ func addCluster(c echo.Context) error {
     }
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil)
 	return c.JSON(http.StatusOK,ret) 
-}
+} 
 
 func getClusters(c echo.Context) error {
 	logger.Debug("getClusters")

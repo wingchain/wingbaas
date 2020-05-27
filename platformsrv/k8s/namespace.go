@@ -48,7 +48,8 @@ func GetClusterNamespaces(cluserId string) ([]Namespace,error) {
 		logger.Errorf("GetClusterNamespaces: cluser nil,cluser id =%s",cluserId)
 		return nil,fmt.Errorf("GetClusterNamespaces: cluser nil,cluser id =%s",cluserId)
 	}
-	bytes,err := utils.RequestWithCert(cluster.Addr + API_V1 + NAMESPACES,utils.REQ_GET,cluster.Cert,cluster.Key)
+	cp := utils.BAAS_CFG.ClusterPkiBasePath
+	bytes,err := utils.RequestWithCert(cluster.ApiUrl + API_V1 + NAMESPACES,utils.REQ_GET,cp + cluster.Cert,cp + cluster.Key)
 	if err != nil { 
 		logger.Errorf("GetClusterNamespaces: RequestWithCert err,%v", err)
 		return nil,nil

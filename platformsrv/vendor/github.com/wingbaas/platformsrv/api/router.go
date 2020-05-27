@@ -11,6 +11,7 @@ func Start(port string) {
 	r := echo.New()
 	r.Use(middleware.Logger())
 	r.Use(middleware.Recover())
+	r.POST("/api/v1/upLoadKeyFile",upLoadKeyFile) 
 	r.POST("/api/v1/addcluster",addCluster) 
 	r.GET("/api/v1/clusters",getClusters)
 	r.GET("/api/v1/:clusterid/hosts",getHosts)

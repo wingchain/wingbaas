@@ -58,7 +58,8 @@ func GetNamespaceServices(clusterId string,namespaceId string) ([]Service,error)
 		logger.Errorf("GetNamespaceServices: cluster nil,cluster id =%s",clusterId)
 		return nil,fmt.Errorf("GetNamespaceServices: cluster nil,cluster id =%s",clusterId)
 	}
-	bytes,err := utils.RequestWithCert(cluster.Addr + API_V1 + NAMESPACES + "/" + namespaceId + "/" + SERVICES,utils.REQ_GET,cluster.Cert,cluster.Key)
+	cp := utils.BAAS_CFG.ClusterPkiBasePath
+	bytes,err := utils.RequestWithCert(cluster.ApiUrl + API_V1 + NAMESPACES + "/" + namespaceId + "/" + SERVICES,utils.REQ_GET,cp + cluster.Cert,cp + cluster.Key)
 	if err != nil { 
 		logger.Errorf("GetNamespaceServices: RequestWithCert err,%v", err)
 		return nil,nil
@@ -68,6 +69,10 @@ func GetNamespaceServices(clusterId string,namespaceId string) ([]Service,error)
 	if err != nil {
 		logger.Errorf("GetNamespaceServices: unmarshal services err,%v", err)
 		return nil,fmt.Errorf("GetNamespaceServices: unmarshal services err,%v", err)
+	}
+	if services.Items == nil || len(services.Items) < 1{
+		logger.Errorf("GetNamespaceServices: service items nil")
+		return nil,fmt.Errorf("GetNamespaceServices: service items nil")
 	}
 	// logger.Debug("service list=")
 	// logger.Debug(services.Items)

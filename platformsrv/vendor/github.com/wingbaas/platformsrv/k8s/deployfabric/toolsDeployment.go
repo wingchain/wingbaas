@@ -28,6 +28,7 @@ type PathToolsDeploymentPara struct{
 	PeerName 	string
 	PeerDomain 	string
 	OrgName 	string
+	LogLevel	string
 } 
 
 func CreateToolsDeployment(clusterId string,node string,namespaceId string,chainId string,p ToolsDeploymentPara)([]byte,error) {
@@ -213,6 +214,10 @@ func PatchToolsDeployment(clusterId string,node string,namespaceId string,chainI
 		logger.Errorf("PatchToolsDeployment: get cluster failed,id=%s",clusterId)
 		return nil,fmt.Errorf("PatchToolsDeployment: get cluster failed,id=%s",clusterId)
 	}
+	logLevel := p.LogLevel
+	if logLevel == "" {
+		logLevel = "INFO"
+	}
 	toolsDeployMent :=  ToolsDeployMent { 
 		APIVersion: "apps/v1",
 		Kind: "Deployment",
@@ -245,6 +250,7 @@ func PatchToolsDeployment(clusterId string,node string,namespaceId string,chainI
 							Name: appName, 
 							Image: p.ToolsImage,
 							ImagePullPolicy: "IfNotPresent",
+							//ImagePullPolicy: "Always",
 							Resources: ResourceContainerSpecTemplateSt{
 								Requests: RequestsResourceContainerSpecTemplateSt{
 									Memory: "768Mi",
@@ -254,11 +260,13 @@ func PatchToolsDeployment(clusterId string,node string,namespaceId string,chainI
 							WorkingDir: "/opt/gopath/src/github.com/hyperledger/fabric/peer",
 							Tty : true,
 							Stdin: true, 
-							Args: p.Args, 
-							Env: []EnvContainerSpecTemplateSt{
+							//Args: p.Args,  
+							Command: p.Args,
+							Env: []EnvContainerSpecTemplateSt{ 
 								{
 									Name: "FABRIC_LOGGING_SPEC", 
-									Value: "INFO",
+									//Value: "INFO", 
+									Value: logLevel, 
 								},
 								{
 									Name: "GOPATH", 

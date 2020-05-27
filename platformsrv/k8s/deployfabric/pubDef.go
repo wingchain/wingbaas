@@ -287,8 +287,9 @@ func CreateDeployment(clusterId string,namespaceId string,deployObj interface{})
 		logger.Errorf("CreateDeployment: cluster nil,cluster id =%s",clusterId)
 		return nil,fmt.Errorf("CreateDeployment: cluster nil,cluster id =%s",clusterId)
 	}
-	reqUrl := cluster.Addr + k8s.API_APP + k8s.NAMESPACES + "/" + namespaceId + "/" + k8s.DEPLOYMENTS
-	bytes,err = utils.RequestWithCertAndBody(reqUrl,utils.REQ_POST,cluster.Cert,cluster.Key,yamlStr)
+	reqUrl := cluster.ApiUrl + k8s.API_APP + k8s.NAMESPACES + "/" + namespaceId + "/" + k8s.DEPLOYMENTS
+	cp := utils.BAAS_CFG.ClusterPkiBasePath
+	bytes,err = utils.RequestWithCertAndBody(reqUrl,utils.REQ_POST,cp + cluster.Cert,cp + cluster.Key,yamlStr)
 	if err != nil { 
 		logger.Errorf("CreateDeployment: RequestWithCertAndBody err,%v", err)
 		return nil,fmt.Errorf("CreateDeployment: RequestWithCertAndBody err,%v", err)
@@ -323,8 +324,9 @@ func PatchDeployment(clusterId string,namespaceId string,deploymentName string,d
 		logger.Errorf("PatchDeployment: cluster nil,cluster id =%s",clusterId)
 		return nil,fmt.Errorf("PatchDeployment: cluster nil,cluster id =%s",clusterId)
 	}
-	reqUrl := cluster.Addr + k8s.API_APP + k8s.NAMESPACES + "/" + namespaceId + "/" + k8s.DEPLOYMENTS +  "/" + deploymentName
-	bytes,err := utils.RequestWithCertAndBodyJsonHeader(reqUrl,utils.REQ_PATCH,cluster.Cert,cluster.Key,string(mBytes))
+	reqUrl := cluster.ApiUrl + k8s.API_APP + k8s.NAMESPACES + "/" + namespaceId + "/" + k8s.DEPLOYMENTS +  "/" + deploymentName
+	cp := utils.BAAS_CFG.ClusterPkiBasePath
+	bytes,err := utils.RequestWithCertAndBodyJsonHeader(reqUrl,utils.REQ_PATCH,cp + cluster.Cert,cp + cluster.Key,string(mBytes))
 	if err != nil { 
 		logger.Errorf("PatchDeployment: RequestWithCertAndBody err,%v", err)
 		return nil,fmt.Errorf("PatchDeployment: RequestWithCertAndBody err,%v", err)
@@ -354,7 +356,7 @@ func DeleteDeployment(clusterId string,namespaceId string,deployName string)([]b
 		logger.Errorf("DeleteDeployment: cluser nil,cluser id =%s",clusterId)
 		return nil,fmt.Errorf("DeleteDeployment: cluster nil,cluster id =%s",clusterId)
 	}
-	reqUrl := cluster.Addr + k8s.API_APP + k8s.NAMESPACES + "/" + namespaceId + "/" + k8s.DEPLOYMENTS + "/" + deployName
+	reqUrl := cluster.ApiUrl + k8s.API_APP + k8s.NAMESPACES + "/" + namespaceId + "/" + k8s.DEPLOYMENTS + "/" + deployName
 	bytes,err := utils.RequestWithCert(reqUrl,utils.REQ_DELETE,cluster.Cert,cluster.Key)
 	if err != nil { 
 		logger.Errorf("DeleteDeployment: RequestWithCertAndBody err,%v", err)
@@ -386,8 +388,9 @@ func CreateService(clusterId string,namespaceId string,serviceObj interface{})([
 		logger.Errorf("CreateService: cluster nil,cluster id =%s",clusterId)
 		return nil,fmt.Errorf("CreateService: cluster nil,cluster id =%s",clusterId)
 	}
-	reqUrl := cluster.Addr + k8s.API_V1 + k8s.NAMESPACES + "/" + namespaceId + "/" + k8s.SERVICES
-	bytes,err = utils.RequestWithCertAndBody(reqUrl,utils.REQ_POST,cluster.Cert,cluster.Key,yamlStr)
+	reqUrl := cluster.ApiUrl + k8s.API_V1 + k8s.NAMESPACES + "/" + namespaceId + "/" + k8s.SERVICES
+	cp := utils.BAAS_CFG.ClusterPkiBasePath
+	bytes,err = utils.RequestWithCertAndBody(reqUrl,utils.REQ_POST,cp + cluster.Cert,cp + cluster.Key,yamlStr)
 	if err != nil { 
 		logger.Errorf("CreateService: RequestWithCertAndBody err,%v", err)
 		return nil,fmt.Errorf("CreateService: RequestWithCertAndBody err,%v", err)
@@ -417,7 +420,7 @@ func DeleteService(clusterId string,namespaceId string,serviceName string)([]byt
 		logger.Errorf("DeleteService: cluser nil,cluser id =%s",clusterId)
 		return nil,fmt.Errorf("DeleteService: cluster nil,cluster id =%s",clusterId)
 	}
-	reqUrl := cluster.Addr + k8s.API_V1 + k8s.NAMESPACES + "/" + namespaceId + "/" + k8s.SERVICES + "/" + serviceName
+	reqUrl := cluster.ApiUrl + k8s.API_V1 + k8s.NAMESPACES + "/" + namespaceId + "/" + k8s.SERVICES + "/" + serviceName
 	bytes,err := utils.RequestWithCert(reqUrl,utils.REQ_DELETE,cluster.Cert,cluster.Key)
 	if err != nil { 
 		logger.Errorf("DeleteService: RequestWithCertAndBody err,%v", err)

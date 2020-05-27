@@ -291,7 +291,7 @@ func orgDeployCCV2(c echo.Context,cfg public.DeployPara,d FabricDeployCCPara) er
 		cmd = cmd + " /bin/bash"
 		updatePara.Args = nil
 		updatePara.Args = append(updatePara.Args,args...)
-		updatePara.Args = append(updatePara.Args,cmd)
+		updatePara.Args = append(updatePara.Args,cmd) 
 		//logger.Debug("init args=",updatePara.Args)
 		_,err = deployfabric.PatchToolsDeployment(cfg.ClusterId,cfg.DeployNetCfg.ToolsDeployNode,chain.BlockChainName,d.BlockChainId,updatePara)
 		if err != nil {

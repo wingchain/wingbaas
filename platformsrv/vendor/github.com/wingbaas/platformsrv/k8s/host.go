@@ -119,7 +119,8 @@ func GetHostList(clusterId string)(*HostList,error) {
 		logger.Errorf("GetHostList: cluser nil,cluser id = %s",clusterId)
 		return nil,fmt.Errorf("GetHostList: cluser nil,cluser id = %s",clusterId)
 	}
-	bytes,err := utils.RequestWithCert(cluster.Addr + API_V1 + NODES,utils.REQ_GET,cluster.Cert,cluster.Key)
+	cp := utils.BAAS_CFG.ClusterPkiBasePath 
+	bytes,err := utils.RequestWithCert(cluster.ApiUrl + API_V1 + NODES,utils.REQ_GET,cp + cluster.Cert,cp + cluster.Key)
 	if err != nil { 
 		logger.Errorf("GetHostList: RequestWithCert err,%v", err)
 		return nil,nil

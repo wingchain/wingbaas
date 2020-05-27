@@ -8,6 +8,23 @@
     "data": json obj //data object       
 }
 ``` 
+
+## upload already exsist kuberntes cluster cert or key file into wingbaas                
+URL：http://ip:port//api/v1/upLoadKeyFile      
+METHOD：POST(formdata)     
+RETURN：json object           
+
+example:        
+request:http://localhost:9001/api/v1/upLoadKeyFile          
+request parameter:(form-data file)   
+API RETURN:                  
+```json     
+{
+    "code": 0,
+    "message": "success",
+    "data": "hNl4075WtUIvbAKz"//file id        
+}
+```      
  
 ## add already exsist kuberntes cluster into wingbaas                
 URL：http://ip:port//api/v1/addcluster      
@@ -19,11 +36,13 @@ request:http://localhost:9001/api/v1/addcluster
 request parameter:       
 ```json
 {
-  "ClusterId": "kubernetes-cluster1",    
-  "Addr": "https://kubernetes:6443/api/v1/",      
-  "Cert": "./conf/pki/cluster1/apiserver-kubelet-client.crt",      
-  "Key": "./conf/pki/cluster1/apiserver-kubelet-client.key"       
-}    
+	"ClusterId": "test-cluster1", 
+    "ApiUrl": "https://kubernetes:6443", 
+    "HostDomain": "kubernetes",
+    "PublicIp": "106.75.51.138",
+    "Cert": "hEU9HNb6Mb3JJ8fR",//file id
+    "Key": "hNl4075WtUIvbAKz"//file id
+}
 ``` 
 API RETURN:                  
 ```json     
