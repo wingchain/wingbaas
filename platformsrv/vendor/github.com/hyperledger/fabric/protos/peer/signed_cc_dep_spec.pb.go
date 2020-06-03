@@ -81,13 +81,13 @@ func (m *SignedChaincodeDeploymentSpec) GetOwnerEndorsements() []*Endorsement {
 	return nil
 }
 
-// func init() {
-// 	proto.RegisterType((*SignedChaincodeDeploymentSpec)(nil), "protos.SignedChaincodeDeploymentSpec")
-// }
+func init() {
+	proto.RegisterType((*SignedChaincodeDeploymentSpec)(nil), "protos.SignedChaincodeDeploymentSpec")
+}
 
-// func init() {
-// 	proto.RegisterFile("peer/signed_cc_dep_spec.proto", fileDescriptor_signed_cc_dep_spec_80ee01f5d5123140)
-// }
+func init() {
+	proto.RegisterFile("peer/signed_cc_dep_spec.proto", fileDescriptor_signed_cc_dep_spec_80ee01f5d5123140)
+}
 
 var fileDescriptor_signed_cc_dep_spec_80ee01f5d5123140 = []byte{
 	// 255 bytes of a gzipped FileDescriptorProto

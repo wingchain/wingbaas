@@ -981,26 +981,26 @@ func (m *StateMetadataResult) GetEntries() []*StateMetadata {
 	return nil
 }
 
-// func init() {
-// 	proto.RegisterType((*ChaincodeMessage)(nil), "protos.ChaincodeMessage")
-// 	proto.RegisterType((*GetState)(nil), "protos.GetState")
-// 	proto.RegisterType((*GetStateMetadata)(nil), "protos.GetStateMetadata")
-// 	proto.RegisterType((*PutState)(nil), "protos.PutState")
-// 	proto.RegisterType((*PutStateMetadata)(nil), "protos.PutStateMetadata")
-// 	proto.RegisterType((*DelState)(nil), "protos.DelState")
-// 	proto.RegisterType((*GetStateByRange)(nil), "protos.GetStateByRange")
-// 	proto.RegisterType((*GetQueryResult)(nil), "protos.GetQueryResult")
-// 	proto.RegisterType((*QueryMetadata)(nil), "protos.QueryMetadata")
-// 	proto.RegisterType((*GetHistoryForKey)(nil), "protos.GetHistoryForKey")
-// 	proto.RegisterType((*QueryStateNext)(nil), "protos.QueryStateNext")
-// 	proto.RegisterType((*QueryStateClose)(nil), "protos.QueryStateClose")
-// 	proto.RegisterType((*QueryResultBytes)(nil), "protos.QueryResultBytes")
-// 	proto.RegisterType((*QueryResponse)(nil), "protos.QueryResponse")
-// 	proto.RegisterType((*QueryResponseMetadata)(nil), "protos.QueryResponseMetadata")
-// 	proto.RegisterType((*StateMetadata)(nil), "protos.StateMetadata")
-// 	proto.RegisterType((*StateMetadataResult)(nil), "protos.StateMetadataResult")
-// 	proto.RegisterEnum("protos.ChaincodeMessage_Type", ChaincodeMessage_Type_name, ChaincodeMessage_Type_value)
-// }
+func init() {
+	proto.RegisterType((*ChaincodeMessage)(nil), "protos.ChaincodeMessage")
+	proto.RegisterType((*GetState)(nil), "protos.GetState")
+	proto.RegisterType((*GetStateMetadata)(nil), "protos.GetStateMetadata")
+	proto.RegisterType((*PutState)(nil), "protos.PutState")
+	proto.RegisterType((*PutStateMetadata)(nil), "protos.PutStateMetadata")
+	proto.RegisterType((*DelState)(nil), "protos.DelState")
+	proto.RegisterType((*GetStateByRange)(nil), "protos.GetStateByRange")
+	proto.RegisterType((*GetQueryResult)(nil), "protos.GetQueryResult")
+	proto.RegisterType((*QueryMetadata)(nil), "protos.QueryMetadata")
+	proto.RegisterType((*GetHistoryForKey)(nil), "protos.GetHistoryForKey")
+	proto.RegisterType((*QueryStateNext)(nil), "protos.QueryStateNext")
+	proto.RegisterType((*QueryStateClose)(nil), "protos.QueryStateClose")
+	proto.RegisterType((*QueryResultBytes)(nil), "protos.QueryResultBytes")
+	proto.RegisterType((*QueryResponse)(nil), "protos.QueryResponse")
+	proto.RegisterType((*QueryResponseMetadata)(nil), "protos.QueryResponseMetadata")
+	proto.RegisterType((*StateMetadata)(nil), "protos.StateMetadata")
+	proto.RegisterType((*StateMetadataResult)(nil), "protos.StateMetadataResult")
+	proto.RegisterEnum("protos.ChaincodeMessage_Type", ChaincodeMessage_Type_name, ChaincodeMessage_Type_value)
+}
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
@@ -1106,9 +1106,9 @@ var _ChaincodeSupport_serviceDesc = grpc.ServiceDesc{
 	Metadata: "peer/chaincode_shim.proto",
 }
 
-// func init() {
-// 	proto.RegisterFile("peer/chaincode_shim.proto", fileDescriptor_chaincode_shim_b04d3028f86b65a2)
-// }
+func init() {
+	proto.RegisterFile("peer/chaincode_shim.proto", fileDescriptor_chaincode_shim_b04d3028f86b65a2)
+}
 
 var fileDescriptor_chaincode_shim_b04d3028f86b65a2 = []byte{
 	// 1027 bytes of a gzipped FileDescriptorProto

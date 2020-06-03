@@ -451,15 +451,15 @@ func (m *CollectionCriteria) GetNamespace() string {
 	return ""
 }
 
-// func init() {
-// 	proto.RegisterType((*CollectionConfigPackage)(nil), "common.CollectionConfigPackage")
-// 	proto.RegisterType((*CollectionConfig)(nil), "common.CollectionConfig")
-// 	proto.RegisterType((*StaticCollectionConfig)(nil), "common.StaticCollectionConfig")
-// 	proto.RegisterType((*CollectionPolicyConfig)(nil), "common.CollectionPolicyConfig")
-// 	proto.RegisterType((*CollectionCriteria)(nil), "common.CollectionCriteria")
-// }
+func init() {
+	proto.RegisterType((*CollectionConfigPackage)(nil), "common.CollectionConfigPackage")
+	proto.RegisterType((*CollectionConfig)(nil), "common.CollectionConfig")
+	proto.RegisterType((*StaticCollectionConfig)(nil), "common.StaticCollectionConfig")
+	proto.RegisterType((*CollectionPolicyConfig)(nil), "common.CollectionPolicyConfig")
+	proto.RegisterType((*CollectionCriteria)(nil), "common.CollectionCriteria")
+}
 
-// func init() { proto.RegisterFile("common/collection.proto", fileDescriptor_collection_12a2cf6632dc7d83) }
+func init() { proto.RegisterFile("common/collection.proto", fileDescriptor_collection_12a2cf6632dc7d83) }
 
 var fileDescriptor_collection_12a2cf6632dc7d83 = []byte{
 	// 480 bytes of a gzipped FileDescriptorProto

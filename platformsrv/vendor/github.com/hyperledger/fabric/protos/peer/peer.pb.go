@@ -107,10 +107,10 @@ func (m *PeerEndpoint) GetAddress() string {
 	return ""
 }
 
-// func init() {
-// 	proto.RegisterType((*PeerID)(nil), "protos.PeerID")
-// 	proto.RegisterType((*PeerEndpoint)(nil), "protos.PeerEndpoint")
-// }
+func init() {
+	proto.RegisterType((*PeerID)(nil), "protos.PeerID")
+	proto.RegisterType((*PeerEndpoint)(nil), "protos.PeerEndpoint")
+}
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
@@ -184,7 +184,7 @@ var _Endorser_serviceDesc = grpc.ServiceDesc{
 	Metadata: "peer/peer.proto",
 }
 
-//func init() { proto.RegisterFile("peer/peer.proto", fileDescriptor_peer_f225b6e437338532) }
+func init() { proto.RegisterFile("peer/peer.proto", fileDescriptor_peer_f225b6e437338532) }
 
 var fileDescriptor_peer_f225b6e437338532 = []byte{
 	// 246 bytes of a gzipped FileDescriptorProto

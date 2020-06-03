@@ -2,6 +2,7 @@
 package public
 
 const (
+	SYS_CHANNEL        				string = "testchainid"
 	BLOCK_CHAIN_TYPE_FABRIC 		string = "fabric"
 	SOLO_FABRIC     				string = "SOLO_FABRIC"
 	KAFKA_FABRIC    				string = "KAFKA_FABRIC"
@@ -45,6 +46,17 @@ type DeployPara struct {
 type ServiceNodePortSt struct { 
 	ServerName	string
 	NodePort 	string
+}
+
+type AddOrgConfig struct {
+	BlockChainId   string      `json:"BlockChainId"`
+	PeerOrgs       []OrgSpec   `json:"PeerOrgs"`
+}
+
+type ChannelList struct {
+	Channels []struct {
+		ChannelID string `json:"channel_id"`
+	} `json:"channels"`
 }
 
 

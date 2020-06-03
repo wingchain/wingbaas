@@ -373,16 +373,16 @@ func (m *ChaincodeAction) GetTokenExpectation() *token.TokenExpectation {
 	return nil
 }
 
-// func init() {
-// 	proto.RegisterType((*SignedProposal)(nil), "protos.SignedProposal")
-// 	proto.RegisterType((*Proposal)(nil), "protos.Proposal")
-// 	proto.RegisterType((*ChaincodeHeaderExtension)(nil), "protos.ChaincodeHeaderExtension")
-// 	proto.RegisterType((*ChaincodeProposalPayload)(nil), "protos.ChaincodeProposalPayload")
-// 	proto.RegisterMapType((map[string][]byte)(nil), "protos.ChaincodeProposalPayload.TransientMapEntry")
-// 	proto.RegisterType((*ChaincodeAction)(nil), "protos.ChaincodeAction")
-// }
+func init() {
+	proto.RegisterType((*SignedProposal)(nil), "protos.SignedProposal")
+	proto.RegisterType((*Proposal)(nil), "protos.Proposal")
+	proto.RegisterType((*ChaincodeHeaderExtension)(nil), "protos.ChaincodeHeaderExtension")
+	proto.RegisterType((*ChaincodeProposalPayload)(nil), "protos.ChaincodeProposalPayload")
+	proto.RegisterMapType((map[string][]byte)(nil), "protos.ChaincodeProposalPayload.TransientMapEntry")
+	proto.RegisterType((*ChaincodeAction)(nil), "protos.ChaincodeAction")
+}
 
-// func init() { proto.RegisterFile("peer/proposal.proto", fileDescriptor_proposal_2be65988745cf952) }
+func init() { proto.RegisterFile("peer/proposal.proto", fileDescriptor_proposal_2be65988745cf952) }
 
 var fileDescriptor_proposal_2be65988745cf952 = []byte{
 	// 487 bytes of a gzipped FileDescriptorProto

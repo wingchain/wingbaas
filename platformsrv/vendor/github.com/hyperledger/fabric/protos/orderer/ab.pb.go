@@ -612,17 +612,17 @@ func _DeliverResponse_OneofSizer(msg proto.Message) (n int) {
 	return n
 }
 
-// func init() {
-// 	proto.RegisterType((*BroadcastResponse)(nil), "orderer.BroadcastResponse")
-// 	proto.RegisterType((*SeekNewest)(nil), "orderer.SeekNewest")
-// 	proto.RegisterType((*SeekOldest)(nil), "orderer.SeekOldest")
-// 	proto.RegisterType((*SeekSpecified)(nil), "orderer.SeekSpecified")
-// 	proto.RegisterType((*SeekPosition)(nil), "orderer.SeekPosition")
-// 	proto.RegisterType((*SeekInfo)(nil), "orderer.SeekInfo")
-// 	proto.RegisterType((*DeliverResponse)(nil), "orderer.DeliverResponse")
-// 	proto.RegisterEnum("orderer.SeekInfo_SeekBehavior", SeekInfo_SeekBehavior_name, SeekInfo_SeekBehavior_value)
-// 	proto.RegisterEnum("orderer.SeekInfo_SeekErrorResponse", SeekInfo_SeekErrorResponse_name, SeekInfo_SeekErrorResponse_value)
-// }
+func init() {
+	proto.RegisterType((*BroadcastResponse)(nil), "orderer.BroadcastResponse")
+	proto.RegisterType((*SeekNewest)(nil), "orderer.SeekNewest")
+	proto.RegisterType((*SeekOldest)(nil), "orderer.SeekOldest")
+	proto.RegisterType((*SeekSpecified)(nil), "orderer.SeekSpecified")
+	proto.RegisterType((*SeekPosition)(nil), "orderer.SeekPosition")
+	proto.RegisterType((*SeekInfo)(nil), "orderer.SeekInfo")
+	proto.RegisterType((*DeliverResponse)(nil), "orderer.DeliverResponse")
+	proto.RegisterEnum("orderer.SeekInfo_SeekBehavior", SeekInfo_SeekBehavior_name, SeekInfo_SeekBehavior_value)
+	proto.RegisterEnum("orderer.SeekInfo_SeekErrorResponse", SeekInfo_SeekErrorResponse_name, SeekInfo_SeekErrorResponse_value)
+}
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
@@ -797,7 +797,7 @@ var _AtomicBroadcast_serviceDesc = grpc.ServiceDesc{
 	Metadata: "orderer/ab.proto",
 }
 
-//func init() { proto.RegisterFile("orderer/ab.proto", fileDescriptor_ab_237e854d47750248) }
+func init() { proto.RegisterFile("orderer/ab.proto", fileDescriptor_ab_237e854d47750248) }
 
 var fileDescriptor_ab_237e854d47750248 = []byte{
 	// 560 bytes of a gzipped FileDescriptorProto

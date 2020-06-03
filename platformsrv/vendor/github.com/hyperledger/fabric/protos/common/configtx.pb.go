@@ -589,28 +589,28 @@ func (m *ConfigSignature) GetSignature() []byte {
 	return nil
 }
 
-// func init() {
-// 	proto.RegisterType((*ConfigEnvelope)(nil), "common.ConfigEnvelope")
-// 	proto.RegisterType((*ConfigGroupSchema)(nil), "common.ConfigGroupSchema")
-// 	proto.RegisterMapType((map[string]*ConfigGroupSchema)(nil), "common.ConfigGroupSchema.GroupsEntry")
-// 	proto.RegisterMapType((map[string]*ConfigPolicySchema)(nil), "common.ConfigGroupSchema.PoliciesEntry")
-// 	proto.RegisterMapType((map[string]*ConfigValueSchema)(nil), "common.ConfigGroupSchema.ValuesEntry")
-// 	proto.RegisterType((*ConfigValueSchema)(nil), "common.ConfigValueSchema")
-// 	proto.RegisterType((*ConfigPolicySchema)(nil), "common.ConfigPolicySchema")
-// 	proto.RegisterType((*Config)(nil), "common.Config")
-// 	proto.RegisterType((*ConfigUpdateEnvelope)(nil), "common.ConfigUpdateEnvelope")
-// 	proto.RegisterType((*ConfigUpdate)(nil), "common.ConfigUpdate")
-// 	proto.RegisterMapType((map[string][]byte)(nil), "common.ConfigUpdate.IsolatedDataEntry")
-// 	proto.RegisterType((*ConfigGroup)(nil), "common.ConfigGroup")
-// 	proto.RegisterMapType((map[string]*ConfigGroup)(nil), "common.ConfigGroup.GroupsEntry")
-// 	proto.RegisterMapType((map[string]*ConfigPolicy)(nil), "common.ConfigGroup.PoliciesEntry")
-// 	proto.RegisterMapType((map[string]*ConfigValue)(nil), "common.ConfigGroup.ValuesEntry")
-// 	proto.RegisterType((*ConfigValue)(nil), "common.ConfigValue")
-// 	proto.RegisterType((*ConfigPolicy)(nil), "common.ConfigPolicy")
-// 	proto.RegisterType((*ConfigSignature)(nil), "common.ConfigSignature")
-// }
+func init() {
+	proto.RegisterType((*ConfigEnvelope)(nil), "common.ConfigEnvelope")
+	proto.RegisterType((*ConfigGroupSchema)(nil), "common.ConfigGroupSchema")
+	proto.RegisterMapType((map[string]*ConfigGroupSchema)(nil), "common.ConfigGroupSchema.GroupsEntry")
+	proto.RegisterMapType((map[string]*ConfigPolicySchema)(nil), "common.ConfigGroupSchema.PoliciesEntry")
+	proto.RegisterMapType((map[string]*ConfigValueSchema)(nil), "common.ConfigGroupSchema.ValuesEntry")
+	proto.RegisterType((*ConfigValueSchema)(nil), "common.ConfigValueSchema")
+	proto.RegisterType((*ConfigPolicySchema)(nil), "common.ConfigPolicySchema")
+	proto.RegisterType((*Config)(nil), "common.Config")
+	proto.RegisterType((*ConfigUpdateEnvelope)(nil), "common.ConfigUpdateEnvelope")
+	proto.RegisterType((*ConfigUpdate)(nil), "common.ConfigUpdate")
+	proto.RegisterMapType((map[string][]byte)(nil), "common.ConfigUpdate.IsolatedDataEntry")
+	proto.RegisterType((*ConfigGroup)(nil), "common.ConfigGroup")
+	proto.RegisterMapType((map[string]*ConfigGroup)(nil), "common.ConfigGroup.GroupsEntry")
+	proto.RegisterMapType((map[string]*ConfigPolicy)(nil), "common.ConfigGroup.PoliciesEntry")
+	proto.RegisterMapType((map[string]*ConfigValue)(nil), "common.ConfigGroup.ValuesEntry")
+	proto.RegisterType((*ConfigValue)(nil), "common.ConfigValue")
+	proto.RegisterType((*ConfigPolicy)(nil), "common.ConfigPolicy")
+	proto.RegisterType((*ConfigSignature)(nil), "common.ConfigSignature")
+}
 
-// func init() { proto.RegisterFile("common/configtx.proto", fileDescriptor_configtx_f1e09584bdb3a224) }
+func init() { proto.RegisterFile("common/configtx.proto", fileDescriptor_configtx_f1e09584bdb3a224) }
 
 var fileDescriptor_configtx_f1e09584bdb3a224 = []byte{
 	// 742 bytes of a gzipped FileDescriptorProto

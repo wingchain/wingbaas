@@ -161,7 +161,7 @@ func OrgQueryBlockChain(chainId string,orgName string,channelId string)  (interf
 		return nil,fmt.Errorf("OrgQueryBlockChain:load chain cfg error,chainId=%s\n", chainId)
 	}
 	var orderId string
-	for _,org := range obj.DeployNetCfg.OrdererOrgs {
+	for _,org := range obj.DeployNetCfg.OrdererOrgs { 
 		for _,p := range org.Specs {
 			orderId = p.Hostname + "." + org.Domain
 			break

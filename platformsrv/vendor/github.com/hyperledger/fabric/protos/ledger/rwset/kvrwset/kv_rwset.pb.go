@@ -808,25 +808,25 @@ func (m *QueryReadsMerkleSummary) GetMaxLevelHashes() [][]byte {
 	return nil
 }
 
-// func init() {
-// 	proto.RegisterType((*KVRWSet)(nil), "kvrwset.KVRWSet")
-// 	proto.RegisterType((*HashedRWSet)(nil), "kvrwset.HashedRWSet")
-// 	proto.RegisterType((*KVRead)(nil), "kvrwset.KVRead")
-// 	proto.RegisterType((*KVWrite)(nil), "kvrwset.KVWrite")
-// 	proto.RegisterType((*KVMetadataWrite)(nil), "kvrwset.KVMetadataWrite")
-// 	proto.RegisterType((*KVReadHash)(nil), "kvrwset.KVReadHash")
-// 	proto.RegisterType((*KVWriteHash)(nil), "kvrwset.KVWriteHash")
-// 	proto.RegisterType((*KVMetadataWriteHash)(nil), "kvrwset.KVMetadataWriteHash")
-// 	proto.RegisterType((*KVMetadataEntry)(nil), "kvrwset.KVMetadataEntry")
-// 	proto.RegisterType((*Version)(nil), "kvrwset.Version")
-// 	proto.RegisterType((*RangeQueryInfo)(nil), "kvrwset.RangeQueryInfo")
-// 	proto.RegisterType((*QueryReads)(nil), "kvrwset.QueryReads")
-// 	proto.RegisterType((*QueryReadsMerkleSummary)(nil), "kvrwset.QueryReadsMerkleSummary")
-// }
+func init() {
+	proto.RegisterType((*KVRWSet)(nil), "kvrwset.KVRWSet")
+	proto.RegisterType((*HashedRWSet)(nil), "kvrwset.HashedRWSet")
+	proto.RegisterType((*KVRead)(nil), "kvrwset.KVRead")
+	proto.RegisterType((*KVWrite)(nil), "kvrwset.KVWrite")
+	proto.RegisterType((*KVMetadataWrite)(nil), "kvrwset.KVMetadataWrite")
+	proto.RegisterType((*KVReadHash)(nil), "kvrwset.KVReadHash")
+	proto.RegisterType((*KVWriteHash)(nil), "kvrwset.KVWriteHash")
+	proto.RegisterType((*KVMetadataWriteHash)(nil), "kvrwset.KVMetadataWriteHash")
+	proto.RegisterType((*KVMetadataEntry)(nil), "kvrwset.KVMetadataEntry")
+	proto.RegisterType((*Version)(nil), "kvrwset.Version")
+	proto.RegisterType((*RangeQueryInfo)(nil), "kvrwset.RangeQueryInfo")
+	proto.RegisterType((*QueryReads)(nil), "kvrwset.QueryReads")
+	proto.RegisterType((*QueryReadsMerkleSummary)(nil), "kvrwset.QueryReadsMerkleSummary")
+}
 
-// func init() {
-// 	proto.RegisterFile("ledger/rwset/kvrwset/kv_rwset.proto", fileDescriptor_kv_rwset_b744a14a894993b5)
-// }
+func init() {
+	proto.RegisterFile("ledger/rwset/kvrwset/kv_rwset.proto", fileDescriptor_kv_rwset_b744a14a894993b5)
+}
 
 var fileDescriptor_kv_rwset_b744a14a894993b5 = []byte{
 	// 740 bytes of a gzipped FileDescriptorProto

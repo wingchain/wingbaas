@@ -387,20 +387,20 @@ func (m *CombinedPrincipal) GetPrincipals() []*MSPPrincipal {
 	return nil
 }
 
-// func init() {
-// 	proto.RegisterType((*MSPPrincipal)(nil), "common.MSPPrincipal")
-// 	proto.RegisterType((*OrganizationUnit)(nil), "common.OrganizationUnit")
-// 	proto.RegisterType((*MSPRole)(nil), "common.MSPRole")
-// 	proto.RegisterType((*MSPIdentityAnonymity)(nil), "common.MSPIdentityAnonymity")
-// 	proto.RegisterType((*CombinedPrincipal)(nil), "common.CombinedPrincipal")
-// 	proto.RegisterEnum("common.MSPPrincipal_Classification", MSPPrincipal_Classification_name, MSPPrincipal_Classification_value)
-// 	proto.RegisterEnum("common.MSPRole_MSPRoleType", MSPRole_MSPRoleType_name, MSPRole_MSPRoleType_value)
-// 	proto.RegisterEnum("common.MSPIdentityAnonymity_MSPIdentityAnonymityType", MSPIdentityAnonymity_MSPIdentityAnonymityType_name, MSPIdentityAnonymity_MSPIdentityAnonymityType_value)
-// }
+func init() {
+	proto.RegisterType((*MSPPrincipal)(nil), "common.MSPPrincipal")
+	proto.RegisterType((*OrganizationUnit)(nil), "common.OrganizationUnit")
+	proto.RegisterType((*MSPRole)(nil), "common.MSPRole")
+	proto.RegisterType((*MSPIdentityAnonymity)(nil), "common.MSPIdentityAnonymity")
+	proto.RegisterType((*CombinedPrincipal)(nil), "common.CombinedPrincipal")
+	proto.RegisterEnum("common.MSPPrincipal_Classification", MSPPrincipal_Classification_name, MSPPrincipal_Classification_value)
+	proto.RegisterEnum("common.MSPRole_MSPRoleType", MSPRole_MSPRoleType_name, MSPRole_MSPRoleType_value)
+	proto.RegisterEnum("common.MSPIdentityAnonymity_MSPIdentityAnonymityType", MSPIdentityAnonymity_MSPIdentityAnonymityType_name, MSPIdentityAnonymity_MSPIdentityAnonymityType_value)
+}
 
-// func init() {
-// 	proto.RegisterFile("msp/msp_principal.proto", fileDescriptor_msp_principal_3b3c17f3e626d163)
-// }
+func init() {
+	proto.RegisterFile("msp/msp_principal.proto", fileDescriptor_msp_principal_3b3c17f3e626d163)
+}
 
 var fileDescriptor_msp_principal_3b3c17f3e626d163 = []byte{
 	// 524 bytes of a gzipped FileDescriptorProto

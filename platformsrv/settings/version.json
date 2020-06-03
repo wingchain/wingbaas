@@ -7,7 +7,8 @@
             "peer": "registry.wingbaas.cn:5000/fabric-peer:1.3.0",
             "zookeeper": "registry.wingbaas.cn:5000/fabric-zookeeper:0.4.10",
             "kafka": "registry.wingbaas.cn:5000/fabric-kafka:0.4.10",
-            "baseos": "registry.wingbaas.cn:5000/fabric-baseos:amd64-0.4.13"
+            "baseos": "registry.wingbaas.cn:5000/fabric-baseos:amd64-0.4.13",
+            "tools": "registry.wingbaas.cn:5000/fabric-tools:1.4"
         },
         "1.4":{
             "ca": "registry.wingbaas.cn:5000/fabric-ca:1.4",
@@ -16,7 +17,8 @@
             "peer": "registry.wingbaas.cn:5000/fabric-peer:1.4",
             "zookeeper": "registry.wingbaas.cn:5000/fabric-zookeeper:0.4.10",
             "kafka": "registry.wingbaas.cn:5000/fabric-kafka:0.4.10",
-            "baseos": "registry.wingbaas.cn:5000/fabric-baseos:amd64-0.4.13"
+            "baseos": "registry.wingbaas.cn:5000/fabric-baseos:amd64-0.4.13",
+            "tools": "registry.wingbaas.cn:5000/fabric-tools:1.4"
         },
         "2.0.0":{
             "ca": "registry.wingbaas.cn:5000/fabric-ca:1.4",

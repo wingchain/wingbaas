@@ -282,19 +282,19 @@ func (m *Capability) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Capability proto.InternalMessageInfo
 
-// func init() {
-// 	proto.RegisterType((*HashingAlgorithm)(nil), "common.HashingAlgorithm")
-// 	proto.RegisterType((*BlockDataHashingStructure)(nil), "common.BlockDataHashingStructure")
-// 	proto.RegisterType((*OrdererAddresses)(nil), "common.OrdererAddresses")
-// 	proto.RegisterType((*Consortium)(nil), "common.Consortium")
-// 	proto.RegisterType((*Capabilities)(nil), "common.Capabilities")
-// 	proto.RegisterMapType((map[string]*Capability)(nil), "common.Capabilities.CapabilitiesEntry")
-// 	proto.RegisterType((*Capability)(nil), "common.Capability")
-// }
+func init() {
+	proto.RegisterType((*HashingAlgorithm)(nil), "common.HashingAlgorithm")
+	proto.RegisterType((*BlockDataHashingStructure)(nil), "common.BlockDataHashingStructure")
+	proto.RegisterType((*OrdererAddresses)(nil), "common.OrdererAddresses")
+	proto.RegisterType((*Consortium)(nil), "common.Consortium")
+	proto.RegisterType((*Capabilities)(nil), "common.Capabilities")
+	proto.RegisterMapType((map[string]*Capability)(nil), "common.Capabilities.CapabilitiesEntry")
+	proto.RegisterType((*Capability)(nil), "common.Capability")
+}
 
-// func init() {
-// 	proto.RegisterFile("common/configuration.proto", fileDescriptor_configuration_c60fbe5ebb3de531)
-// }
+func init() {
+	proto.RegisterFile("common/configuration.proto", fileDescriptor_configuration_c60fbe5ebb3de531)
+}
 
 var fileDescriptor_configuration_c60fbe5ebb3de531 = []byte{
 	// 314 bytes of a gzipped FileDescriptorProto

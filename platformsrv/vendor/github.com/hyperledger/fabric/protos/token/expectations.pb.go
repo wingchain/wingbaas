@@ -319,15 +319,15 @@ func (m *PlainTokenExpectation) GetOutputs() []*PlainOutput {
 	return nil
 }
 
-// func init() {
-// 	proto.RegisterType((*TokenExpectation)(nil), "protos.TokenExpectation")
-// 	proto.RegisterType((*PlainExpectation)(nil), "protos.PlainExpectation")
-// 	proto.RegisterType((*PlainTokenExpectation)(nil), "protos.PlainTokenExpectation")
-// }
+func init() {
+	proto.RegisterType((*TokenExpectation)(nil), "protos.TokenExpectation")
+	proto.RegisterType((*PlainExpectation)(nil), "protos.PlainExpectation")
+	proto.RegisterType((*PlainTokenExpectation)(nil), "protos.PlainTokenExpectation")
+}
 
-// func init() {
-// 	proto.RegisterFile("token/expectations.proto", fileDescriptor_expectations_8d8d9622f86de889)
-// }
+func init() {
+	proto.RegisterFile("token/expectations.proto", fileDescriptor_expectations_8d8d9622f86de889)
+}
 
 var fileDescriptor_expectations_8d8d9622f86de889 = []byte{
 	// 296 bytes of a gzipped FileDescriptorProto

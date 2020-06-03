@@ -9,6 +9,7 @@ import (
 	"time"
 	"github.com/wingbaas/platformsrv/logger"
 	"github.com/wingbaas/platformsrv/utils"
+	"github.com/wingbaas/platformsrv/k8s"
 	"github.com/wingbaas/platformsrv/certgenerate/fabric"
 	"github.com/wingbaas/platformsrv/k8s/deployfabric" 
 	"github.com/wingbaas/platformsrv/settings/fabric/public" 
@@ -43,26 +44,12 @@ func DeployFabric(p public.DeployPara,chainName string,chainType string)(string,
 	}
 	if p.DeployType == public.RAFT_FABRIC {
 		err = GenerateGenesisBlockRaft(blockCertPath,p.DeployNetCfg) 
-		if err != nil {
-			logger.Errorf("DeployFabric: GenerateGenesisBlockRaft error")
-			return "",fmt.Errorf("DeployFabric: GenerateGenesisBlockRaft error")
-		}
-		err = GenerateChannelTxRaft(blockCertPath,sdkfabric.DefaultChannel)
-		if err != nil {
-			logger.Errorf("DeployFabric: GenerateChannelTxRaft error: %v",err)
-			return "",fmt.Errorf("DeployFabric: GenerateChannelTxRaft error: %v",err)
-		}
 	}else{
 		err = GenerateGenesisBlock(blockCertPath,p.DeployNetCfg,p.DeployType) 
-		if err != nil {
-			logger.Errorf("DeployFabric: GenerateGenesisBlock error")
-			return "",fmt.Errorf("DeployFabric: GenerateGenesisBlock error")
-		}
-		err = GenerateChannelTx(blockCertPath,sdkfabric.DefaultChannel)
-		if err != nil {
-			logger.Errorf("DeployFabric: GenerateChannelTx error: %v",err)
-			return "",fmt.Errorf("DeployFabric: GenerateChannelTx error: %v",err)
-		}
+	}
+	if err != nil {
+		logger.Errorf("DeployFabric: GenerateGenesisBlock error")
+		return "",fmt.Errorf("DeployFabric: GenerateGenesisBlock error")
 	}
 	dstNfsPath := utils.BAAS_CFG.NfsLocalRootDir + blockId
 	err = utils.DirCheck(dstNfsPath)
@@ -95,7 +82,6 @@ func DeployFabric(p public.DeployPara,chainName string,chainType string)(string,
 	sdkCfg.ClusterId = p.ClusterId
 	sdkCfg.NamespaceId = chainName 
 	sdkCfg.BlockId = blockId
-	sdkCfg.ChannelName = sdkfabric.DefaultChannel
 	sdkfabric.GenerateOrgCfg(p.DeployNetCfg,sdkCfg) 
 	time.Sleep(30*time.Second)
 	return blockId,nil  
@@ -199,7 +185,7 @@ func DeployComponets(p public.DeployPara,chainName string,chainId string,chainTy
 		}
 	}
 	//deploy peer
-	peerImage,err := utils.GetBlockImage(chainType,p.Version,"peer") 
+	peerImage,err := utils.GetBlockImage(chainType,p.Version,"peer")
 	if err != nil {
 		logger.Errorf("DeployComponets: GetBlockImage peer error,chainType=%s version=%s",chainType,p.Version)
 		return "",fmt.Errorf("DeployComponets: GetBlockImage peer error,chainType=%s version=%s",chainType,p.Version)
@@ -240,29 +226,99 @@ func DeployComponets(p public.DeployPara,chainName string,chainId string,chainTy
 			}
 		}
 	}
-	if strings.HasPrefix(p.Version,"2.") {
-		toolsImage,err := utils.GetBlockImage(chainType,p.Version,"tools")
-		if err != nil {
-			logger.Errorf("DeployComponets: GetBlockImage tools error,chainType=%s version=%s",chainType,p.Version)
-			return "",fmt.Errorf("DeployComponets: GetBlockImage tools error,chainType=%s version=%s",chainType,p.Version)
-		}
-		var dp deployfabric.ToolsDeploymentPara
-		for _,org := range p.DeployNetCfg.PeerOrgs {
-			dp.PeerDomain = org.Domain 
-			dp.OrgName = org.Name
-			for _,spec :=  range org.Specs { 
-				dp.PeerName = spec.Hostname
-				break
-			}
+	toolsImage,err := utils.GetBlockImage(chainType,p.Version,"tools")
+	if err != nil {
+		logger.Errorf("DeployComponets: GetBlockImage tools error,chainType=%s version=%s",chainType,p.Version)
+		return "",fmt.Errorf("DeployComponets: GetBlockImage tools error,chainType=%s version=%s",chainType,p.Version)
+	}
+	var dpt deployfabric.ToolsDeploymentPara
+	for _,org := range p.DeployNetCfg.PeerOrgs {
+		dpt.PeerDomain = org.Domain 
+		dpt.OrgName = org.Name
+		for _,spec :=  range org.Specs { 
+			dpt.PeerName = spec.Hostname
 			break
 		}
-		dp.ToolsImage = toolsImage
-		_,err = deployfabric.CreateToolsDeployment(p.ClusterId,p.DeployNetCfg.ToolsDeployNode,chainName,chainId,dp)
+		break
+	}
+	dpt.ToolsImage = toolsImage
+	_,err = deployfabric.CreateToolsDeployment(p.ClusterId,p.DeployNetCfg.ToolsDeployNode,chainName,chainId,dpt)
+	if err != nil {
+		logger.Errorf("DeployComponets: CreateToolsDeployment error=%s",err.Error())
+		return "",fmt.Errorf("DeployComponets: CreateToolsDeployment error=%s",err.Error())
+	}
+	return "",nil
+}
+
+
+func DeployOrg(clusterId,chainName,chainId,chainType,version string,orgs []public.OrgSpec)(string,error) {
+	//deploy ca
+	for _,org := range orgs { 
+		caName := strings.ToLower(org.Name + "-ca") 
+		caImage,err := utils.GetBlockImage(chainType,version,"ca")
 		if err != nil {
-			logger.Errorf("DeployComponets: CreateToolsDeployment error=%s",err.Error())
-			return "",fmt.Errorf("DeployComponets: CreateToolsDeployment error=%s",err.Error())
+			logger.Errorf("DeployOrg: GetBlockImage ca error,chainType=%s version=%s",chainType,version)
+			return "",fmt.Errorf("DeployOrg: GetBlockImage ca error,chainType=%s version=%s",chainType,version)
+		}
+		priKey,err := utils.GetCaPrivateKey(chainId,org.Domain)
+		if err != nil {
+			logger.Errorf("DeployOrg: GetCaPrivateKey error=%s caName=%s",err.Error(),caName) 
+			return "",fmt.Errorf("DeployOrg: GetCaPrivateKey error=%s caName=%s",err.Error(),caName)
+		}
+		_,err = deployfabric.CreateCaDeployment(clusterId,org.DeployNode,chainName,chainId,caImage,caName,org.Domain,priKey) 
+		if err != nil {
+			logger.Errorf("DeployOrg: CreateCaDeployment error=%s caName=%s",err.Error(),caName)
+			return "",fmt.Errorf("DeployOrg: CreateCaDeployment error=%s caName=%s",err.Error(),caName)
+		}
+		_,err = deployfabric.CreateCaService(clusterId,chainName,chainId,caName)
+		if err != nil {
+			logger.Errorf("DeployOrg: CreateCaService error=%s caName=%s",err.Error(),caName)
+			return "",fmt.Errorf("DeployOrg: CreateCaService error=%s caName=%s",err.Error(),caName)
+		}	
+	}
+	//deploy peer
+	peerImage,err := utils.GetBlockImage(chainType,version,"peer")
+	if err != nil {
+		logger.Errorf("DeployOrg: GetBlockImage peer error,chainType=%s version=%s",chainType,version)
+		return "",fmt.Errorf("DeployOrg: GetBlockImage peer error,chainType=%s version=%s",chainType,version)
+	}
+	ccenvImage,err := utils.GetBlockImage(chainType,version,"ccenv")
+	if err != nil {
+		logger.Errorf("DeployOrg: GetBlockImage ccenv error,chainType=%s version=%s",chainType,version)
+		return "",fmt.Errorf("DeployOrg: GetBlockImage ccenv error,chainType=%s version=%s",chainType,version)
+	}
+	baseosImage,err := utils.GetBlockImage(chainType,version,"baseos")
+	if err != nil {
+		logger.Errorf("DeployOrg: GetBlockImage baseos error,chainType=%s version=%s",chainType,version)
+		return "",fmt.Errorf("DeployOrg: GetBlockImage baseos error,chainType=%s version=%s",chainType,version)
+	}
+	var dp deployfabric.PeerDeploymentPara
+	dp.PeerImage = peerImage
+	dp.CcenvImage = ccenvImage
+	dp.BaseosImage = baseosImage
+	for _,org := range orgs {
+		dp.PeerDomain = org.Domain 
+		dp.OrgName = org.Name
+		for _,spec := range org.Specs {
+			dp.AnchorPeer = spec.Hostname
+			break
+		}
+		for _,spec :=  range org.Specs { 
+			dp.RawPeerName = spec.Hostname
+			dp.PeerName = spec.Hostname 
+			_,err = deployfabric.CreatePeerDeployment(clusterId,org.DeployNode,chainName,chainId,dp) 
+			if err != nil {
+				logger.Errorf("DeployOrg: CreatePeerDeployment error=%s",err.Error())
+				return "",fmt.Errorf("DeployOrg: CreatePeerDeployment error=%s",err.Error())
+			}
+			_,err = deployfabric.CreatePeerService(clusterId,chainName,chainId,dp.PeerName)
+			if err != nil {
+				logger.Errorf("DeployOrg: CreatePeerService error=%s",err.Error())
+				return "",fmt.Errorf("DeployOrg: CreatePeerService error=%s",err.Error())
+			}
 		}
 	}
+	logger.Debug("DeployOrg success")
 	return "",nil
 }
 
@@ -270,6 +326,31 @@ func OrgCreateChannel(chainId string,orgName string,channelId string) error {
 	obj,err := sdkfabric.LoadChainCfg(chainId)
 	if err != nil {
 		return fmt.Errorf("OrgCreateChannel: load chain cfg error,channelId=%s\n", channelId)
+	}
+	chain,_ := k8s.GetChain(chainId,obj.ClusterId)
+	if chain == nil {
+		logger.Errorf("OrgCreateChannel: not find this chain,id=%s\n",chainId)
+		return fmt.Errorf("OrgCreateChannel: not find this chain,id=%s\n",chainId)
+	}
+	blockCertPath := utils.BAAS_CFG.BlockNetCfgBasePath + chainId
+	if obj.DeployType == public.RAFT_FABRIC {
+		err = GenerateChannelTxRaft(blockCertPath,channelId)
+	}else if obj.DeployType == public.KAFKA_FABRIC {
+		err = GenerateChannelTx(blockCertPath,channelId)
+	}
+	if err != nil {
+		logger.Errorf("OrgCreateChannel: GenerateChannelTx error: %v",err)
+		return fmt.Errorf("OrgCreateChannel: GenerateChannelTx error: %v",err)
+	}
+	var sdkCfg sdkfabric.GenerateParaSt
+	sdkCfg.ClusterId = obj.ClusterId
+	sdkCfg.NamespaceId = chain.BlockChainName  
+	sdkCfg.BlockId = chainId
+	sdkCfg.ChannelName = channelId
+	_,err = sdkfabric.UpdateChannelCfg(obj.DeployNetCfg,sdkCfg) 
+	if err != nil {
+		logger.Errorf("OrgCreateChannel: UpdateChannelCfg error")
+		return fmt.Errorf("OrgCreateChannel: UpdateChannelCfg error")
 	}
 	var orderId string
 	for _,org := range obj.DeployNetCfg.OrdererOrgs { 
@@ -286,7 +367,7 @@ func OrgCreateChannel(chainId string,orgName string,channelId string) error {
 		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
 	}
 	chSetup := sdkfabric.ChannnelSetup{
-		ChannelID: sdkfabric.DefaultChannel, 
+		ChannelID: channelId, 
 		ChannelConfig: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/channel-artifacts/" + channelId + ".tx",
 	}
 	err = fSetup.Initialize()

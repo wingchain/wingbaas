@@ -293,16 +293,16 @@ func (m *Endorsement) GetSignature() []byte {
 	return nil
 }
 
-// func init() {
-// 	proto.RegisterType((*ProposalResponse)(nil), "protos.ProposalResponse")
-// 	proto.RegisterType((*Response)(nil), "protos.Response")
-// 	proto.RegisterType((*ProposalResponsePayload)(nil), "protos.ProposalResponsePayload")
-// 	proto.RegisterType((*Endorsement)(nil), "protos.Endorsement")
-// }
+func init() {
+	proto.RegisterType((*ProposalResponse)(nil), "protos.ProposalResponse")
+	proto.RegisterType((*Response)(nil), "protos.Response")
+	proto.RegisterType((*ProposalResponsePayload)(nil), "protos.ProposalResponsePayload")
+	proto.RegisterType((*Endorsement)(nil), "protos.Endorsement")
+}
 
-// func init() {
-// 	proto.RegisterFile("peer/proposal_response.proto", fileDescriptor_proposal_response_22a755721b685f40)
-// }
+func init() {
+	proto.RegisterFile("peer/proposal_response.proto", fileDescriptor_proposal_response_22a755721b685f40)
+}
 
 var fileDescriptor_proposal_response_22a755721b685f40 = []byte{
 	// 367 bytes of a gzipped FileDescriptorProto

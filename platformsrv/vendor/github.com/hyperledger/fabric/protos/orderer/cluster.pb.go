@@ -448,13 +448,13 @@ func (m *SubmitResponse) GetInfo() string {
 	return ""
 }
 
-// func init() {
-// 	proto.RegisterType((*StepRequest)(nil), "orderer.StepRequest")
-// 	proto.RegisterType((*StepResponse)(nil), "orderer.StepResponse")
-// 	proto.RegisterType((*ConsensusRequest)(nil), "orderer.ConsensusRequest")
-// 	proto.RegisterType((*SubmitRequest)(nil), "orderer.SubmitRequest")
-// 	proto.RegisterType((*SubmitResponse)(nil), "orderer.SubmitResponse")
-// }
+func init() {
+	proto.RegisterType((*StepRequest)(nil), "orderer.StepRequest")
+	proto.RegisterType((*StepResponse)(nil), "orderer.StepResponse")
+	proto.RegisterType((*ConsensusRequest)(nil), "orderer.ConsensusRequest")
+	proto.RegisterType((*SubmitRequest)(nil), "orderer.SubmitRequest")
+	proto.RegisterType((*SubmitResponse)(nil), "orderer.SubmitResponse")
+}
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
@@ -562,7 +562,7 @@ var _Cluster_serviceDesc = grpc.ServiceDesc{
 	Metadata: "orderer/cluster.proto",
 }
 
-//func init() { proto.RegisterFile("orderer/cluster.proto", fileDescriptor_cluster_d9833ceca5c79414) }
+func init() { proto.RegisterFile("orderer/cluster.proto", fileDescriptor_cluster_d9833ceca5c79414) }
 
 var fileDescriptor_cluster_d9833ceca5c79414 = []byte{
 	// 399 bytes of a gzipped FileDescriptorProto

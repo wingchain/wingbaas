@@ -152,12 +152,12 @@ func (m *SerializedIdemixIdentity) GetProof() []byte {
 	return nil
 }
 
-// func init() {
-// 	proto.RegisterType((*SerializedIdentity)(nil), "msp.SerializedIdentity")
-// 	proto.RegisterType((*SerializedIdemixIdentity)(nil), "msp.SerializedIdemixIdentity")
-// }
+func init() {
+	proto.RegisterType((*SerializedIdentity)(nil), "msp.SerializedIdentity")
+	proto.RegisterType((*SerializedIdemixIdentity)(nil), "msp.SerializedIdemixIdentity")
+}
 
-// func init() { proto.RegisterFile("msp/identities.proto", fileDescriptor_identities_8fa8af3e5bf2070a) }
+func init() { proto.RegisterFile("msp/identities.proto", fileDescriptor_identities_8fa8af3e5bf2070a) }
 
 var fileDescriptor_identities_8fa8af3e5bf2070a = []byte{
 	// 238 bytes of a gzipped FileDescriptorProto

@@ -419,15 +419,15 @@ func _AdminOperation_OneofSizer(msg proto.Message) (n int) {
 	return n
 }
 
-// func init() {
-// 	proto.RegisterType((*ServerStatus)(nil), "protos.ServerStatus")
-// 	proto.RegisterType((*LogLevelRequest)(nil), "protos.LogLevelRequest")
-// 	proto.RegisterType((*LogLevelResponse)(nil), "protos.LogLevelResponse")
-// 	proto.RegisterType((*LogSpecRequest)(nil), "protos.LogSpecRequest")
-// 	proto.RegisterType((*LogSpecResponse)(nil), "protos.LogSpecResponse")
-// 	proto.RegisterType((*AdminOperation)(nil), "protos.AdminOperation")
-// 	proto.RegisterEnum("protos.ServerStatus_StatusCode", ServerStatus_StatusCode_name, ServerStatus_StatusCode_value)
-// }
+func init() {
+	proto.RegisterType((*ServerStatus)(nil), "protos.ServerStatus")
+	proto.RegisterType((*LogLevelRequest)(nil), "protos.LogLevelRequest")
+	proto.RegisterType((*LogLevelResponse)(nil), "protos.LogLevelResponse")
+	proto.RegisterType((*LogSpecRequest)(nil), "protos.LogSpecRequest")
+	proto.RegisterType((*LogSpecResponse)(nil), "protos.LogSpecResponse")
+	proto.RegisterType((*AdminOperation)(nil), "protos.AdminOperation")
+	proto.RegisterEnum("protos.ServerStatus_StatusCode", ServerStatus_StatusCode_name, ServerStatus_StatusCode_value)
+}
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
@@ -699,7 +699,7 @@ var _Admin_serviceDesc = grpc.ServiceDesc{
 	Metadata: "peer/admin.proto",
 }
 
-//func init() { proto.RegisterFile("peer/admin.proto", fileDescriptor_admin_b2904393863b6bc5) }
+func init() { proto.RegisterFile("peer/admin.proto", fileDescriptor_admin_b2904393863b6bc5) }
 
 var fileDescriptor_admin_b2904393863b6bc5 = []byte{
 	// 555 bytes of a gzipped FileDescriptorProto

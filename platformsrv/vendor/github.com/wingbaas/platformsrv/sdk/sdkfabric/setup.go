@@ -17,11 +17,6 @@ import (
 	"github.com/hyperledger/fabric-sdk-go/third_party/github.com/hyperledger/fabric/common/cauthdsl"
 )
 
-const (
-	//DefaultChannel	string	=	"mychannel" 
-	DefaultChannel	string	=	"baaschannel"
-)
-
 // FabricSetup implementation
 type FabricSetup struct {
 	ConfigFile      string

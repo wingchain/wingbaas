@@ -82,13 +82,13 @@ func (m *ChaincodeEvent) GetPayload() []byte {
 	return nil
 }
 
-// func init() {
-// 	proto.RegisterType((*ChaincodeEvent)(nil), "protos.ChaincodeEvent")
-// }
+func init() {
+	proto.RegisterType((*ChaincodeEvent)(nil), "protos.ChaincodeEvent")
+}
 
-// func init() {
-// 	proto.RegisterFile("peer/chaincode_event.proto", fileDescriptor_chaincode_event_b240c71081bd7c2d)
-// }
+func init() {
+	proto.RegisterFile("peer/chaincode_event.proto", fileDescriptor_chaincode_event_b240c71081bd7c2d)
+}
 
 var fileDescriptor_chaincode_event_b240c71081bd7c2d = []byte{
 	// 218 bytes of a gzipped FileDescriptorProto

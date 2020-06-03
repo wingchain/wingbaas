@@ -264,16 +264,16 @@ func (m *BlockMetadata) GetRaftIndex() uint64 {
 	return 0
 }
 
-// func init() {
-// 	proto.RegisterType((*ConfigMetadata)(nil), "etcdraft.ConfigMetadata")
-// 	proto.RegisterType((*Consenter)(nil), "etcdraft.Consenter")
-// 	proto.RegisterType((*Options)(nil), "etcdraft.Options")
-// 	proto.RegisterType((*BlockMetadata)(nil), "etcdraft.BlockMetadata")
-// }
+func init() {
+	proto.RegisterType((*ConfigMetadata)(nil), "etcdraft.ConfigMetadata")
+	proto.RegisterType((*Consenter)(nil), "etcdraft.Consenter")
+	proto.RegisterType((*Options)(nil), "etcdraft.Options")
+	proto.RegisterType((*BlockMetadata)(nil), "etcdraft.BlockMetadata")
+}
 
-// func init() {
-// 	proto.RegisterFile("orderer/etcdraft/configuration.proto", fileDescriptor_configuration_780531726dd41db7)
-// }
+func init() {
+	proto.RegisterFile("orderer/etcdraft/configuration.proto", fileDescriptor_configuration_780531726dd41db7)
+}
 
 var fileDescriptor_configuration_780531726dd41db7 = []byte{
 	// 448 bytes of a gzipped FileDescriptorProto

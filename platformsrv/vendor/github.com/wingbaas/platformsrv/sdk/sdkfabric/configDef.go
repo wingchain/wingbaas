@@ -1,6 +1,10 @@
 
 package sdkfabric
 
+import (
+	"time"
+)
+
 type LoggingSt struct {
 	Level string `json:"level"`
 }
@@ -185,4 +189,454 @@ type CCInvokeResult struct {
 	TxValidationCode int `json:"TxValidationCode"`
 	ChaincodeStatus int `json:"ChaincodeStatus"`
 	Payload interface{} `json:"Payload"`
+}
+
+type BlockInfo struct {
+	Header struct {
+		Number int `json:"number"`
+		PreviousHash string `json:"previous_hash"`
+		DataHash string `json:"data_hash"`
+	} `json:"header"`
+	Transactions []struct {
+		Signature string `json:"signature"`
+		ChannelHeader struct {
+			Type int `json:"type"`
+			ChannelID string `json:"channel_id"`
+			TxID string `json:"tx_id"`
+			ChaincodeID struct {
+				Name string `json:"name"`
+			} `json:"chaincode_id"`
+		} `json:"channel_header"`
+		SignatureHeader struct {
+			Certificate struct {
+				Raw string `json:"Raw"`
+				RawTBSCertificate string `json:"RawTBSCertificate"`
+				RawSubjectPublicKeyInfo string `json:"RawSubjectPublicKeyInfo"`
+				RawSubject string `json:"RawSubject"`
+				RawIssuer string `json:"RawIssuer"`
+				Signature string `json:"Signature"`
+				SignatureAlgorithm int `json:"SignatureAlgorithm"`
+				PublicKeyAlgorithm int `json:"PublicKeyAlgorithm"`
+				PublicKey struct {
+					Curve struct {
+						P int64 `json:"P"`
+						N int64 `json:"N"`
+						B int64 `json:"B"`
+						Gx int64 `json:"Gx"`
+						Gy int64 `json:"Gy"`
+						BitSize int `json:"BitSize"`
+						Name string `json:"Name"`
+					} `json:"Curve"`
+					X int64 `json:"X"`
+					Y int64 `json:"Y"`
+				} `json:"PublicKey"`
+				Version int `json:"Version"`
+				SerialNumber int64 `json:"SerialNumber"`
+				Issuer struct {
+					Country []string `json:"Country"`
+					Organization []string `json:"Organization"`
+					OrganizationalUnit interface{} `json:"OrganizationalUnit"`
+					Locality []string `json:"Locality"`
+					Province []string `json:"Province"`
+					StreetAddress interface{} `json:"StreetAddress"`
+					PostalCode interface{} `json:"PostalCode"`
+					SerialNumber string `json:"SerialNumber"`
+					CommonName string `json:"CommonName"`
+					Names []struct {
+						Type []int `json:"Type"`
+						Value string `json:"Value"`
+					} `json:"Names"`
+					ExtraNames interface{} `json:"ExtraNames"`
+				} `json:"Issuer"`
+				Subject struct {
+					Country interface{} `json:"Country"`
+					Organization interface{} `json:"Organization"`
+					OrganizationalUnit []string `json:"OrganizationalUnit"`
+					Locality interface{} `json:"Locality"`
+					Province interface{} `json:"Province"`
+					StreetAddress interface{} `json:"StreetAddress"`
+					PostalCode interface{} `json:"PostalCode"`
+					SerialNumber string `json:"SerialNumber"`
+					CommonName string `json:"CommonName"`
+					Names []struct {
+						Type []int `json:"Type"`
+						Value string `json:"Value"`
+					} `json:"Names"`
+					ExtraNames interface{} `json:"ExtraNames"`
+				} `json:"Subject"`
+				NotBefore time.Time `json:"NotBefore"`
+				NotAfter time.Time `json:"NotAfter"`
+				KeyUsage int `json:"KeyUsage"`
+				Extensions []struct {
+					ID []int `json:"Id"`
+					Critical bool `json:"Critical"`
+					Value string `json:"Value"`
+				} `json:"Extensions"`
+				ExtraExtensions interface{} `json:"ExtraExtensions"`
+				UnhandledCriticalExtensions interface{} `json:"UnhandledCriticalExtensions"`
+				ExtKeyUsage interface{} `json:"ExtKeyUsage"`
+				UnknownExtKeyUsage interface{} `json:"UnknownExtKeyUsage"`
+				BasicConstraintsValid bool `json:"BasicConstraintsValid"`
+				IsCA bool `json:"IsCA"`
+				MaxPathLen int `json:"MaxPathLen"`
+				MaxPathLenZero bool `json:"MaxPathLenZero"`
+				SubjectKeyID string `json:"SubjectKeyId"`
+				AuthorityKeyID string `json:"AuthorityKeyId"`
+				OCSPServer interface{} `json:"OCSPServer"`
+				IssuingCertificateURL interface{} `json:"IssuingCertificateURL"`
+				DNSNames []string `json:"DNSNames"`
+				EmailAddresses interface{} `json:"EmailAddresses"`
+				IPAddresses interface{} `json:"IPAddresses"`
+				URIs interface{} `json:"URIs"`
+				PermittedDNSDomainsCritical bool `json:"PermittedDNSDomainsCritical"`
+				PermittedDNSDomains interface{} `json:"PermittedDNSDomains"`
+				ExcludedDNSDomains interface{} `json:"ExcludedDNSDomains"`
+				PermittedIPRanges interface{} `json:"PermittedIPRanges"`
+				ExcludedIPRanges interface{} `json:"ExcludedIPRanges"`
+				PermittedEmailAddresses interface{} `json:"PermittedEmailAddresses"`
+				ExcludedEmailAddresses interface{} `json:"ExcludedEmailAddresses"`
+				PermittedURIDomains interface{} `json:"PermittedURIDomains"`
+				ExcludedURIDomains interface{} `json:"ExcludedURIDomains"`
+				CRLDistributionPoints interface{} `json:"CRLDistributionPoints"`
+				PolicyIdentifiers interface{} `json:"PolicyIdentifiers"`
+			} `json:"Certificate"`
+			Nonce string `json:"nonce"`
+		} `json:"signature_header"`
+		TxActionSignatureHeader struct {
+			Certificate struct {
+				Raw string `json:"Raw"`
+				RawTBSCertificate string `json:"RawTBSCertificate"`
+				RawSubjectPublicKeyInfo string `json:"RawSubjectPublicKeyInfo"`
+				RawSubject string `json:"RawSubject"`
+				RawIssuer string `json:"RawIssuer"`
+				Signature string `json:"Signature"`
+				SignatureAlgorithm int `json:"SignatureAlgorithm"`
+				PublicKeyAlgorithm int `json:"PublicKeyAlgorithm"`
+				PublicKey struct {
+					Curve struct {
+						P int64 `json:"P"`
+						N int64 `json:"N"`
+						B int64 `json:"B"`
+						Gx int64 `json:"Gx"`
+						Gy int64 `json:"Gy"`
+						BitSize int `json:"BitSize"`
+						Name string `json:"Name"`
+					} `json:"Curve"`
+					X int64 `json:"X"`
+					Y int64 `json:"Y"`
+				} `json:"PublicKey"`
+				Version int `json:"Version"`
+				SerialNumber int64 `json:"SerialNumber"`
+				Issuer struct {
+					Country []string `json:"Country"`
+					Organization []string `json:"Organization"`
+					OrganizationalUnit interface{} `json:"OrganizationalUnit"`
+					Locality []string `json:"Locality"`
+					Province []string `json:"Province"`
+					StreetAddress interface{} `json:"StreetAddress"`
+					PostalCode interface{} `json:"PostalCode"`
+					SerialNumber string `json:"SerialNumber"`
+					CommonName string `json:"CommonName"`
+					Names []struct {
+						Type []int `json:"Type"`
+						Value string `json:"Value"`
+					} `json:"Names"`
+					ExtraNames interface{} `json:"ExtraNames"`
+				} `json:"Issuer"`
+				Subject struct {
+					Country interface{} `json:"Country"`
+					Organization interface{} `json:"Organization"`
+					OrganizationalUnit []string `json:"OrganizationalUnit"`
+					Locality interface{} `json:"Locality"`
+					Province interface{} `json:"Province"`
+					StreetAddress interface{} `json:"StreetAddress"`
+					PostalCode interface{} `json:"PostalCode"`
+					SerialNumber string `json:"SerialNumber"`
+					CommonName string `json:"CommonName"`
+					Names []struct {
+						Type []int `json:"Type"`
+						Value string `json:"Value"`
+					} `json:"Names"`
+					ExtraNames interface{} `json:"ExtraNames"`
+				} `json:"Subject"`
+				NotBefore time.Time `json:"NotBefore"`
+				NotAfter time.Time `json:"NotAfter"`
+				KeyUsage int `json:"KeyUsage"`
+				Extensions []struct {
+					ID []int `json:"Id"`
+					Critical bool `json:"Critical"`
+					Value string `json:"Value"`
+				} `json:"Extensions"`
+				ExtraExtensions interface{} `json:"ExtraExtensions"`
+				UnhandledCriticalExtensions interface{} `json:"UnhandledCriticalExtensions"`
+				ExtKeyUsage interface{} `json:"ExtKeyUsage"`
+				UnknownExtKeyUsage interface{} `json:"UnknownExtKeyUsage"`
+				BasicConstraintsValid bool `json:"BasicConstraintsValid"`
+				IsCA bool `json:"IsCA"`
+				MaxPathLen int `json:"MaxPathLen"`
+				MaxPathLenZero bool `json:"MaxPathLenZero"`
+				SubjectKeyID string `json:"SubjectKeyId"`
+				AuthorityKeyID string `json:"AuthorityKeyId"`
+				OCSPServer interface{} `json:"OCSPServer"`
+				IssuingCertificateURL interface{} `json:"IssuingCertificateURL"`
+				DNSNames []string `json:"DNSNames"`
+				EmailAddresses interface{} `json:"EmailAddresses"`
+				IPAddresses interface{} `json:"IPAddresses"`
+				URIs interface{} `json:"URIs"`
+				PermittedDNSDomainsCritical bool `json:"PermittedDNSDomainsCritical"`
+				PermittedDNSDomains interface{} `json:"PermittedDNSDomains"`
+				ExcludedDNSDomains interface{} `json:"ExcludedDNSDomains"`
+				PermittedIPRanges interface{} `json:"PermittedIPRanges"`
+				ExcludedIPRanges interface{} `json:"ExcludedIPRanges"`
+				PermittedEmailAddresses interface{} `json:"PermittedEmailAddresses"`
+				ExcludedEmailAddresses interface{} `json:"ExcludedEmailAddresses"`
+				PermittedURIDomains interface{} `json:"PermittedURIDomains"`
+				ExcludedURIDomains interface{} `json:"ExcludedURIDomains"`
+				CRLDistributionPoints interface{} `json:"CRLDistributionPoints"`
+				PolicyIdentifiers interface{} `json:"PolicyIdentifiers"`
+			} `json:"Certificate"`
+			Nonce string `json:"nonce"`
+		} `json:"tx_action_signature_header"`
+		ChaincodeSpec struct {
+			Type int `json:"type"`
+			ChaincodeID struct {
+				Name string `json:"name"`
+			} `json:"chaincode_id"`
+			Input struct {
+				Args []string `json:"Args"`
+			} `json:"input"`
+		} `json:"chaincode_spec"`
+		Endorsements []struct {
+			SignatureHeader struct {
+				Certificate interface{} `json:"Certificate"`
+				Nonce string `json:"nonce"`
+			} `json:"signature_header"`
+			Signature string `json:"signature"`
+		} `json:"endorsements"`
+		ProposalHash string `json:"proposal_hash"`
+		Events struct {
+		} `json:"events"`
+		Response struct {
+			Status int `json:"status"`
+		} `json:"response"`
+		NsReadWriteSet []struct {
+			Namespace string `json:"Namespace"`
+			KVRWSet struct {
+				Reads []struct {
+					Key string `json:"key"`
+					Version struct {
+						BlockNum int `json:"block_num"`
+					} `json:"version"`
+				} `json:"reads"`
+				Writes []struct {
+					Key string `json:"key"`
+					Value string `json:"value"`
+				} `json:"writes"`
+			} `json:"KVRWSet"`
+		} `json:"ns_read_write_Set"`
+		ValidationCode int `json:"validation_code"`
+		ValidationCodeName string `json:"validation_code_name"`
+	} `json:"transactions"`
+	BlockCreatorSignature struct {
+		SignatureHeader struct {
+			Certificate struct {
+				Raw string `json:"Raw"`
+				RawTBSCertificate string `json:"RawTBSCertificate"`
+				RawSubjectPublicKeyInfo string `json:"RawSubjectPublicKeyInfo"`
+				RawSubject string `json:"RawSubject"`
+				RawIssuer string `json:"RawIssuer"`
+				Signature string `json:"Signature"`
+				SignatureAlgorithm int `json:"SignatureAlgorithm"`
+				PublicKeyAlgorithm int `json:"PublicKeyAlgorithm"`
+				PublicKey struct {
+					Curve struct {
+						P int64 `json:"P"`
+						N int64 `json:"N"`
+						B int64 `json:"B"`
+						Gx int64 `json:"Gx"`
+						Gy int64 `json:"Gy"`
+						BitSize int `json:"BitSize"`
+						Name string `json:"Name"`
+					} `json:"Curve"`
+					X int64 `json:"X"`
+					Y int64 `json:"Y"`
+				} `json:"PublicKey"`
+				Version int `json:"Version"`
+				SerialNumber int64 `json:"SerialNumber"`
+				Issuer struct {
+					Country []string `json:"Country"`
+					Organization []string `json:"Organization"`
+					OrganizationalUnit interface{} `json:"OrganizationalUnit"`
+					Locality []string `json:"Locality"`
+					Province []string `json:"Province"`
+					StreetAddress interface{} `json:"StreetAddress"`
+					PostalCode interface{} `json:"PostalCode"`
+					SerialNumber string `json:"SerialNumber"`
+					CommonName string `json:"CommonName"`
+					Names []struct {
+						Type []int `json:"Type"`
+						Value string `json:"Value"`
+					} `json:"Names"`
+					ExtraNames interface{} `json:"ExtraNames"`
+				} `json:"Issuer"`
+				Subject struct {
+					Country []string `json:"Country"`
+					Organization interface{} `json:"Organization"`
+					OrganizationalUnit interface{} `json:"OrganizationalUnit"`
+					Locality []string `json:"Locality"`
+					Province []string `json:"Province"`
+					StreetAddress interface{} `json:"StreetAddress"`
+					PostalCode interface{} `json:"PostalCode"`
+					SerialNumber string `json:"SerialNumber"`
+					CommonName string `json:"CommonName"`
+					Names []struct {
+						Type []int `json:"Type"`
+						Value string `json:"Value"`
+					} `json:"Names"`
+					ExtraNames interface{} `json:"ExtraNames"`
+				} `json:"Subject"`
+				NotBefore time.Time `json:"NotBefore"`
+				NotAfter time.Time `json:"NotAfter"`
+				KeyUsage int `json:"KeyUsage"`
+				Extensions []struct {
+					ID []int `json:"Id"`
+					Critical bool `json:"Critical"`
+					Value string `json:"Value"`
+				} `json:"Extensions"`
+				ExtraExtensions interface{} `json:"ExtraExtensions"`
+				UnhandledCriticalExtensions interface{} `json:"UnhandledCriticalExtensions"`
+				ExtKeyUsage interface{} `json:"ExtKeyUsage"`
+				UnknownExtKeyUsage interface{} `json:"UnknownExtKeyUsage"`
+				BasicConstraintsValid bool `json:"BasicConstraintsValid"`
+				IsCA bool `json:"IsCA"`
+				MaxPathLen int `json:"MaxPathLen"`
+				MaxPathLenZero bool `json:"MaxPathLenZero"`
+				SubjectKeyID interface{} `json:"SubjectKeyId"`
+				AuthorityKeyID string `json:"AuthorityKeyId"`
+				OCSPServer interface{} `json:"OCSPServer"`
+				IssuingCertificateURL interface{} `json:"IssuingCertificateURL"`
+				DNSNames interface{} `json:"DNSNames"`
+				EmailAddresses interface{} `json:"EmailAddresses"`
+				IPAddresses interface{} `json:"IPAddresses"`
+				URIs interface{} `json:"URIs"`
+				PermittedDNSDomainsCritical bool `json:"PermittedDNSDomainsCritical"`
+				PermittedDNSDomains interface{} `json:"PermittedDNSDomains"`
+				ExcludedDNSDomains interface{} `json:"ExcludedDNSDomains"`
+				PermittedIPRanges interface{} `json:"PermittedIPRanges"`
+				ExcludedIPRanges interface{} `json:"ExcludedIPRanges"`
+				PermittedEmailAddresses interface{} `json:"PermittedEmailAddresses"`
+				ExcludedEmailAddresses interface{} `json:"ExcludedEmailAddresses"`
+				PermittedURIDomains interface{} `json:"PermittedURIDomains"`
+				ExcludedURIDomains interface{} `json:"ExcludedURIDomains"`
+				CRLDistributionPoints interface{} `json:"CRLDistributionPoints"`
+				PolicyIdentifiers interface{} `json:"PolicyIdentifiers"`
+			} `json:"Certificate"`
+			Nonce string `json:"nonce"`
+		} `json:"signature_header"`
+		Signature string `json:"signature"`
+	} `json:"block_creator_signature"`
+	LastConfigBlockNumber struct {
+		SignatureData struct {
+			SignatureHeader struct {
+				Certificate struct {
+					Raw string `json:"Raw"`
+					RawTBSCertificate string `json:"RawTBSCertificate"`
+					RawSubjectPublicKeyInfo string `json:"RawSubjectPublicKeyInfo"`
+					RawSubject string `json:"RawSubject"`
+					RawIssuer string `json:"RawIssuer"`
+					Signature string `json:"Signature"`
+					SignatureAlgorithm int `json:"SignatureAlgorithm"`
+					PublicKeyAlgorithm int `json:"PublicKeyAlgorithm"`
+					PublicKey struct {
+						Curve struct {
+							P int64 `json:"P"`
+							N int64 `json:"N"`
+							B int64 `json:"B"`
+							Gx int64 `json:"Gx"`
+							Gy int64 `json:"Gy"`
+							BitSize int `json:"BitSize"`
+							Name string `json:"Name"`
+						} `json:"Curve"`
+						X int64 `json:"X"`
+						Y int64 `json:"Y"`
+					} `json:"PublicKey"`
+					Version int `json:"Version"`
+					SerialNumber int64 `json:"SerialNumber"`
+					Issuer struct {
+						Country []string `json:"Country"`
+						Organization []string `json:"Organization"`
+						OrganizationalUnit interface{} `json:"OrganizationalUnit"`
+						Locality []string `json:"Locality"`
+						Province []string `json:"Province"`
+						StreetAddress interface{} `json:"StreetAddress"`
+						PostalCode interface{} `json:"PostalCode"`
+						SerialNumber string `json:"SerialNumber"`
+						CommonName string `json:"CommonName"`
+						Names []struct {
+							Type []int `json:"Type"`
+							Value string `json:"Value"`
+						} `json:"Names"`
+						ExtraNames interface{} `json:"ExtraNames"`
+					} `json:"Issuer"`
+					Subject struct {
+						Country []string `json:"Country"`
+						Organization interface{} `json:"Organization"`
+						OrganizationalUnit interface{} `json:"OrganizationalUnit"`
+						Locality []string `json:"Locality"`
+						Province []string `json:"Province"`
+						StreetAddress interface{} `json:"StreetAddress"`
+						PostalCode interface{} `json:"PostalCode"`
+						SerialNumber string `json:"SerialNumber"`
+						CommonName string `json:"CommonName"`
+						Names []struct {
+							Type []int `json:"Type"`
+							Value string `json:"Value"`
+						} `json:"Names"`
+						ExtraNames interface{} `json:"ExtraNames"`
+					} `json:"Subject"`
+					NotBefore time.Time `json:"NotBefore"`
+					NotAfter time.Time `json:"NotAfter"`
+					KeyUsage int `json:"KeyUsage"`
+					Extensions []struct {
+						ID []int `json:"Id"`
+						Critical bool `json:"Critical"`
+						Value string `json:"Value"`
+					} `json:"Extensions"`
+					ExtraExtensions interface{} `json:"ExtraExtensions"`
+					UnhandledCriticalExtensions interface{} `json:"UnhandledCriticalExtensions"`
+					ExtKeyUsage interface{} `json:"ExtKeyUsage"`
+					UnknownExtKeyUsage interface{} `json:"UnknownExtKeyUsage"`
+					BasicConstraintsValid bool `json:"BasicConstraintsValid"`
+					IsCA bool `json:"IsCA"`
+					MaxPathLen int `json:"MaxPathLen"`
+					MaxPathLenZero bool `json:"MaxPathLenZero"`
+					SubjectKeyID interface{} `json:"SubjectKeyId"`
+					AuthorityKeyID string `json:"AuthorityKeyId"`
+					OCSPServer interface{} `json:"OCSPServer"`
+					IssuingCertificateURL interface{} `json:"IssuingCertificateURL"`
+					DNSNames interface{} `json:"DNSNames"`
+					EmailAddresses interface{} `json:"EmailAddresses"`
+					IPAddresses interface{} `json:"IPAddresses"`
+					URIs interface{} `json:"URIs"`
+					PermittedDNSDomainsCritical bool `json:"PermittedDNSDomainsCritical"`
+					PermittedDNSDomains interface{} `json:"PermittedDNSDomains"`
+					ExcludedDNSDomains interface{} `json:"ExcludedDNSDomains"`
+					PermittedIPRanges interface{} `json:"PermittedIPRanges"`
+					ExcludedIPRanges interface{} `json:"ExcludedIPRanges"`
+					PermittedEmailAddresses interface{} `json:"PermittedEmailAddresses"`
+					ExcludedEmailAddresses interface{} `json:"ExcludedEmailAddresses"`
+					PermittedURIDomains interface{} `json:"PermittedURIDomains"`
+					ExcludedURIDomains interface{} `json:"ExcludedURIDomains"`
+					CRLDistributionPoints interface{} `json:"CRLDistributionPoints"`
+					PolicyIdentifiers interface{} `json:"PolicyIdentifiers"`
+				} `json:"Certificate"`
+				Nonce string `json:"nonce"`
+			} `json:"signature_header"`
+			Signature string `json:"signature"`
+		} `json:"signature_data"`
+	} `json:"last_config_block_number"`
+	TransactionFilter string `json:"transaction_filter"`
+	OrdererKafkaMetadata struct {
+		LastOffsetPersisted int64 `json:"last_offset_persisted"`
+	} `json:"orderer_kafka_metadata"`
 }

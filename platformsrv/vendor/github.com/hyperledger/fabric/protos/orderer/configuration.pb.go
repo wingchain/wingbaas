@@ -282,18 +282,18 @@ func (m *ChannelRestrictions) GetMaxCount() uint64 {
 	return 0
 }
 
-// func init() {
-// 	proto.RegisterType((*ConsensusType)(nil), "orderer.ConsensusType")
-// 	proto.RegisterType((*BatchSize)(nil), "orderer.BatchSize")
-// 	proto.RegisterType((*BatchTimeout)(nil), "orderer.BatchTimeout")
-// 	proto.RegisterType((*KafkaBrokers)(nil), "orderer.KafkaBrokers")
-// 	proto.RegisterType((*ChannelRestrictions)(nil), "orderer.ChannelRestrictions")
-// 	proto.RegisterEnum("orderer.ConsensusType_State", ConsensusType_State_name, ConsensusType_State_value)
-// }
+func init() {
+	proto.RegisterType((*ConsensusType)(nil), "orderer.ConsensusType")
+	proto.RegisterType((*BatchSize)(nil), "orderer.BatchSize")
+	proto.RegisterType((*BatchTimeout)(nil), "orderer.BatchTimeout")
+	proto.RegisterType((*KafkaBrokers)(nil), "orderer.KafkaBrokers")
+	proto.RegisterType((*ChannelRestrictions)(nil), "orderer.ChannelRestrictions")
+	proto.RegisterEnum("orderer.ConsensusType_State", ConsensusType_State_name, ConsensusType_State_value)
+}
 
-// func init() {
-// 	proto.RegisterFile("orderer/configuration.proto", fileDescriptor_configuration_3a2420d24de6d468)
-// }
+func init() {
+	proto.RegisterFile("orderer/configuration.proto", fileDescriptor_configuration_3a2420d24de6d468)
+}
 
 var fileDescriptor_configuration_3a2420d24de6d468 = []byte{
 	// 403 bytes of a gzipped FileDescriptorProto

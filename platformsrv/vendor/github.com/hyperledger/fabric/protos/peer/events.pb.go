@@ -472,13 +472,13 @@ func _DeliverResponse_OneofSizer(msg proto.Message) (n int) {
 	return n
 }
 
-// func init() {
-// 	proto.RegisterType((*FilteredBlock)(nil), "protos.FilteredBlock")
-// 	proto.RegisterType((*FilteredTransaction)(nil), "protos.FilteredTransaction")
-// 	proto.RegisterType((*FilteredTransactionActions)(nil), "protos.FilteredTransactionActions")
-// 	proto.RegisterType((*FilteredChaincodeAction)(nil), "protos.FilteredChaincodeAction")
-// 	proto.RegisterType((*DeliverResponse)(nil), "protos.DeliverResponse")
-// }
+func init() {
+	proto.RegisterType((*FilteredBlock)(nil), "protos.FilteredBlock")
+	proto.RegisterType((*FilteredTransaction)(nil), "protos.FilteredTransaction")
+	proto.RegisterType((*FilteredTransactionActions)(nil), "protos.FilteredTransactionActions")
+	proto.RegisterType((*FilteredChaincodeAction)(nil), "protos.FilteredChaincodeAction")
+	proto.RegisterType((*DeliverResponse)(nil), "protos.DeliverResponse")
+}
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ context.Context
@@ -661,7 +661,7 @@ var _Deliver_serviceDesc = grpc.ServiceDesc{
 	Metadata: "peer/events.proto",
 }
 
-//func init() { proto.RegisterFile("peer/events.proto", fileDescriptor_events_8af932975aef5a3c) }
+func init() { proto.RegisterFile("peer/events.proto", fileDescriptor_events_8af932975aef5a3c) }
 
 var fileDescriptor_events_8af932975aef5a3c = []byte{
 	// 560 bytes of a gzipped FileDescriptorProto

@@ -13,6 +13,7 @@ import (
 	"github.com/wingbaas/platformsrv/utils"
 	"github.com/wingbaas/platformsrv/settings/fabric"
 	"github.com/wingbaas/platformsrv/sdk/sdkfabric"
+	"github.com/wingbaas/platformsrv/settings/fabric/public"
 )
 
 func orgCreateChannel(c echo.Context) error {
@@ -35,7 +36,6 @@ func orgCreateChannel(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
-	d.ChannelId = sdkfabric.DefaultChannel
 	err = fabric.OrgCreateChannel(d.BlockChainId,d.OrgName,d.ChannelId)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
@@ -65,7 +65,6 @@ func orgJoinChannel(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
-	d.ChannelId = sdkfabric.DefaultChannel
 	err = fabric.OrgJoinChannel(d.BlockChainId,d.OrgName,d.ChannelId)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
@@ -151,7 +150,6 @@ func orgDeployCC(c echo.Context) error {
 	if strings.HasPrefix(cfg.Version,"2.") {
 		return orgDeployCCV2(c,cfg,d)
 	}
-	d.ChannelId = sdkfabric.DefaultChannel
 	err = fabric.OrgDeployChaiCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.ChainCodeVersion,d.InitArgs)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
@@ -185,8 +183,7 @@ func chaincodeCall(c echo.Context) error {
 	}
 	if strings.HasPrefix(cfg.Version,"2.") {
 		return callCCV2(c,cfg,d)
-	}
-	d.ChannelId = sdkfabric.DefaultChannel 
+	} 
 	cr,err := fabric.OrgInvokeChainCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.Args)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
@@ -220,7 +217,6 @@ func chaincodeQuery(c echo.Context) error {
 	// if strings.HasPrefix(cfg.Version,"2.") {
 	// 	return ccQueryV2(c,cfg,d)
 	// }
-	d.ChannelId = sdkfabric.DefaultChannel
 	qr,err := fabric.OrgQueryChainCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.Args)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
@@ -254,7 +250,6 @@ func queryInstatialCC(c echo.Context) error {
 	if strings.HasPrefix(cfg.Version,"2.") {
 		return ccQueryInstatialV2(c,cfg,d) 
 	}
-	d.ChannelId = sdkfabric.DefaultChannel
 	qr,err := fabric.OrgQueryInstantiateCC(d.BlockChainId,d.OrgName,d.ChannelId)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
@@ -284,7 +279,6 @@ func queryInstalledCC(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
-	d.ChannelId = sdkfabric.DefaultChannel
 	qr,err := fabric.OrgQueryInstalledCC(d.BlockChainId,d.OrgName,d.ChannelId)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
@@ -343,7 +337,6 @@ func queryTxInfo(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
-	d.ChannelId = sdkfabric.DefaultChannel
 	qr,err := fabric.OrgQueryTxById(d.BlockChainId,d.OrgName,d.ChannelId,d.TxId)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
@@ -374,7 +367,6 @@ func queryBlockInfo(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
-	d.ChannelId = sdkfabric.DefaultChannel
 	qr,err := fabric.OrgQueryBlockById(d.BlockChainId,d.OrgName,d.ChannelId,d.BlockId)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
@@ -404,12 +396,35 @@ func queryBlock(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
-	d.ChannelId = sdkfabric.DefaultChannel
 	qr,err := fabric.OrgQueryBlockChain(d.BlockChainId,d.OrgName,d.ChannelId)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
 		return c.JSON(http.StatusOK,ret)
 	}
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,qr) 
+	return c.JSON(http.StatusOK,ret) 
+}
+
+func addOrg(c echo.Context) error {
+	logger.Debug("addOrg")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	var d public.AddOrgConfig
+    err = json.Unmarshal(result, &d)
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	err = fabric.ChainAddOrg(d.BlockChainId,d)
+	if err != nil {
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,"") 
 	return c.JSON(http.StatusOK,ret) 
 }

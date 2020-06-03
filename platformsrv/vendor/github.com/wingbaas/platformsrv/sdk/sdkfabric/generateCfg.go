@@ -45,8 +45,7 @@ func GenerateCfg(netCfg public.DeployNetConfig,p GenerateParaSt)(string,error) {
 		logger.Errorf("GenerateCfg: GetServicesNodePort failed")
 		return "",fmt.Errorf("GenerateCfg: GetServicesNodePort failed")
 	}
-	svMap = sMap
-	channelMap := getChannelMap(netCfg,p) 
+	svMap = sMap 
 	orgMap := getOrgMap(netCfg,p)
 	err,orderMap := getOrderMap(netCfg,p)
 	if err != nil {
@@ -86,7 +85,7 @@ func GenerateCfg(netCfg public.DeployNetConfig,p GenerateParaSt)(string,error) {
 		break
 	}
 
-	cfg := SdkFabricCfg {
+	cfg := SdkFabricCfg { 
 		Name: "fabric-network",
 		Version: "1.0.0",
 	    Client: ClientSt {
@@ -124,13 +123,8 @@ func GenerateCfg(netCfg public.DeployNetConfig,p GenerateParaSt)(string,error) {
 						Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/Admin@" + firstOrg.Domain + "/tls/client.crt",
 					},
 				},
-				// Client: ClientCertSt {
-				// 	Keyfile: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/User1@" + firstOrg.Domain + "/tls/client.key",
-				// 	Certfile: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/User1@" + firstOrg.Domain + "/tls/client.crt",
-				// }, 
 			},
 		},
-		Channels: channelMap,
 		Organizations: orgMap,
 		Orderers: orderMap,
 		Peers: peerMemberMap, 
@@ -161,6 +155,12 @@ func GenerateCfg(netCfg public.DeployNetConfig,p GenerateParaSt)(string,error) {
 		logger.Errorf("GenerateCfg: write sdk config error")
 		return "",fmt.Errorf("GenerateCfg: write sdk config error")
 	}
+	jsonFile := utils.BAAS_CFG.BlockNetCfgBasePath + "/" + p.BlockId + "/network-config-" + firstOrg.Name + ".json"
+	err = utils.WriteFile(jsonFile,string(bytes))
+	if err != nil {
+		logger.Errorf("GenerateCfg: write sdk json config error")
+		return "",fmt.Errorf("GenerateCfg: write sdk json config error")
+	} 
 	return "",nil
 }
 
@@ -359,7 +359,6 @@ func getOrgMap(netCfg public.DeployNetConfig,p GenerateParaSt) map[string]OrgFie
 			field.Peers = append(field.Peers,p.Hostname + "." + org.Domain)
 		}
 		field.CertificateAuthorities = append(field.CertificateAuthorities,"ca." + org.Domain)
-		//field.Users = getUserMap("Admin",org.Domain,p)
 		m[org.Name] = field
 	}
 	for _,org := range netCfg.OrdererOrgs {
@@ -398,6 +397,38 @@ func getChannelMap(netCfg public.DeployNetConfig,p GenerateParaSt)map[string]Cha
 		},
 	}
 	m[p.ChannelName] = field
+	return m
+}
+
+func getChannelListMap(netCfg public.DeployNetConfig,p GenerateParaSt,chList public.ChannelList)map[string]ChannelField {
+	m := make(map[string]ChannelField)
+	for _,ch := range chList.Channels {
+		var orderers []string
+		for _,org := range netCfg.OrdererOrgs {
+			for _,member := range org.Specs {
+				order := member.Hostname + "." + org.Domain
+				orderers = append(orderers,order)
+			}
+		}
+		peerMap := getPeerMap(netCfg)	
+		field := ChannelField { 
+			Orderers: orderers,
+			Peers: peerMap,
+			Policies: PoliciesSt {
+				QueryChannelConfig: QueryChannelConfigSt {
+					MinResponses: 1,
+					MaxTargets: 1,
+					RetryOpts: RetryOptsSt { 
+						Attempts: 5,
+						InitialBackoff: "500ms",
+						MaxBackoff: "5s",
+						BackoffFactor: 2.0,
+					},
+				},
+			},
+		}
+		m[ch.ChannelID] = field
+	}
 	return m
 }
 

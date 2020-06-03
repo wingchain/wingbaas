@@ -439,16 +439,16 @@ func (m *KafkaMetadata) GetLastResubmittedConfigOffset() int64 {
 	return 0
 }
 
-// func init() {
-// 	proto.RegisterType((*KafkaMessage)(nil), "orderer.KafkaMessage")
-// 	proto.RegisterType((*KafkaMessageRegular)(nil), "orderer.KafkaMessageRegular")
-// 	proto.RegisterType((*KafkaMessageTimeToCut)(nil), "orderer.KafkaMessageTimeToCut")
-// 	proto.RegisterType((*KafkaMessageConnect)(nil), "orderer.KafkaMessageConnect")
-// 	proto.RegisterType((*KafkaMetadata)(nil), "orderer.KafkaMetadata")
-// 	proto.RegisterEnum("orderer.KafkaMessageRegular_Class", KafkaMessageRegular_Class_name, KafkaMessageRegular_Class_value)
-// }
+func init() {
+	proto.RegisterType((*KafkaMessage)(nil), "orderer.KafkaMessage")
+	proto.RegisterType((*KafkaMessageRegular)(nil), "orderer.KafkaMessageRegular")
+	proto.RegisterType((*KafkaMessageTimeToCut)(nil), "orderer.KafkaMessageTimeToCut")
+	proto.RegisterType((*KafkaMessageConnect)(nil), "orderer.KafkaMessageConnect")
+	proto.RegisterType((*KafkaMetadata)(nil), "orderer.KafkaMetadata")
+	proto.RegisterEnum("orderer.KafkaMessageRegular_Class", KafkaMessageRegular_Class_name, KafkaMessageRegular_Class_value)
+}
 
-// func init() { proto.RegisterFile("orderer/kafka.proto", fileDescriptor_kafka_d6fc97ca114dc767) }
+func init() { proto.RegisterFile("orderer/kafka.proto", fileDescriptor_kafka_d6fc97ca114dc767) }
 
 var fileDescriptor_kafka_d6fc97ca114dc767 = []byte{
 	// 476 bytes of a gzipped FileDescriptorProto

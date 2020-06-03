@@ -762,21 +762,21 @@ func (m *PlainDelegatedOutput) GetQuantity() uint64 {
 	return 0
 }
 
-// func init() {
-// 	proto.RegisterType((*TokenTransaction)(nil), "TokenTransaction")
-// 	proto.RegisterType((*PlainTokenAction)(nil), "PlainTokenAction")
-// 	proto.RegisterType((*PlainImport)(nil), "PlainImport")
-// 	proto.RegisterType((*PlainTransfer)(nil), "PlainTransfer")
-// 	proto.RegisterType((*PlainApprove)(nil), "PlainApprove")
-// 	proto.RegisterType((*PlainTransferFrom)(nil), "PlainTransferFrom")
-// 	proto.RegisterType((*PlainOutput)(nil), "PlainOutput")
-// 	proto.RegisterType((*InputId)(nil), "InputId")
-// 	proto.RegisterType((*PlainDelegatedOutput)(nil), "PlainDelegatedOutput")
-// }
+func init() {
+	proto.RegisterType((*TokenTransaction)(nil), "TokenTransaction")
+	proto.RegisterType((*PlainTokenAction)(nil), "PlainTokenAction")
+	proto.RegisterType((*PlainImport)(nil), "PlainImport")
+	proto.RegisterType((*PlainTransfer)(nil), "PlainTransfer")
+	proto.RegisterType((*PlainApprove)(nil), "PlainApprove")
+	proto.RegisterType((*PlainTransferFrom)(nil), "PlainTransferFrom")
+	proto.RegisterType((*PlainOutput)(nil), "PlainOutput")
+	proto.RegisterType((*InputId)(nil), "InputId")
+	proto.RegisterType((*PlainDelegatedOutput)(nil), "PlainDelegatedOutput")
+}
 
-// func init() {
-// 	proto.RegisterFile("token/transaction.proto", fileDescriptor_transaction_a359b0c8d648a383)
-// }
+func init() {
+	proto.RegisterFile("token/transaction.proto", fileDescriptor_transaction_a359b0c8d648a383)
+}
 
 var fileDescriptor_transaction_a359b0c8d648a383 = []byte{
 	// 505 bytes of a gzipped FileDescriptorProto
