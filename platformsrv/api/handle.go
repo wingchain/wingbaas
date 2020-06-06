@@ -227,6 +227,7 @@ func deployBlockChain(c echo.Context) error {
 	chain.BlockChainType = d.BlockChainType
 	chain.ClusterId = clusterId
 	chain.Version = version
+	chain.Status = k8s.CHAIN_STATUS_FREE
 	err = k8s.AddChain(chain)
 	if err != nil {
 		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)

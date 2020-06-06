@@ -33,7 +33,9 @@ func Start(port string) {
 	r.POST("/api/v1/queryblockinfo",queryBlockInfo)
 	r.POST("/api/v1/queryblock",queryBlock) 
 	r.POST("/api/v1/addorg",addOrg)
-
+	r.POST("/api/v1/singleorgdeploycc",singleOrgDeployCC) 
+	r.POST("/api/v1/orginstantialcc",orgInstantialCC) 
+	r.POST("/api/v1/orgupgradecc",orgUpgradeCC) 
 
 	// Start server
 	logger.Debug("start wing baas api server")

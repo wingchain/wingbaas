@@ -557,6 +557,7 @@ request parameter:
 	"ChannelId": "mychannel",
 	"ChainCodeId": "cctest",
 	"ChainCodeVersion": "1.0",
+	"EndorsePolicy": "AND('Org1MSP.member','Org2MSP.member')",
 	"InitArgs":["init","a","200","b","200"]
 }
 ``` 
@@ -582,7 +583,8 @@ request parameter:
 	"OrgName": "Org1",
 	"ChannelId": "mychannel",
 	"ChainCodeId": "cctest",
-	"Args":["transfer","a","b","10"]
+	"Args":["transfer","a","b","10"],
+	"Peers":["peer0-org1.Org1.fabric.baas.xyz","peer0-org2.Org2.fabric.baas.xyz"]
 }
 ``` 
 API RETURN:                  

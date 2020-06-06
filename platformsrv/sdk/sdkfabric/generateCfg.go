@@ -35,6 +35,137 @@ func GenerateOrgCfg(netCfg public.DeployNetConfig,p GenerateParaSt)(string,error
 			return "",fmt.Errorf("GenerateOrgCfg failed,org=%s",org.Name)
 		}
 	}
+	_,err := GenerateAllCfg(netCfg,p)
+	if err != nil {
+		logger.Errorf("GenerateOrgCfg GenerateAllCfg failed")
+		return "",fmt.Errorf("GenerateOrgCfg GenerateAllCfg failed")
+	}
+	return "",nil
+}
+
+func GenerateAllCfg(netCfg public.DeployNetConfig,p GenerateParaSt)(string,error) { 
+	svMap = make(map[string][]public.ServiceNodePortSt)
+	err,sMap := k8s.GetServicesNodePort(p.ClusterId,p.NamespaceId,netCfg)
+	if err != nil {
+		logger.Errorf("GenerateAllCfg: GetServicesNodePort failed")
+		return "",fmt.Errorf("GenerateAllCfg: GetServicesNodePort failed")
+	}
+	svMap = sMap 
+	orgMap := getOrgMap(netCfg,p)
+	err,orderMap := getOrderMap(netCfg,p)
+	if err != nil {
+		logger.Errorf("GenerateAllCfg: getOrderMap,id=%s",p.ClusterId)
+		return "",fmt.Errorf("GenerateAllCfg: getOrderMap failed,id=%s",p.ClusterId)
+	}
+	err,peerMemberMap := getPeersMemberMap(netCfg,p)
+	if err != nil {
+		logger.Errorf("GenerateAllCfg: getPeersMemberMap,id=%s",p.ClusterId)
+		return "",fmt.Errorf("GenerateAllCfg: getPeersMemberMap failed,id=%s",p.ClusterId)
+	}
+	err,caMap := getCaMap(netCfg,p)
+	if err != nil {
+		logger.Errorf("GenerateAllCfg: getCaMap,id=%s",p.ClusterId)
+		return "",fmt.Errorf("GenerateAllCfg: getCaMap failed,id=%s",p.ClusterId)
+	}
+
+	err,pm := getPeersMatch(netCfg,p)
+	if err != nil {
+		logger.Errorf("GenerateAllCfg: getPeersMatch,id=%s",p.ClusterId)
+		return "",fmt.Errorf("GenerateAllCfg: getPeersMatch failed,id=%s",p.ClusterId)
+	}
+	err,om := getOrdersMatch(netCfg,p)
+	if err != nil {
+		logger.Errorf("GenerateAllCfg: getOrdersMatch,id=%s",p.ClusterId)
+		return "",fmt.Errorf("GenerateAllCfg: getOrdersMatch failed,id=%s",p.ClusterId)
+	}
+	err,cm := getCasMatch(netCfg,p)
+	if err != nil {
+		logger.Errorf("GenerateAllCfg: getCasMatch,id=%s",p.ClusterId)
+		return "",fmt.Errorf("GenerateAllCfg: getCasMatch failed,id=%s",p.ClusterId)
+	}
+
+	var firstOrg public.OrgSpec
+	for _,org := range netCfg.PeerOrgs { 
+		firstOrg = org
+		break
+	}
+
+	cfg := SdkFabricCfg { 
+		Name: "fabric-network",
+		Version: "1.0.0",
+	    Client: ClientSt {
+			Organization: firstOrg.Name, 
+			Logging: LoggingSt {
+				Level: "info",
+			},
+			Cryptoconfig: CryptoconfigSt {
+				Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config" ,
+			},
+			CredentialStore: CredentialStoreSt {
+				Path: utils.BAAS_CFG.KeyStorePath + p.BlockId + "/credentialstore/" + firstOrg.Name,
+				CryptoStore: CryptoStoreSt {
+					Path: utils.BAAS_CFG.KeyStorePath + p.BlockId + "/cryptostore/" + firstOrg.Name, 
+				}, 
+			},
+			BCCSP: BCCSPSt {
+				Security: SecuritySt {
+					Enabled: true,
+					Default: DefaultSt {
+						Provider: "SW",
+					},
+					HashAlgorithm: "SHA2",
+					SoftVerify: true,
+					Level: 256,
+				},
+			},
+			TLSCerts: TLSCertsSt {
+				SystemCertPool: false,
+				Client: ClientTLSCertsSt {
+					Key: CryptoconfigSt {
+						Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/Admin@" + firstOrg.Domain + "/tls/client.key",
+					},
+					Cert: CryptoconfigSt {
+						Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/peerOrganizations/" + firstOrg.Domain + "/users/Admin@" + firstOrg.Domain + "/tls/client.crt",
+					},
+				},
+			},
+		},
+		Organizations: orgMap,
+		Orderers: orderMap,
+		Peers: peerMemberMap, 
+		CertificateAuthorities: caMap,
+		EntityMatchers: EntityMatchersSt {
+			Peer: pm,
+			Orderer: om,
+			CertificateAuthorities: cm,
+		}, 
+	}
+	bytes, err := json.Marshal(cfg)
+	if err != nil {
+		logger.Errorf("GenerateAllCfg: Marshal fabric sdk config error") 
+		return "",fmt.Errorf("GenerateAllCfg: Marshal fabric sdk config error")
+	} 
+	// logger.Debug("GenerateAllCfg: json str=")
+	// logger.Debug(string(bytes))
+	bl,yamlStr := fabric.JsonToYaml(string(bytes)) 
+	if !bl {
+		logger.Errorf("GenerateAllCfg: json2yaml error") 
+		return "",fmt.Errorf("GenerateAllCfg: json2yaml error")
+	}
+	// logger.Debug("GenerateAllCfg: yaml str=")
+	// logger.Debug(yamlStr)
+	cfgFile := utils.BAAS_CFG.BlockNetCfgBasePath + "/" + p.BlockId + "/network-config.yaml" 
+	err = utils.WriteFile(cfgFile,yamlStr)
+	if err != nil {
+		logger.Errorf("GenerateAllCfg: write sdk config error")
+		return "",fmt.Errorf("GenerateAllCfg: write sdk config error")
+	}
+	jsonFile := utils.BAAS_CFG.BlockNetCfgBasePath + "/" + p.BlockId + "/network-config.json"
+	err = utils.WriteFile(jsonFile,string(bytes))
+	if err != nil {
+		logger.Errorf("GenerateAllCfg: write sdk json config error")
+		return "",fmt.Errorf("GenerateAllCfg: write sdk json config error")
+	} 
 	return "",nil
 }
 

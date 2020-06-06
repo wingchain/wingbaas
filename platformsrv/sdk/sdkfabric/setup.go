@@ -42,6 +42,7 @@ type ChaincodeSetup struct {
 	ChaincodeGoPath 	string
 	ChaincodePath   	string
 	InitOrg				string
+	EndorsePolicy		string
 	InitArgs            []string 
 }
 
@@ -132,7 +133,12 @@ func (setup *FabricSetup) InstallCC(cc ChaincodeSetup) error {
 
 func (setup *FabricSetup) InstantiateCC(ch ChannnelSetup,cc ChaincodeSetup) error {
 	//ccPolicy := cauthdsl.SignedByAnyMember([]string{cc.InitOrg})
-	endorse := "AND('" + setup.OrgName + "MSP.member')"
+
+	var endorse string
+	if cc.EndorsePolicy == "" {
+		endorse = "AND('" + setup.OrgName + "MSP.member')"
+	}
+	endorse = cc.EndorsePolicy  
 	ccPolicy,err := setup.genPolicy(endorse)
 	if err != nil {
 		logger.Errorf("InstantiateCC: genPolicy failed,msg=%v",err.Error())
@@ -154,6 +160,37 @@ func (setup *FabricSetup) InstantiateCC(ch ChannnelSetup,cc ChaincodeSetup) erro
 		return fmt.Errorf("failed to instantiate the chaincode,err=%v",err)
 	}
 	logger.Debug("Chaincode instantiate success") 
+	return nil
+}
+
+func (setup *FabricSetup) UpgradeCC(ch ChannnelSetup,cc ChaincodeSetup) error {
+	//ccPolicy := cauthdsl.SignedByAnyMember([]string{cc.InitOrg})
+	var endorse string
+	if cc.EndorsePolicy == "" {
+		endorse = "AND('" + setup.OrgName + "MSP.member')"
+	}
+	endorse = cc.EndorsePolicy  
+	ccPolicy,err := setup.genPolicy(endorse)
+	if err != nil {
+		logger.Errorf("UpgradeCC: genPolicy failed,msg=%v",err.Error())
+		return fmt.Errorf("UpgradeCC: genPolicy failed,msg=%v",err.Error())
+	}
+	args := packArgs(cc.InitArgs)
+	req := resmgmt.UpgradeCCRequest{
+		Name: cc.ChainCodeID,
+		Path: cc.ChaincodeGoPath,
+		Version: cc.ChaincodeVersion,
+		Args: args,
+		Policy: ccPolicy,
+	}
+	reqPeers := resmgmt.WithTargetEndpoints(setup.Peers...)
+
+	resp, err := setup.netAdmin.UpgradeCC(ch.ChannelID,req,reqPeers)
+	if err != nil || resp.TransactionID == "" {
+		logger.Errorf("failed to UpgradeCC the chaincode,err=%v",err)
+		return fmt.Errorf("failed to UpgradeCC the chaincode,err=%v",err)
+	}
+	logger.Debug("Chaincode UpgradeCC success") 
 	return nil
 }
 

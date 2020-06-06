@@ -30,6 +30,7 @@ type FabricDeployCCPara struct {
 	ChannelId string `json:"ChannelId"`
 	ChainCodeId string `json:"ChainCodeId"`
 	ChainCodeVersion string `json:"ChainCodeVersion"`
+	EndorsePolicy string `json:"EndorsePolicy"`
 	InitArgs []string `json:"InitArgs"`
 }
 
@@ -39,6 +40,7 @@ type FabricCCCallPara struct {
 	ChannelId string `json:"ChannelId"`
 	ChainCodeId string `json:"ChainCodeId"`
 	Args []string `json:"Args"`
+	Peers []string `json:"Peers"`
 }
 
 type FabricCCQueryPara struct {
@@ -162,7 +164,7 @@ func getResultByFlag(fileName string,flag string) (string,error) {
 	// flagLocker.Lock()
 	// defer flagLocker.Unlock()
 	var text []string
-	bl,_ := utils.PathExists(fileName)
+	bl,_ := utils.PathExists(fileName) 
 	for i:=0;i<LOOP_COUNT;i++ {
 		if bl {
 			_,text = sdkfabric.ReadFileLine2(fileName)	

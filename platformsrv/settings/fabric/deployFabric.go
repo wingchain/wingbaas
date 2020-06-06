@@ -78,6 +78,7 @@ func DeployFabric(p public.DeployPara,chainName string,chainType string)(string,
 		logger.Errorf("DeployFabric: write block config error")
 		return "",fmt.Errorf("DeployFabric: write block config error") 
 	}
+	//GenerateChannelTx(blockCertPath,"wingchaincase")
 	var sdkCfg sdkfabric.GenerateParaSt
 	sdkCfg.ClusterId = p.ClusterId
 	sdkCfg.NamespaceId = chainName 
@@ -421,7 +422,7 @@ func OrgJoinChannel(chainId string,orgName string,channelId string) error {
 	return nil
 }
 
-func OrgDeployChaiCode(chainId string,orgName string,channelId string,ChainCodeID string,ChaincodeVersion string,initArgs []string) error {
+func OrgDeployChaiCode(chainId,orgName,channelId,ChainCodeID,ChaincodeVersion,EndorsePolicy string,initArgs []string) error {
 	rootPath,err := utils.GetProcessRunRoot()
 	if err != nil {
 		return fmt.Errorf("OrgDeployChaiCode: get process run path error")
@@ -462,6 +463,7 @@ func OrgDeployChaiCode(chainId string,orgName string,channelId string,ChainCodeI
 		ChaincodeGoPath: 	rootPath + "/tmp/" + chainId,
 		ChaincodePath:   	ChainCodeID + ChaincodeVersion,
 		ChaincodeVersion:	ChaincodeVersion,
+		EndorsePolicy:      EndorsePolicy,
 		InitOrg:			orgName,
 	}
 	ccSetup.InitArgs = append(ccSetup.InitArgs,initArgs...)
@@ -481,6 +483,177 @@ func OrgDeployChaiCode(chainId string,orgName string,channelId string,ChainCodeI
 		return fmt.Errorf("OrgDeployChaiCode: instatiate cc failed,org=%s\n", orgName)
 	}
 	logger.Debug("OrgDeployChaiCode success")
+	return nil
+}
+
+func SingleOrgInstallChaiCode(chainId string,orgName string,channelId string,ChainCodeID string,ChaincodeVersion string) error {
+	rootPath,err := utils.GetProcessRunRoot()
+	if err != nil {
+		return fmt.Errorf("NewOrgInstallChaiCode: get process run path error")
+	}
+	obj,err := sdkfabric.LoadChainCfg(chainId)
+	if err != nil {
+		return fmt.Errorf("NewOrgInstallChaiCode:load chain cfg error,chainId=%s\n", chainId)
+	}
+	var orderId string
+	for _,org := range obj.DeployNetCfg.OrdererOrgs {
+		for _,p := range org.Specs {
+			orderId = p.Hostname + "." + org.Domain
+			break
+		}
+	} 
+	fSetup := sdkfabric.FabricSetup{ 
+		OrdererID: orderId,
+		OrgAdmin:  "Admin",
+		OrgName:   orgName, 
+		ChannelId: channelId,
+		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
+	}
+	for _,org := range obj.DeployNetCfg.PeerOrgs {
+		if org.Name == orgName {
+			for _,p := range org.Specs {
+				peer := p.Hostname + "." + org.Domain
+				fSetup.Peers = append(fSetup.Peers,peer)
+			}
+			break
+		}
+	}
+	ccSetup := sdkfabric.ChaincodeSetup {
+		ChainCodeID:     	ChainCodeID,
+		ChaincodeGoPath: 	rootPath + "/tmp/" + chainId,
+		ChaincodePath:   	ChainCodeID + ChaincodeVersion,
+		ChaincodeVersion:	ChaincodeVersion, 
+	}
+	err = fSetup.Initialize()
+	if err != nil {
+		return fmt.Errorf("NewOrgInstallChaiCode:init SDK failed: org=%s  err=%s\n", orgName,err)
+	}
+	defer fSetup.CloseSDK() 
+	err = fSetup.InstallCC(ccSetup) 
+	if err != nil {
+		return fmt.Errorf("NewOrgInstallChaiCode: install cc failed,org=%s\n", orgName)
+	}
+	logger.Debug("NewOrgInstallChaiCode success")
+	return nil
+}
+
+func OrgInstantialChaiCode(chainId,orgName,channelId,ChainCodeID,ChaincodeVersion,endorsePolicy string,initArgs []string) error {
+	rootPath,err := utils.GetProcessRunRoot()
+	if err != nil {
+		return fmt.Errorf("OrgInstantialChaiCode: get process run path error")
+	}
+	obj,err := sdkfabric.LoadChainCfg(chainId)
+	if err != nil {
+		return fmt.Errorf("OrgInstantialChaiCode:load chain cfg error,chainId=%s\n", chainId)
+	}
+	var orderId string
+	for _,org := range obj.DeployNetCfg.OrdererOrgs {
+		for _,p := range org.Specs {
+			orderId = p.Hostname + "." + org.Domain
+			break
+		}
+	} 
+	fSetup := sdkfabric.FabricSetup{ 
+		OrdererID: orderId,
+		OrgAdmin:  "Admin",
+		OrgName:   orgName, 
+		ChannelId: channelId,
+		//ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
+		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config.yaml",
+	}
+	for _,org := range obj.DeployNetCfg.PeerOrgs {
+		if org.Name == orgName {
+			for _,p := range org.Specs {
+				peer := p.Hostname + "." + org.Domain
+				fSetup.Peers = append(fSetup.Peers,peer)
+			}
+			break
+		}
+	} 
+	chSetup := sdkfabric.ChannnelSetup{
+		ChannelID: channelId, 
+		ChannelConfig: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/channel-artifacts/" + channelId + ".tx",
+	}
+	ccSetup := sdkfabric.ChaincodeSetup {
+		ChainCodeID:     	ChainCodeID,
+		ChaincodeGoPath: 	rootPath + "/tmp/" + chainId,
+		ChaincodePath:   	ChainCodeID + ChaincodeVersion,
+		ChaincodeVersion:	ChaincodeVersion,
+		EndorsePolicy:		endorsePolicy, 
+		InitOrg:			orgName,
+	}
+	ccSetup.InitArgs = append(ccSetup.InitArgs,initArgs...)
+
+	err = fSetup.Initialize()
+	if err != nil {
+		return fmt.Errorf("OrgInstantialChaiCode:init SDK failed: org=%s  err=%s\n", orgName,err)
+	}
+	defer fSetup.CloseSDK()
+	err = fSetup.InstantiateCC(chSetup,ccSetup) 
+	if err != nil {
+		return fmt.Errorf("OrgInstantialChaiCode: instatiate cc failed,org=%s\n", orgName)
+	}
+	logger.Debug("OrgInstantialChaiCode success") 
+	return nil
+}
+
+func OrgUpgradeChaiCode(chainId,orgName,channelId,ChainCodeID,ChaincodeVersion,endorsePolicy string,initArgs []string) error {
+	rootPath,err := utils.GetProcessRunRoot()
+	if err != nil {
+		return fmt.Errorf("OrgUpgradeChaiCode: get process run path error")
+	}
+	obj,err := sdkfabric.LoadChainCfg(chainId)
+	if err != nil {
+		return fmt.Errorf("OrgUpgradeChaiCode:load chain cfg error,chainId=%s\n", chainId)
+	}
+	var orderId string
+	for _,org := range obj.DeployNetCfg.OrdererOrgs {
+		for _,p := range org.Specs {
+			orderId = p.Hostname + "." + org.Domain
+			break
+		}
+	} 
+	fSetup := sdkfabric.FabricSetup{  
+		OrdererID: orderId,
+		OrgAdmin:  "Admin",
+		OrgName:   orgName, 
+		ChannelId: channelId,
+		//ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
+		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config.yaml",
+	}
+	for _,org := range obj.DeployNetCfg.PeerOrgs {
+		if org.Name == orgName {
+			for _,p := range org.Specs {
+				peer := p.Hostname + "." + org.Domain
+				fSetup.Peers = append(fSetup.Peers,peer)
+			}
+			break
+		}
+	} 
+	chSetup := sdkfabric.ChannnelSetup{
+		ChannelID: channelId, 
+		ChannelConfig: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/channel-artifacts/" + channelId + ".tx",
+	}
+	ccSetup := sdkfabric.ChaincodeSetup {
+		ChainCodeID:     	ChainCodeID,
+		ChaincodeGoPath: 	rootPath + "/tmp/" + chainId,
+		ChaincodePath:   	ChainCodeID + ChaincodeVersion,
+		ChaincodeVersion:	ChaincodeVersion,
+		EndorsePolicy:		endorsePolicy, 
+		InitOrg:			orgName,
+	}
+	ccSetup.InitArgs = append(ccSetup.InitArgs,initArgs...)
+
+	err = fSetup.Initialize()
+	if err != nil {
+		return fmt.Errorf("OrgUpgradeChaiCode:init SDK failed: org=%s  err=%s\n", orgName,err)
+	}
+	defer fSetup.CloseSDK()
+	err = fSetup.UpgradeCC(chSetup,ccSetup)  
+	if err != nil {
+		return fmt.Errorf("OrgUpgradeChaiCode: UpgradeCC cc failed,org=%s\n", orgName)
+	}
+	logger.Debug("OrgUpgradeChaiCode success") 
 	return nil
 }
 

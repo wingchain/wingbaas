@@ -14,10 +14,17 @@ type Chain struct {
 	BlockChainType  string 	`json:"BlockChainType"`
 	ClusterId       string 	`json:"ClusterId"`
 	Version			string	`json:"Version"`
+	Status			int		`json:"Status"`
 }
 
 const (
-	CHAIN_FILE  string = "chain.json" 
+	CHAIN_FILE  			string = "chain.json" 
+	CHAIN_STATUS_FREE   	int = 0
+	CHAIN_STATUS_ORGADD 	int = 1
+	CHAIN_STATUS_PKGCC  	int = 2 
+	CHAIN_STATUS_DEPLOYCC	int = 3
+	CHAIN_STATUS_CALLCC		int = 4 
+	CHAIN_STATUS_QUERY		int = 5 
 )
 
 func AddChain(chain Chain) error {
@@ -147,6 +154,37 @@ func DeleteChain(chain Chain) error {
 	err = utils.WriteFile(cfgPath,string(bytes))
 	if err != nil {
 		logger.Errorf("DeleteChain: Write chain list file error,%v", err)
+		return fmt.Errorf("%v", err)
+	}
+	return nil
+}
+
+func UpdateChainStatus(chain Chain) error {
+	cfgPath := utils.BAAS_CFG.BlockNetCfgBasePath + CHAIN_FILE
+	var chains []Chain
+	bytes,err := utils.LoadFile(cfgPath)
+	if err != nil {
+		logger.Errorf("UpdateChainStatus: read chains error,%v", err)
+		return fmt.Errorf("%v", err)
+	}
+	err = json.Unmarshal(bytes,&chains)
+	if err != nil {
+		logger.Errorf("UpdateChainStatus: unmarshal chains error,%v", err)
+		return fmt.Errorf("%v", err)
+	}
+	for k,c := range chains {
+		if c.BlockChainName == chain.BlockChainName {
+			chains[k].Status = chain.Status
+		}
+	}
+	bytes, err = json.Marshal(chains)
+	if err != nil {
+		logger.Errorf("UpdateChainStatus: marshal chains error,%v", err)
+		return fmt.Errorf("%v", err)
+	}
+	err = utils.WriteFile(cfgPath,string(bytes))
+	if err != nil {
+		logger.Errorf("UpdateChainStatus: Write chain list file error,%v", err)
 		return fmt.Errorf("%v", err)
 	}
 	return nil

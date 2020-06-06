@@ -15,7 +15,7 @@ const (
 	USER_DEFAULT_TYPE 		string = "user"
 )
 
-func OrgInvokeChainCode(chainId string,orgName string,channelId string,ChainCodeID string,args []string) (interface{},error) {
+func OrgInvokeChainCode(chainId,orgName,channelId,ChainCodeID string,args []string,peers []string) (interface{},error) {
 	if len(args)<2 {
 		logger.Errorf("OrgInovkeChainCode: len args<2 error")
 		return nil,fmt.Errorf("OrgInovkeChainCode: len args<2 error")
@@ -38,17 +38,19 @@ func OrgInvokeChainCode(chainId string,orgName string,channelId string,ChainCode
 		OrgAdmin:  "Admin",
 		OrgName:   orgName, 
 		ChannelId: channelId,
-		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
+		//ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml", 
+		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config.yaml", 
 	}
-	for _,org := range obj.DeployNetCfg.PeerOrgs {
-		if org.Name == orgName {
-			for _,p := range org.Specs {
-				peer := p.Hostname + "." + org.Domain
-				fSetup.Peers = append(fSetup.Peers,peer)
-			}
-			break
-		}
-	}
+	// for _,org := range obj.DeployNetCfg.PeerOrgs {
+	// 	if org.Name == orgName {
+	// 		for _,p := range org.Specs {
+	// 			peer := p.Hostname + "." + org.Domain
+	// 			fSetup.Peers = append(fSetup.Peers,peer)
+	// 		}
+	// 		break
+	// 	}
+	// } 
+	fSetup.Peers = append(fSetup.Peers,peers...) 
 	err = fSetup.Initialize()
 	if err != nil {
 		return nil,fmt.Errorf("OrgInovkeChainCode:init SDK failed: org=%s  err=%s\n", orgName,err)
@@ -113,7 +115,8 @@ func OrgQueryChainCode(chainId string,orgName string,channelId string,ChainCodeI
 		OrgAdmin:  "Admin",
 		OrgName:   orgName, 
 		ChannelId: channelId,
-		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
+		//ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
+		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config.yaml",
 	}
 	var peer string
 	for _,org := range obj.DeployNetCfg.PeerOrgs {
@@ -172,7 +175,8 @@ func OrgQueryBlockChain(chainId string,orgName string,channelId string)  (interf
 		OrgAdmin:  "Admin",
 		OrgName:   orgName, 
 		ChannelId: channelId,
-		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
+		//ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
+		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config.yaml",
 	}
 	var peer string
 	for _,org := range obj.DeployNetCfg.PeerOrgs {
@@ -227,7 +231,8 @@ func OrgQueryBlockById(chainId string,orgName string,channelId string,blockId ui
 		OrgAdmin:  "Admin",
 		OrgName:   orgName, 
 		ChannelId: channelId,
-		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
+		//ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
+		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config.yaml",
 	}
 	var peer string
 	for _,org := range obj.DeployNetCfg.PeerOrgs {
@@ -282,7 +287,8 @@ func OrgQueryTxById(chainId string,orgName string,channelId string,txId string) 
 		OrgAdmin:  "Admin",
 		OrgName:   orgName, 
 		ChannelId: channelId,
-		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
+		//ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
+		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config.yaml",
 	}
 	var peer string
 	for _,org := range obj.DeployNetCfg.PeerOrgs {
@@ -336,7 +342,8 @@ func OrgQueryChannel(chainId string,orgName string)  (interface{},error) {
 		OrdererID: orderId,
 		OrgAdmin:  "Admin",
 		OrgName:   orgName, 
-		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
+		//ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
+		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config.yaml",
 	}
 	var peer string
 	for _,org := range obj.DeployNetCfg.PeerOrgs {
@@ -377,7 +384,8 @@ func OrgQueryInstalledCC(chainId string,orgName string,channelId string)  (inter
 		OrgAdmin:  "Admin",
 		OrgName:   orgName, 
 		ChannelId: channelId,
-		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
+		//ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
+		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config.yaml",
 	}
 	var peer string
 	for _,org := range obj.DeployNetCfg.PeerOrgs { 
@@ -418,7 +426,8 @@ func OrgQueryInstantiateCC(chainId string,orgName string,channelId string)  (int
 		OrgAdmin:  "Admin",
 		OrgName:   orgName, 
 		ChannelId: channelId,
-		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
+		//ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
+		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config.yaml",
 	}
 	var peer string
 	for _,org := range obj.DeployNetCfg.PeerOrgs { 

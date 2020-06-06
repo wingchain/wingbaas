@@ -126,6 +126,72 @@ func upChainCode(c echo.Context) error {
 	return c.JSON(http.StatusOK,ret)
 }
 
+func singleOrgDeployCC(c echo.Context) error { 
+	logger.Debug("singleOrgDeployCC")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	var d FabricDeployCCPara
+    err = json.Unmarshal(result, &d)
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	cfg,err := sdkfabric.LoadChainCfg(d.BlockChainId)
+	if err != nil {
+		msg := "singleOrgDeployCC: not find this chain"
+		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	if strings.HasPrefix(cfg.Version,"2.") {
+		//return orgDeployCCV2(c,cfg,d) 
+	}
+	err = fabric.SingleOrgInstallChaiCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.ChainCodeVersion)
+	if err != nil {
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil)
+	return c.JSON(http.StatusOK,ret)
+}
+
+func orgInstantialCC(c echo.Context) error { 
+	logger.Debug("orgInstantialCC")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	var d FabricDeployCCPara
+    err = json.Unmarshal(result, &d)
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	cfg,err := sdkfabric.LoadChainCfg(d.BlockChainId)
+	if err != nil {
+		msg := "orgInstantialCC: not find this chain"
+		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	if strings.HasPrefix(cfg.Version,"2.") {
+		//return orgDeployCCV2(c,cfg,d)
+	}
+	err = fabric.OrgInstantialChaiCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.ChainCodeVersion,d.EndorsePolicy,d.InitArgs)
+	if err != nil {
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil) 
+	return c.JSON(http.StatusOK,ret) 
+}
+
 func orgDeployCC(c echo.Context) error { 
 	logger.Debug("orgDeployCC")
 	result, err := ioutil.ReadAll(c.Request().Body)
@@ -150,14 +216,46 @@ func orgDeployCC(c echo.Context) error {
 	if strings.HasPrefix(cfg.Version,"2.") {
 		return orgDeployCCV2(c,cfg,d)
 	}
-	err = fabric.OrgDeployChaiCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.ChainCodeVersion,d.InitArgs)
+	err = fabric.OrgDeployChaiCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.ChainCodeVersion,d.EndorsePolicy,d.InitArgs)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
 		return c.JSON(http.StatusOK,ret)
 	}
-
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil)
 	return c.JSON(http.StatusOK,ret)
+}
+
+func orgUpgradeCC(c echo.Context) error { 
+	logger.Debug("orgUpgradeCC")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	var d FabricDeployCCPara
+    err = json.Unmarshal(result, &d)
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	cfg,err := sdkfabric.LoadChainCfg(d.BlockChainId)
+	if err != nil {
+		msg := "orgUpgradeCC: not find this chain"
+		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	if strings.HasPrefix(cfg.Version,"2.") {
+		//return orgDeployCCV2(c,cfg,d)
+	}
+	err = fabric.OrgUpgradeChaiCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.ChainCodeVersion,d.EndorsePolicy,d.InitArgs)
+	if err != nil {
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil) 
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil) 
+	return c.JSON(http.StatusOK,ret) 
 }
 
 func chaincodeCall(c echo.Context) error {
@@ -184,7 +282,7 @@ func chaincodeCall(c echo.Context) error {
 	if strings.HasPrefix(cfg.Version,"2.") {
 		return callCCV2(c,cfg,d)
 	} 
-	cr,err := fabric.OrgInvokeChainCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.Args)
+	cr,err := fabric.OrgInvokeChainCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.Args,d.Peers)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
 		return c.JSON(http.StatusOK,ret)

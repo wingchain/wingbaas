@@ -43,6 +43,7 @@ type OrgAddToolsDeploymentPara struct{
 	MspPath		string
 	CertFile	string
 	PeerAddr    string
+	AddOrgName  string
 } 
 
 func CreateToolsDeployment(clusterId string,node string,namespaceId string,chainId string,p ToolsDeploymentPara)([]byte,error) {

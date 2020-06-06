@@ -25,9 +25,25 @@ func upChainCodeV2(c echo.Context,cfg public.DeployPara) error {
 		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
 		return c.JSON(http.StatusOK,ret)
 	}
-	locker := getChainOpLocker(chainId)
-	locker.Lock()
-	defer locker.Unlock()
+	// locker := getChainOpLocker(chainId)
+	// locker.Lock()
+	// defer locker.Unlock()
+
+	if chain.Status >k8s.CHAIN_STATUS_FREE {
+		msg := "upChainCodeV2: chain status not support operation"
+		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	chain.Status = k8s.CHAIN_STATUS_PKGCC
+	err := k8s.UpdateChainStatus(*chain)
+	if err != nil {
+		msg := "upChainCodeV2: set chain status error"
+		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	} 
+	chain.Status = k8s.CHAIN_STATUS_FREE
+	defer k8s.UpdateChainStatus(*chain)  
+
 	file, err := c.FormFile("file") 
 	if err != nil {
 		msg := "get upload file error"
@@ -134,9 +150,25 @@ func orgDeployCCV2(c echo.Context,cfg public.DeployPara,d FabricDeployCCPara) er
 		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
-	locker := getChainOpLocker(d.BlockChainId)
-	locker.Lock()
-	defer locker.Unlock()
+	// locker := getChainOpLocker(d.BlockChainId)
+	// locker.Lock()
+	// defer locker.Unlock()
+
+	if chain.Status >k8s.CHAIN_STATUS_FREE {
+		msg := "orgDeployCCV2: chain status not support operation"
+		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	chain.Status = k8s.CHAIN_STATUS_DEPLOYCC
+	err := k8s.UpdateChainStatus(*chain)
+	if err != nil {
+		msg := "orgDeployCCV2: set chain status error"
+		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	} 
+	chain.Status = k8s.CHAIN_STATUS_FREE
+	defer k8s.UpdateChainStatus(*chain)  
+
 	toolsImage,err := utils.GetBlockImage(public.BLOCK_CHAIN_TYPE_FABRIC,cfg.Version,"tools")
 	if err != nil {
 		msg := "orgDeployCCV2 get tools image failed"
