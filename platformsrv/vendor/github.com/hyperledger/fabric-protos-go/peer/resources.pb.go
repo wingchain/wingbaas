@@ -256,15 +256,15 @@ func (m *ConfigTree) GetResourcesConfig() *common.Config {
 	return nil
 }
 
-func init() {
-	proto.RegisterType((*ChaincodeIdentifier)(nil), "protos.ChaincodeIdentifier")
-	proto.RegisterType((*ChaincodeValidation)(nil), "protos.ChaincodeValidation")
-	proto.RegisterType((*VSCCArgs)(nil), "protos.VSCCArgs")
-	proto.RegisterType((*ChaincodeEndorsement)(nil), "protos.ChaincodeEndorsement")
-	proto.RegisterType((*ConfigTree)(nil), "protos.ConfigTree")
-}
+// func init() {
+// 	proto.RegisterType((*ChaincodeIdentifier)(nil), "protos.ChaincodeIdentifier")
+// 	proto.RegisterType((*ChaincodeValidation)(nil), "protos.ChaincodeValidation")
+// 	proto.RegisterType((*VSCCArgs)(nil), "protos.VSCCArgs")
+// 	proto.RegisterType((*ChaincodeEndorsement)(nil), "protos.ChaincodeEndorsement")
+// 	proto.RegisterType((*ConfigTree)(nil), "protos.ConfigTree")
+// }
 
-func init() { proto.RegisterFile("peer/resources.proto", fileDescriptor_4991d8496920b696) }
+// func init() { proto.RegisterFile("peer/resources.proto", fileDescriptor_4991d8496920b696) }
 
 var fileDescriptor_4991d8496920b696 = []byte{
 	// 327 bytes of a gzipped FileDescriptorProto

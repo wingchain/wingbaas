@@ -415,17 +415,17 @@ func (*DeliverResponse) XXX_OneofWrappers() []interface{} {
 	}
 }
 
-func init() {
-	proto.RegisterType((*FilteredBlock)(nil), "protos.FilteredBlock")
-	proto.RegisterType((*FilteredTransaction)(nil), "protos.FilteredTransaction")
-	proto.RegisterType((*FilteredTransactionActions)(nil), "protos.FilteredTransactionActions")
-	proto.RegisterType((*FilteredChaincodeAction)(nil), "protos.FilteredChaincodeAction")
-	proto.RegisterType((*BlockAndPrivateData)(nil), "protos.BlockAndPrivateData")
-	proto.RegisterMapType((map[uint64]*rwset.TxPvtReadWriteSet)(nil), "protos.BlockAndPrivateData.PrivateDataMapEntry")
-	proto.RegisterType((*DeliverResponse)(nil), "protos.DeliverResponse")
-}
+// func init() {
+// 	proto.RegisterType((*FilteredBlock)(nil), "protos.FilteredBlock")
+// 	proto.RegisterType((*FilteredTransaction)(nil), "protos.FilteredTransaction")
+// 	proto.RegisterType((*FilteredTransactionActions)(nil), "protos.FilteredTransactionActions")
+// 	proto.RegisterType((*FilteredChaincodeAction)(nil), "protos.FilteredChaincodeAction")
+// 	proto.RegisterType((*BlockAndPrivateData)(nil), "protos.BlockAndPrivateData")
+// 	proto.RegisterMapType((map[uint64]*rwset.TxPvtReadWriteSet)(nil), "protos.BlockAndPrivateData.PrivateDataMapEntry")
+// 	proto.RegisterType((*DeliverResponse)(nil), "protos.DeliverResponse")
+// }
 
-func init() { proto.RegisterFile("peer/events.proto", fileDescriptor_5eedcc5fab2714e6) }
+// func init() { proto.RegisterFile("peer/events.proto", fileDescriptor_5eedcc5fab2714e6) }
 
 var fileDescriptor_5eedcc5fab2714e6 = []byte{
 	// 700 bytes of a gzipped FileDescriptorProto

@@ -836,26 +836,26 @@ func (m *OrdererBlockMetadata) GetConsenterMetadata() []byte {
 	return nil
 }
 
-func init() {
-	proto.RegisterEnum("common.Status", Status_name, Status_value)
-	proto.RegisterEnum("common.HeaderType", HeaderType_name, HeaderType_value)
-	proto.RegisterEnum("common.BlockMetadataIndex", BlockMetadataIndex_name, BlockMetadataIndex_value)
-	proto.RegisterType((*LastConfig)(nil), "common.LastConfig")
-	proto.RegisterType((*Metadata)(nil), "common.Metadata")
-	proto.RegisterType((*MetadataSignature)(nil), "common.MetadataSignature")
-	proto.RegisterType((*Header)(nil), "common.Header")
-	proto.RegisterType((*ChannelHeader)(nil), "common.ChannelHeader")
-	proto.RegisterType((*SignatureHeader)(nil), "common.SignatureHeader")
-	proto.RegisterType((*Payload)(nil), "common.Payload")
-	proto.RegisterType((*Envelope)(nil), "common.Envelope")
-	proto.RegisterType((*Block)(nil), "common.Block")
-	proto.RegisterType((*BlockHeader)(nil), "common.BlockHeader")
-	proto.RegisterType((*BlockData)(nil), "common.BlockData")
-	proto.RegisterType((*BlockMetadata)(nil), "common.BlockMetadata")
-	proto.RegisterType((*OrdererBlockMetadata)(nil), "common.OrdererBlockMetadata")
-}
+// func init() {
+// 	proto.RegisterEnum("common.Status", Status_name, Status_value)
+// 	proto.RegisterEnum("common.HeaderType", HeaderType_name, HeaderType_value)
+// 	proto.RegisterEnum("common.BlockMetadataIndex", BlockMetadataIndex_name, BlockMetadataIndex_value)
+// 	proto.RegisterType((*LastConfig)(nil), "common.LastConfig")
+// 	proto.RegisterType((*Metadata)(nil), "common.Metadata")
+// 	proto.RegisterType((*MetadataSignature)(nil), "common.MetadataSignature")
+// 	proto.RegisterType((*Header)(nil), "common.Header")
+// 	proto.RegisterType((*ChannelHeader)(nil), "common.ChannelHeader")
+// 	proto.RegisterType((*SignatureHeader)(nil), "common.SignatureHeader")
+// 	proto.RegisterType((*Payload)(nil), "common.Payload")
+// 	proto.RegisterType((*Envelope)(nil), "common.Envelope")
+// 	proto.RegisterType((*Block)(nil), "common.Block")
+// 	proto.RegisterType((*BlockHeader)(nil), "common.BlockHeader")
+// 	proto.RegisterType((*BlockData)(nil), "common.BlockData")
+// 	proto.RegisterType((*BlockMetadata)(nil), "common.BlockMetadata")
+// 	proto.RegisterType((*OrdererBlockMetadata)(nil), "common.OrdererBlockMetadata")
+// }
 
-func init() { proto.RegisterFile("common/common.proto", fileDescriptor_8f954d82c0b891f6) }
+// func init() { proto.RegisterFile("common/common.proto", fileDescriptor_8f954d82c0b891f6) }
 
 var fileDescriptor_8f954d82c0b891f6 = []byte{
 	// 1054 bytes of a gzipped FileDescriptorProto

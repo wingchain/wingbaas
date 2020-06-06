@@ -479,19 +479,19 @@ func (*DeliverResponse) XXX_OneofWrappers() []interface{} {
 	}
 }
 
-func init() {
-	proto.RegisterEnum("orderer.SeekInfo_SeekBehavior", SeekInfo_SeekBehavior_name, SeekInfo_SeekBehavior_value)
-	proto.RegisterEnum("orderer.SeekInfo_SeekErrorResponse", SeekInfo_SeekErrorResponse_name, SeekInfo_SeekErrorResponse_value)
-	proto.RegisterType((*BroadcastResponse)(nil), "orderer.BroadcastResponse")
-	proto.RegisterType((*SeekNewest)(nil), "orderer.SeekNewest")
-	proto.RegisterType((*SeekOldest)(nil), "orderer.SeekOldest")
-	proto.RegisterType((*SeekSpecified)(nil), "orderer.SeekSpecified")
-	proto.RegisterType((*SeekPosition)(nil), "orderer.SeekPosition")
-	proto.RegisterType((*SeekInfo)(nil), "orderer.SeekInfo")
-	proto.RegisterType((*DeliverResponse)(nil), "orderer.DeliverResponse")
-}
+// func init() {
+// 	proto.RegisterEnum("orderer.SeekInfo_SeekBehavior", SeekInfo_SeekBehavior_name, SeekInfo_SeekBehavior_value)
+// 	proto.RegisterEnum("orderer.SeekInfo_SeekErrorResponse", SeekInfo_SeekErrorResponse_name, SeekInfo_SeekErrorResponse_value)
+// 	proto.RegisterType((*BroadcastResponse)(nil), "orderer.BroadcastResponse")
+// 	proto.RegisterType((*SeekNewest)(nil), "orderer.SeekNewest")
+// 	proto.RegisterType((*SeekOldest)(nil), "orderer.SeekOldest")
+// 	proto.RegisterType((*SeekSpecified)(nil), "orderer.SeekSpecified")
+// 	proto.RegisterType((*SeekPosition)(nil), "orderer.SeekPosition")
+// 	proto.RegisterType((*SeekInfo)(nil), "orderer.SeekInfo")
+// 	proto.RegisterType((*DeliverResponse)(nil), "orderer.DeliverResponse")
+// }
 
-func init() { proto.RegisterFile("orderer/ab.proto", fileDescriptor_79fce58dd8d86d62) }
+// func init() { proto.RegisterFile("orderer/ab.proto", fileDescriptor_79fce58dd8d86d62) }
 
 var fileDescriptor_79fce58dd8d86d62 = []byte{
 	// 561 bytes of a gzipped FileDescriptorProto

@@ -246,14 +246,14 @@ func (m *ChannelInfo) GetChannelId() string {
 	return ""
 }
 
-func init() {
-	proto.RegisterType((*ChaincodeQueryResponse)(nil), "protos.ChaincodeQueryResponse")
-	proto.RegisterType((*ChaincodeInfo)(nil), "protos.ChaincodeInfo")
-	proto.RegisterType((*ChannelQueryResponse)(nil), "protos.ChannelQueryResponse")
-	proto.RegisterType((*ChannelInfo)(nil), "protos.ChannelInfo")
-}
+// func init() {
+// 	proto.RegisterType((*ChaincodeQueryResponse)(nil), "protos.ChaincodeQueryResponse")
+// 	proto.RegisterType((*ChaincodeInfo)(nil), "protos.ChaincodeInfo")
+// 	proto.RegisterType((*ChannelQueryResponse)(nil), "protos.ChannelQueryResponse")
+// 	proto.RegisterType((*ChannelInfo)(nil), "protos.ChannelInfo")
+// }
 
-func init() { proto.RegisterFile("peer/query.proto", fileDescriptor_d45bcf7fe2423301) }
+// func init() { proto.RegisterFile("peer/query.proto", fileDescriptor_d45bcf7fe2423301) }
 
 var fileDescriptor_d45bcf7fe2423301 = []byte{
 	// 300 bytes of a gzipped FileDescriptorProto

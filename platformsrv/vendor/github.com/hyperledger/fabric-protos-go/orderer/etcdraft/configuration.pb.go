@@ -207,15 +207,15 @@ func (m *Options) GetSnapshotIntervalSize() uint32 {
 	return 0
 }
 
-func init() {
-	proto.RegisterType((*ConfigMetadata)(nil), "etcdraft.ConfigMetadata")
-	proto.RegisterType((*Consenter)(nil), "etcdraft.Consenter")
-	proto.RegisterType((*Options)(nil), "etcdraft.Options")
-}
+// func init() {
+// 	proto.RegisterType((*ConfigMetadata)(nil), "etcdraft.ConfigMetadata")
+// 	proto.RegisterType((*Consenter)(nil), "etcdraft.Consenter")
+// 	proto.RegisterType((*Options)(nil), "etcdraft.Options")
+// }
 
-func init() {
-	proto.RegisterFile("orderer/etcdraft/configuration.proto", fileDescriptor_6f12d215c949b072)
-}
+// func init() {
+// 	proto.RegisterFile("orderer/etcdraft/configuration.proto", fileDescriptor_6f12d215c949b072)
+// }
 
 var fileDescriptor_6f12d215c949b072 = []byte{
 	// 392 bytes of a gzipped FileDescriptorProto

@@ -348,15 +348,15 @@ func (m *SubmitResponse) GetInfo() string {
 	return ""
 }
 
-func init() {
-	proto.RegisterType((*StepRequest)(nil), "orderer.StepRequest")
-	proto.RegisterType((*StepResponse)(nil), "orderer.StepResponse")
-	proto.RegisterType((*ConsensusRequest)(nil), "orderer.ConsensusRequest")
-	proto.RegisterType((*SubmitRequest)(nil), "orderer.SubmitRequest")
-	proto.RegisterType((*SubmitResponse)(nil), "orderer.SubmitResponse")
-}
+// func init() {
+// 	proto.RegisterType((*StepRequest)(nil), "orderer.StepRequest")
+// 	proto.RegisterType((*StepResponse)(nil), "orderer.StepResponse")
+// 	proto.RegisterType((*ConsensusRequest)(nil), "orderer.ConsensusRequest")
+// 	proto.RegisterType((*SubmitRequest)(nil), "orderer.SubmitRequest")
+// 	proto.RegisterType((*SubmitResponse)(nil), "orderer.SubmitResponse")
+// }
 
-func init() { proto.RegisterFile("orderer/cluster.proto", fileDescriptor_e3b50707fd3a71f2) }
+// func init() { proto.RegisterFile("orderer/cluster.proto", fileDescriptor_e3b50707fd3a71f2) }
 
 var fileDescriptor_e3b50707fd3a71f2 = []byte{
 	// 418 bytes of a gzipped FileDescriptorProto

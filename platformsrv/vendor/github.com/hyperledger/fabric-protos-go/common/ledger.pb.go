@@ -77,11 +77,11 @@ func (m *BlockchainInfo) GetPreviousBlockHash() []byte {
 	return nil
 }
 
-func init() {
-	proto.RegisterType((*BlockchainInfo)(nil), "common.BlockchainInfo")
-}
+// func init() {
+// 	proto.RegisterType((*BlockchainInfo)(nil), "common.BlockchainInfo")
+// }
 
-func init() { proto.RegisterFile("common/ledger.proto", fileDescriptor_da3410306adbea27) }
+// func init() { proto.RegisterFile("common/ledger.proto", fileDescriptor_da3410306adbea27) }
 
 var fileDescriptor_da3410306adbea27 = []byte{
 	// 189 bytes of a gzipped FileDescriptorProto

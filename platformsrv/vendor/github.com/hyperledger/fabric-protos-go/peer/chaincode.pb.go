@@ -376,18 +376,18 @@ func (m *LifecycleEvent) GetChaincodeName() string {
 	return ""
 }
 
-func init() {
-	proto.RegisterEnum("protos.ChaincodeSpec_Type", ChaincodeSpec_Type_name, ChaincodeSpec_Type_value)
-	proto.RegisterType((*ChaincodeID)(nil), "protos.ChaincodeID")
-	proto.RegisterType((*ChaincodeInput)(nil), "protos.ChaincodeInput")
-	proto.RegisterMapType((map[string][]byte)(nil), "protos.ChaincodeInput.DecorationsEntry")
-	proto.RegisterType((*ChaincodeSpec)(nil), "protos.ChaincodeSpec")
-	proto.RegisterType((*ChaincodeDeploymentSpec)(nil), "protos.ChaincodeDeploymentSpec")
-	proto.RegisterType((*ChaincodeInvocationSpec)(nil), "protos.ChaincodeInvocationSpec")
-	proto.RegisterType((*LifecycleEvent)(nil), "protos.LifecycleEvent")
-}
+// func init() {
+// 	proto.RegisterEnum("protos.ChaincodeSpec_Type", ChaincodeSpec_Type_name, ChaincodeSpec_Type_value)
+// 	proto.RegisterType((*ChaincodeID)(nil), "protos.ChaincodeID")
+// 	proto.RegisterType((*ChaincodeInput)(nil), "protos.ChaincodeInput")
+// 	proto.RegisterMapType((map[string][]byte)(nil), "protos.ChaincodeInput.DecorationsEntry")
+// 	proto.RegisterType((*ChaincodeSpec)(nil), "protos.ChaincodeSpec")
+// 	proto.RegisterType((*ChaincodeDeploymentSpec)(nil), "protos.ChaincodeDeploymentSpec")
+// 	proto.RegisterType((*ChaincodeInvocationSpec)(nil), "protos.ChaincodeInvocationSpec")
+// 	proto.RegisterType((*LifecycleEvent)(nil), "protos.LifecycleEvent")
+// }
 
-func init() { proto.RegisterFile("peer/chaincode.proto", fileDescriptor_202814c635ff5fee) }
+// func init() { proto.RegisterFile("peer/chaincode.proto", fileDescriptor_202814c635ff5fee) }
 
 var fileDescriptor_202814c635ff5fee = []byte{
 	// 560 bytes of a gzipped FileDescriptorProto
