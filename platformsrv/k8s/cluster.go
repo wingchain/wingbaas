@@ -9,10 +9,12 @@ import (
 )
 
 type Cluster struct {
+	AllianceId	 string `json:"AllianceId,omitempty"` 
 	ClusterId    string `json:"ClusterId"`
 	ApiUrl       string `json:"ApiUrl"`
 	HostDomain   string `json:"HostDomain"`
 	PublicIp	 string `json:"PublicIp"` 
+	InterIp      string `json:"InterIp"`  
 	Cert         string `json:"Cert"`
 	Key          string `json:"Key"`
 }
@@ -75,10 +77,9 @@ func GetClusters()([]Cluster,error) {
 			logger.Errorf("GetClusters: load cluster config error,%v", err)
 			return nil,fmt.Errorf("%v", err)
 		}
-	}else {
-		logger.Errorf("GetClusters: load cluster config error")
-		return nil,fmt.Errorf("%s", "GetClusters:  not find config file")
 	}
+	logger.Errorf("GetClusters: load cluster config error")
+	return nil,fmt.Errorf("GetClusters: load cluster config error")
 }
 
 func GetCluster(clusterId string) (*Cluster,error) {

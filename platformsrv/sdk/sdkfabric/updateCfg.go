@@ -98,7 +98,6 @@ func UpdateChannelCfg(netCfg public.DeployNetConfig,p GenerateParaSt)(string,err
 		logger.Errorf("UpdateChannelCfg: write sdk json config error")
 		return "",fmt.Errorf("UpdateChannelCfg: write sdk json config error")
 	} 
-
 	return "",nil 
 }
 

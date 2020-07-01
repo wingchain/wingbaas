@@ -39,11 +39,11 @@ func RequestWithCert(reqUrl string,method string,certPath string,keyPath string)
     }
     client := &http.Client{Transport: tr}
     resp,err := client.Do(req)
-    defer resp.Body.Close()
     if err != nil {
         logger.Errorf("RequestWithCert: request response error,url=%s,err,%v",reqUrl,err)
         return nil,fmt.Errorf("RequestWithCert: request response error,url=%s,err,%v",reqUrl,err) 
     }
+    defer resp.Body.Close()
     bodyText,err := ioutil.ReadAll(resp.Body)
     if err != nil {
         logger.Errorf("RequestWithCert: read response body error,%v",err)
@@ -73,11 +73,11 @@ func RequestWithCertAndBody(reqUrl string,method string,certPath string,keyPath 
     }
     client := &http.Client{Transport: tr}
     resp,err := client.Do(req)
-    defer resp.Body.Close()
     if err != nil {
         logger.Errorf("RequestWithCertAndBody: request response error,url=%s,err,%v",reqUrl,err)
         return nil,fmt.Errorf("RequestWithCertAndBody: request response error,url=%s,err,%v",reqUrl,err) 
     }
+    defer resp.Body.Close()
     bodyText,err := ioutil.ReadAll(resp.Body)
     if err != nil {
         logger.Errorf("RequestWithCertAndBody: read response body error,%v",err)
@@ -107,11 +107,11 @@ func RequestWithCertAndBodyJsonHeader(reqUrl string,method string,certPath strin
     }
     client := &http.Client{Transport: tr}
     resp,err := client.Do(req)
-    defer resp.Body.Close()
     if err != nil {
         logger.Errorf("RequestWithCertAndBodyJsonHeader: request response error,url=%s,err,%v",reqUrl,err)
         return nil,fmt.Errorf("RequestWithCertAndBodyJsonHeader: request response error,url=%s,err,%v",reqUrl,err) 
     }
+    defer resp.Body.Close()
     bodyText,err := ioutil.ReadAll(resp.Body)
     if err != nil {
         logger.Errorf("RequestWithCertAndBodyJsonHeader: read response body error,%v",err)

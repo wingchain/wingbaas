@@ -133,7 +133,7 @@ func (setup *FabricSetup) InstallCC(cc ChaincodeSetup) error {
 
 func (setup *FabricSetup) InstantiateCC(ch ChannnelSetup,cc ChaincodeSetup) error {
 	//ccPolicy := cauthdsl.SignedByAnyMember([]string{cc.InitOrg})
-
+	cc.EndorsePolicy = "AND('" + setup.OrgName + "MSP.member')" //default endorse policy
 	var endorse string
 	if cc.EndorsePolicy == "" {
 		endorse = "AND('" + setup.OrgName + "MSP.member')"
@@ -166,6 +166,7 @@ func (setup *FabricSetup) InstantiateCC(ch ChannnelSetup,cc ChaincodeSetup) erro
 func (setup *FabricSetup) UpgradeCC(ch ChannnelSetup,cc ChaincodeSetup) error {
 	//ccPolicy := cauthdsl.SignedByAnyMember([]string{cc.InitOrg})
 	var endorse string
+	cc.EndorsePolicy = "AND('" + setup.OrgName + "MSP.member')" //default endorse policy
 	if cc.EndorsePolicy == "" {
 		endorse = "AND('" + setup.OrgName + "MSP.member')"
 	}

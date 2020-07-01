@@ -30,6 +30,7 @@ type BaasCfg struct {
 	NfsBasePath				string		`json:"NfsBasePath"`
 	NfsLocalRootDir         string      `json:"NfsLocalRootDir"`
 	KeyStorePath			string		`json:"keyStorePath"`
+	AlliancePath			string		`json:"AlliancePath"`
 }
 
 var BAAS_CFG *BaasCfg = nil
@@ -81,6 +82,7 @@ func (cfg *BaasCfg) CfgPathInit() error {
 	cfg.BlockChainVersionCfg = root + "/" + cfg.BlockChainVersionCfg
 	cfg.NfsLocalRootDir = root + "/" + cfg.NfsLocalRootDir
 	cfg.KeyStorePath = root + "/" + cfg.KeyStorePath
+	cfg.AlliancePath = root + "/" + cfg.AlliancePath
 
 	err = DirCheck(cfg.ClusterCfgPath)
 	if err != nil {
@@ -107,6 +109,11 @@ func (cfg *BaasCfg) CfgPathInit() error {
 		logger.Errorf("CfgPathInit: keyStorePath init error")
 		return fmt.Errorf("%v", err)
 	}
+	err = DirCheck(cfg.AlliancePath)
+	if err != nil {
+		logger.Errorf("CfgPathInit: AlliancePath init error")
+		return fmt.Errorf("%v", err)
+	} 
 	var cmd string
 	var cmd2 string
 	if runtime.GOOS == "darwin" {
@@ -114,7 +121,7 @@ func (cfg *BaasCfg) CfgPathInit() error {
 		cmd2 = "sudo chmod 0666 /etc/hosts"
 		logger.Debug("os type=",runtime.GOOS)
 	}else if runtime.GOOS == "linux" {
-		cmd = "mount -o nolock -t nfs " + cfg.NfsInternalAddr + ":" + cfg.NfsBasePath + " " + cfg.NfsLocalRootDir
+		cmd = "mount -o nolock -t nfs " + cfg.NfsInternalAddr + ":" + cfg.NfsBasePath + " " + cfg.NfsLocalRootDir 
 		cmd2 = "chmod 0666 /etc/hosts"
 		logger.Debug("os type=",runtime.GOOS)
 	}else {

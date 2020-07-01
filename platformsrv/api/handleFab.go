@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"io/ioutil"
 	"github.com/labstack/echo/v4"
+	"github.com/wingbaas/platformsrv/thread"
 	"github.com/wingbaas/platformsrv/logger"
 	"github.com/wingbaas/platformsrv/utils"
 	"github.com/wingbaas/platformsrv/settings/fabric"
@@ -18,6 +19,9 @@ import (
 
 func orgCreateChannel(c echo.Context) error {
 	logger.Debug("orgCreateChannel")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	result, err := ioutil.ReadAll(c.Request().Body)
     if err != nil {
 		msg := "read request body error"
@@ -47,6 +51,9 @@ func orgCreateChannel(c echo.Context) error {
 
 func orgJoinChannel(c echo.Context) error {
 	logger.Debug("orgJoinChannel")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	result, err := ioutil.ReadAll(c.Request().Body)
     if err != nil {
 		msg := "read request body error"
@@ -76,6 +83,9 @@ func orgJoinChannel(c echo.Context) error {
 
 func upChainCode(c echo.Context) error {  
 	logger.Debug("upChainCode")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	chainId := c.FormValue("BlockChainId")
 	ccId := c.FormValue("ChainCodeId")
 	ccVersion := c.FormValue("ChainCodeVersion")
@@ -128,6 +138,9 @@ func upChainCode(c echo.Context) error {
 
 func singleOrgDeployCC(c echo.Context) error { 
 	logger.Debug("singleOrgDeployCC")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	result, err := ioutil.ReadAll(c.Request().Body)
     if err != nil {
 		msg := "read request body error"
@@ -148,7 +161,7 @@ func singleOrgDeployCC(c echo.Context) error {
 		return c.JSON(http.StatusOK,ret)
 	}
 	if strings.HasPrefix(cfg.Version,"2.") {
-		//return orgDeployCCV2(c,cfg,d) 
+		return singleOrgInstallCCV2(c,cfg,d) 
 	}
 	err = fabric.SingleOrgInstallChaiCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.ChainCodeVersion)
 	if err != nil {
@@ -161,6 +174,9 @@ func singleOrgDeployCC(c echo.Context) error {
 
 func orgInstantialCC(c echo.Context) error { 
 	logger.Debug("orgInstantialCC")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	result, err := ioutil.ReadAll(c.Request().Body)
     if err != nil {
 		msg := "read request body error"
@@ -181,7 +197,10 @@ func orgInstantialCC(c echo.Context) error {
 		return c.JSON(http.StatusOK,ret)
 	}
 	if strings.HasPrefix(cfg.Version,"2.") {
-		//return orgDeployCCV2(c,cfg,d)
+		// msg := "orgInstantialCC: favric v2 not support this api"
+		// ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		// return c.JSON(http.StatusOK,ret)
+		return orgInitCCV2(c,cfg,d)
 	}
 	err = fabric.OrgInstantialChaiCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.ChainCodeVersion,d.EndorsePolicy,d.InitArgs)
 	if err != nil {
@@ -194,6 +213,9 @@ func orgInstantialCC(c echo.Context) error {
 
 func orgDeployCC(c echo.Context) error { 
 	logger.Debug("orgDeployCC")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	result, err := ioutil.ReadAll(c.Request().Body)
     if err != nil {
 		msg := "read request body error"
@@ -227,6 +249,9 @@ func orgDeployCC(c echo.Context) error {
 
 func orgUpgradeCC(c echo.Context) error { 
 	logger.Debug("orgUpgradeCC")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	result, err := ioutil.ReadAll(c.Request().Body)
     if err != nil {
 		msg := "read request body error"
@@ -247,7 +272,7 @@ func orgUpgradeCC(c echo.Context) error {
 		return c.JSON(http.StatusOK,ret)
 	}
 	if strings.HasPrefix(cfg.Version,"2.") {
-		//return orgDeployCCV2(c,cfg,d)
+		return orgUpgradeCCV2(c,cfg,d)
 	}
 	err = fabric.OrgUpgradeChaiCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.ChainCodeVersion,d.EndorsePolicy,d.InitArgs)
 	if err != nil {
@@ -260,6 +285,9 @@ func orgUpgradeCC(c echo.Context) error {
 
 func chaincodeCall(c echo.Context) error {
 	logger.Debug("chaincodeCall")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	result, err := ioutil.ReadAll(c.Request().Body)
     if err != nil {
 		msg := "read request body error"
@@ -293,6 +321,9 @@ func chaincodeCall(c echo.Context) error {
 
 func chaincodeQuery(c echo.Context) error {
 	logger.Debug("chaincodeQuery")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	result, err := ioutil.ReadAll(c.Request().Body)
     if err != nil {
 		msg := "read request body error"
@@ -326,6 +357,9 @@ func chaincodeQuery(c echo.Context) error {
 
 func queryInstatialCC(c echo.Context) error {
 	logger.Debug("queryInstatialCC")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	result, err := ioutil.ReadAll(c.Request().Body)
     if err != nil {
 		msg := "read request body error"
@@ -359,6 +393,9 @@ func queryInstatialCC(c echo.Context) error {
 
 func queryInstalledCC(c echo.Context) error {
 	logger.Debug("queryInstalledCC")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	result, err := ioutil.ReadAll(c.Request().Body)
     if err != nil {
 		msg := "read request body error"
@@ -388,6 +425,9 @@ func queryInstalledCC(c echo.Context) error {
 
 func queryChannel(c echo.Context) error {
 	logger.Debug("queryChannel")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	result, err := ioutil.ReadAll(c.Request().Body)
     if err != nil {
 		msg := "read request body error"
@@ -416,6 +456,9 @@ func queryChannel(c echo.Context) error {
 
 func queryTxInfo(c echo.Context) error {
 	logger.Debug("queryTxInfo")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	result, err := ioutil.ReadAll(c.Request().Body)
     if err != nil {
 		msg := "read request body error"
@@ -446,6 +489,9 @@ func queryTxInfo(c echo.Context) error {
 
 func queryBlockInfo(c echo.Context) error {
 	logger.Debug("queryBlockInfo")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	result, err := ioutil.ReadAll(c.Request().Body)
     if err != nil {
 		msg := "read request body error"
@@ -467,7 +513,7 @@ func queryBlockInfo(c echo.Context) error {
 	}
 	qr,err := fabric.OrgQueryBlockById(d.BlockChainId,d.OrgName,d.ChannelId,d.BlockId)
 	if err != nil {
-        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil) 
 		return c.JSON(http.StatusOK,ret)
 	}
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,qr) 
@@ -476,6 +522,9 @@ func queryBlockInfo(c echo.Context) error {
 
 func queryBlock(c echo.Context) error {
 	logger.Debug("queryBlock")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	result, err := ioutil.ReadAll(c.Request().Body)
     if err != nil {
 		msg := "read request body error"
@@ -495,7 +544,7 @@ func queryBlock(c echo.Context) error {
 		return c.JSON(http.StatusOK,ret) 
 	}
 	qr,err := fabric.OrgQueryBlockChain(d.BlockChainId,d.OrgName,d.ChannelId)
-	if err != nil {
+	if err != nil { 
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
 		return c.JSON(http.StatusOK,ret)
 	}
@@ -505,6 +554,9 @@ func queryBlock(c echo.Context) error {
 
 func addOrg(c echo.Context) error {
 	logger.Debug("addOrg")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	result, err := ioutil.ReadAll(c.Request().Body)
     if err != nil {
 		msg := "read request body error"
@@ -524,5 +576,111 @@ func addOrg(c echo.Context) error {
 		return c.JSON(http.StatusOK,ret)
 	}
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,"") 
+	return c.JSON(http.StatusOK,ret) 
+} 
+
+func orgApproveCC(c echo.Context) error { 
+	logger.Debug("orgApproveCC")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	var d FabricDeployCCPara
+    err = json.Unmarshal(result, &d)
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	cfg,err := sdkfabric.LoadChainCfg(d.BlockChainId)
+	if err != nil {
+		msg := "orgApproveCC: not find this chain"
+		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	if strings.HasPrefix(cfg.Version,"1.") {
+		msg := "orgApproveCC: this api only for v2"
+		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	return orgApproveCCV2(c,cfg,d) 
+}
+
+func orgCommitCC(c echo.Context) error { 
+	logger.Debug("orgCommitCC")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	var d FabricDeployCCPara
+    err = json.Unmarshal(result, &d)
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	cfg,err := sdkfabric.LoadChainCfg(d.BlockChainId)
+	if err != nil {
+		msg := "orgCommitCC: not find this chain"
+		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	if strings.HasPrefix(cfg.Version,"1.") {
+		msg := "orgCommitCC: this api only for v2"
+		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	return orgCommitCCV2(c,cfg,d)
+}
+
+func queryBlockTx(c echo.Context) error {
+	logger.Debug("queryBlockTx")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	type ReqPara struct {
+		BlockChainId string `json:"BlockChainId"`
+		OrgName string `json:"OrgName"`
+		ChannelId string `json:"ChannelId"` 
+	}
+	var d ReqPara
+    err = json.Unmarshal(result, &d)
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	if d.BlockChainId == "" || d.ChannelId == "" {
+		msg := "parameter err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	qr,err := thread.GetBlockTx(d.BlockChainId,d.OrgName,d.ChannelId)
+	if err != nil {
+		msg := "orgCommitCC: not find this chain"
+		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	if err != nil { 
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,qr)  
 	return c.JSON(http.StatusOK,ret) 
 }

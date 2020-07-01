@@ -50,7 +50,7 @@ func (setup *FabricSetup) QueryBlockById(userName string,blockId uint64, peer st
 		return nil,fmt.Errorf("QueryBlockByNumber block data is null")
 	}
 	return processBlock(block),nil 
-}
+} 
 
 //get transaction by transaction ID
 func (setup *FabricSetup) QueryTransactionByID(userName string,txId string, peer string) (interface{},error) {

@@ -30,7 +30,9 @@ type FabricDeployCCPara struct {
 	ChannelId string `json:"ChannelId"`
 	ChainCodeId string `json:"ChainCodeId"`
 	ChainCodeVersion string `json:"ChainCodeVersion"`
-	EndorsePolicy string `json:"EndorsePolicy"`
+	EndorsePolicy string `json:"EndorsePolicy,omitempty"`
+	ChaincodePkg string `json:"ChaincodePkg,omitempty"`
+	ChaincodeSeq string `json:"ChaincodeSeq,omitempty"`
 	InitArgs []string `json:"InitArgs"`
 }
 

@@ -27,16 +27,6 @@ func ChainAddOrg(chainId string,p public.AddOrgConfig) error {
 		return fmt.Errorf("ChainAddOrg: load chain deploy para error")
 	}
 	srcCfg,_ := sdkfabric.LoadChainCfg(chainId)
-	// srcCfg.DeployType = cfg.DeployType
-	// srcCfg.Version = cfg.Version
-	// srcCfg.CryptoType = cfg.CryptoType
-	// srcCfg.ClusterId = cfg.ClusterId
-	// srcCfg.DeployNetCfg.KafkaDeployNode = cfg.DeployNetCfg.KafkaDeployNode
-	// srcCfg.DeployNetCfg.ZookeeperDeployNode = cfg.DeployNetCfg.ZookeeperDeployNode
-	// srcCfg.DeployNetCfg.ToolsDeployNode = cfg.DeployNetCfg.ToolsDeployNode
-	// srcCfg.DeployNetCfg.PeerOrgs = cfg.DeployNetCfg.PeerOrgs[:len(cfg.DeployNetCfg.PeerOrgs)-1]
-	// //srcCfg.DeployNetCfg.PeerOrgs = append(srcCfg.DeployNetCfg.PeerOrgs,cfg.DeployNetCfg.PeerOrgs...) 
-	// srcCfg.DeployNetCfg.OrdererOrgs = append(srcCfg.DeployNetCfg.OrdererOrgs,cfg.DeployNetCfg.OrdererOrgs...)
 	ch,_ := k8s.GetChain(chainId,cfg.ClusterId)
 	if ch == nil {
 		msg = "ChainAddOrg: get chain info failed"
@@ -96,7 +86,7 @@ func ChainAddOrg(chainId string,p public.AddOrgConfig) error {
 		logger.Errorf(msg)
 		return fmt.Errorf(msg)
 	}
-	var chList public.ChannelList
+	var chList public.ChannelList 
 	chBytes,_ := json.Marshal(chObj)
 	err = json.Unmarshal(chBytes,&chList)
 	if err != nil {
@@ -157,7 +147,7 @@ func ChainAddOrg(chainId string,p public.AddOrgConfig) error {
 		logger.Errorf(msg)
 		return fmt.Errorf(msg)
 	}
-	time.Sleep(10*time.Second)
+	time.Sleep(20*time.Second)
 	var sdkCfg sdkfabric.GenerateParaSt
 	sdkCfg.ClusterId = cfg.ClusterId
 	sdkCfg.NamespaceId = ch.BlockChainName  
@@ -213,7 +203,7 @@ func AddOrgV1(ch *k8s.Chain,srcCfg public.DeployPara,channelName string, orgName
 	outFile = opLocalBasePath + "decoded_" + channelName + ".json"
 
 	bl,_ = utils.PathExists(inFile)
-	for i:=0;i<20;i++ {
+	for i:=0;i<60;i++ {
 		if bl {
 			break
 		}

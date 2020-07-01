@@ -87,7 +87,8 @@ func DeleteNamespace(clusterId string,namespaceId string)([]byte,error) {
 		return nil,fmt.Errorf("DeleteNamespace: cluster nil,cluster id =%s",clusterId)
 	}
 	reqUrl := cluster.ApiUrl + k8s.API_V1 + k8s.NAMESPACES + "/" + namespaceId
-	bytes,err := utils.RequestWithCert(reqUrl,utils.REQ_DELETE,cluster.Cert,cluster.Key)
+	cp := utils.BAAS_CFG.ClusterPkiBasePath
+	bytes,err := utils.RequestWithCert(reqUrl,utils.REQ_DELETE,cp + cluster.Cert,cp + cluster.Key) 
 	if err != nil { 
 		logger.Errorf("DeleteNamespace: RequestWithCertAndBody err,%v", err)
 		return nil,fmt.Errorf("DeleteNamespace: RequestWithCertAndBody err,%v", err)

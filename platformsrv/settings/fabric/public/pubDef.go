@@ -41,6 +41,7 @@ type DeployPara struct {
 	Version    		 	string          	`json:"Version"`
 	CryptoType       	string          	`json:"CryptoType"`
 	ClusterId        	string          	`json:"ClusterId"` 
+	
 }
 
 type ServiceNodePortSt struct { 
@@ -57,6 +58,17 @@ type ChannelList struct {
 	Channels []struct {
 		ChannelID string `json:"channel_id"`
 	} `json:"channels"`
+}
+
+type ChannelTxSt struct {
+	ChainnnelId string `json:"ChainnnelId"`
+	Height      uint64 `json:"Height"`
+	TxCount     uint64 `json:"TxCount"`
+}
+
+type TxRecordSt struct {
+	BlockChainId string `json:"BlockChainId"`
+	ChTx []ChannelTxSt  `json:"ChTx"` 
 }
 
 

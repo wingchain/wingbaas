@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"io/ioutil"
 	"strings"
+	"time"
 	"github.com/labstack/echo/v4"
 	"github.com/wingbaas/platformsrv/logger"
 	"github.com/wingbaas/platformsrv/k8s"
@@ -30,6 +31,7 @@ const (
 )
 
 type Deploy struct {
+	AllianceId	        string        `json:"AllianceId,omitempty"`
 	BlockChainName      string        `json:"BlockChainName"`
 	BlockChainType      string        `json:"BlockChainType"`
 	DeployCfg     		interface{}   `json:"DeployCfg"`       
@@ -57,6 +59,9 @@ func getApiRet (code int, msg string, data interface{}) ApiRet {
 
 func upLoadKeyFile(c echo.Context) error { 
 	logger.Debug("upLoadKeyFile")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	file, err := c.FormFile("file") 
 	if err != nil {
 		msg := "get upLoadKeyFile error"
@@ -92,6 +97,9 @@ func upLoadKeyFile(c echo.Context) error {
 
 func addCluster(c echo.Context) error {
 	logger.Debug("addCluster")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	var cluster k8s.Cluster
 	result, err := ioutil.ReadAll(c.Request().Body) 
     if err != nil {
@@ -103,6 +111,11 @@ func addCluster(c echo.Context) error {
     if err != nil {
         msg := "body json Unmarshal err"
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	if cluster.ClusterId == "" || cluster.ApiUrl == "" || cluster.HostDomain == "" || cluster.PublicIp == "" || cluster.Cert == "" || cluster.Key == "" {
+		msg := "parameter error"
+        ret := getApiRet(CODE_ERROR_EXE,msg,nil)
 		return c.JSON(http.StatusOK,ret)
 	}
 	bl := sdkfabric.AddHosts(cluster.HostDomain,cluster.PublicIp)
@@ -123,6 +136,9 @@ func addCluster(c echo.Context) error {
 
 func getClusters(c echo.Context) error {
 	logger.Debug("getClusters")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	obj,err := k8s.GetClusters()
 	if err!= nil {
 		msg := err.Error()
@@ -135,6 +151,9 @@ func getClusters(c echo.Context) error {
 
 func getHosts(c echo.Context) error {
 	logger.Debug("getHosts")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	clusterId := c.Param("clusterid")
 	obj,err := k8s.GetHostList(clusterId)
 	if err!= nil {
@@ -148,6 +167,9 @@ func getHosts(c echo.Context) error {
 
 func getNamespaces(c echo.Context) error {
 	logger.Debug("getNamespaces")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	clusterId := c.Param("clusterid")
 	obj,_ := k8s.GetClusterNamespaces(clusterId)
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,obj)
@@ -156,6 +178,9 @@ func getNamespaces(c echo.Context) error {
 
 func deployBlockChain(c echo.Context) error { 
 	logger.Debug("deployBlockChain")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	result, err := ioutil.ReadAll(c.Request().Body)
     if err != nil {
 		msg := "read request body error"
@@ -166,6 +191,11 @@ func deployBlockChain(c echo.Context) error {
     err = json.Unmarshal(result, &d)
     if err != nil {
         msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	if d.BlockChainName == "" {
+		msg := "blockchainname error"
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret)
 	}
@@ -222,6 +252,7 @@ func deployBlockChain(c echo.Context) error {
 		return c.JSON(http.StatusOK,ret)
 	}
 	var chain k8s.Chain
+	chain.AllianceId = d.AllianceId
 	chain.BlockChainId = blockId
 	chain.BlockChainName = d.BlockChainName
 	chain.BlockChainType = d.BlockChainType
@@ -239,6 +270,9 @@ func deployBlockChain(c echo.Context) error {
 
 func getChains(c echo.Context) error {
 	logger.Debug("getChains")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	clusterId := c.Param("clusterid")
 	obj,err := k8s.GetChains(clusterId)
 	if err!= nil {
@@ -252,6 +286,9 @@ func getChains(c echo.Context) error {
 
 func getBlockChainTypes(c echo.Context) error {
 	logger.Debug("getBlockChainTypes")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	if utils.BLOCK_CFG_MAP == nil {
 		msg := "blockchain type config not find"
         ret := getApiRet(CODE_ERROR_CONFIG,msg,nil)
@@ -263,6 +300,9 @@ func getBlockChainTypes(c echo.Context) error {
 
 func deleteBlockChain(c echo.Context) error { 
 	logger.Debug("deleteBlockChain")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	result, err := ioutil.ReadAll(c.Request().Body)
     if err != nil {
 		msg := "read request body error"
@@ -283,14 +323,33 @@ func deleteBlockChain(c echo.Context) error {
 	}
 	ch,_ := k8s.GetChainByName(d.BlockChainName,d.ClusterId) 
 	if ch != nil {
+		time.Sleep(60*time.Second)
 		k8s.DeleteChain(*ch)
 		certPath := utils.BAAS_CFG.BlockNetCfgBasePath + ch.BlockChainId
 		nfsPath :=  utils.BAAS_CFG.NfsLocalRootDir + ch.BlockChainId
 		cfgFile := utils.BAAS_CFG.BlockNetCfgBasePath + "/" + ch.BlockChainId + ".json"
+		keyPath := utils.BAAS_CFG.KeyStorePath + ch.BlockChainId 
 		os.RemoveAll(certPath)
 		os.RemoveAll(nfsPath)
-		os.Remove(cfgFile)
+		os.Remove(cfgFile) 
+		os.Remove(keyPath)
 	}
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil) 
 	return c.JSON(http.StatusOK,ret)
 }
+
+func getBlockchainCfg(c echo.Context) error {
+	logger.Debug("getBlockchainCfg")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
+	blockchainId := c.Param("blockchainid")
+	cfg,err := sdkfabric.LoadChainCfg(blockchainId)
+	if err != nil {
+		msg := "not find this chain"
+		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,cfg)
+	return c.JSON(http.StatusOK,ret) 
+} 

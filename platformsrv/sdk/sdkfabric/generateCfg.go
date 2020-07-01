@@ -308,8 +308,8 @@ func getPeersMatch(netCfg public.DeployNetConfig,p GenerateParaSt)(error,[]Match
 			apiPort := k8s.GetNodePort(svMap,strings.ToLower(p.Hostname), "api")
 			eventPort := k8s.GetNodePort(svMap,strings.ToLower(p.Hostname), "events")
 			pm.Pattern = "(\\w*)" + p.Hostname + "." + org.Domain + "(\\w*)"
-			pm.URLSubstitutionExp = cluster.PublicIp + ":" + apiPort
-			pm.EventURLSubstitutionExp = cluster.PublicIp + ":" + eventPort
+			pm.URLSubstitutionExp = cluster.InterIp + ":" + apiPort
+			pm.EventURLSubstitutionExp = cluster.InterIp + ":" + eventPort
 			pm.SslTargetOverrideURLSubstitutionExp = p.Hostname + "." + org.Domain
 			pm.MappedHost = p.Hostname + "." + org.Domain
 			peersMatch = append(peersMatch,pm)
@@ -330,7 +330,7 @@ func getOrdersMatch(netCfg public.DeployNetConfig,p GenerateParaSt)(error,[]Matc
 			var om MatchFieldSt
 			var orderPort = k8s.GetNodePort(svMap,p.Hostname, p.Hostname)
 			om.Pattern = "(\\w*)" + p.Hostname + "." + org.Domain + "(\\w*)"
-			om.URLSubstitutionExp = cluster.PublicIp + ":" + orderPort
+			om.URLSubstitutionExp = cluster.InterIp + ":" + orderPort
 			om.SslTargetOverrideURLSubstitutionExp = p.Hostname + "." + org.Domain
 			om.MappedHost = p.Hostname + "." + org.Domain
 			ordersMatch = append(ordersMatch,om)
@@ -351,7 +351,7 @@ func getCasMatch(netCfg public.DeployNetConfig,p GenerateParaSt)(error,[]MatchFi
 		key := strings.ToLower(org.Name + "-ca")
 		var caPort = k8s.GetNodePort(svMap,key, key)
 		cm.Pattern = "(\\w*)" + "ca." + org.Domain + "(\\w*)"
-		cm.URLSubstitutionExp = cluster.PublicIp + ":" + caPort 
+		cm.URLSubstitutionExp = cluster.InterIp + ":" + caPort 
 		cm.MappedHost = "ca." + org.Domain
 		casMatch = append(casMatch,cm)
 	}
@@ -371,7 +371,7 @@ func getCaMap(netCfg public.DeployNetConfig,p GenerateParaSt)(error,map[string]C
 		caKey := strings.ToLower(org.Name + "-ca")
 		key = "ca." + org.Domain
 		var caPort = k8s.GetNodePort(svMap,caKey, caKey)
-		//field.URL = "https://" + cluster.PublicIp + ":" + caPort
+		//field.URL = "https://" + cluster.InterIp + ":" + caPort
 		field.URL = "https://" + key + ":" + caPort 
 		field.HTTPOptions = HTTPOptionsSt {
 			Verify: false,
@@ -392,9 +392,9 @@ func getCaMap(netCfg public.DeployNetConfig,p GenerateParaSt)(error,map[string]C
 				},
 			},
 		}
-		bl := AddHosts(key,cluster.PublicIp)
+		bl := AddHosts(key,cluster.InterIp)
 		if !bl {
-			logger.Errorf("getCaMap: AddHosts failed,need manual add to /etc/hosts,host=%s  ip=%s",key,cluster.PublicIp)
+			logger.Errorf("getCaMap: AddHosts failed,need manual add to /etc/hosts,host=%s  ip=%s",key,cluster.InterIp)
 			continue
 		}
 		m[key] = field
@@ -415,8 +415,8 @@ func getPeersMemberMap(netCfg public.DeployNetConfig,p GenerateParaSt) (error,ma
 			var field MemberField
 			apiPort := k8s.GetNodePort(svMap,strings.ToLower(member.Hostname), "api")
 			eventPort := k8s.GetNodePort(svMap,strings.ToLower(member.Hostname), "events")
-			field.URL = cluster.PublicIp + ":" + apiPort
-			field.EventURL = cluster.PublicIp + ":" + eventPort
+			field.URL = cluster.InterIp + ":" + apiPort
+			field.EventURL = cluster.InterIp + ":" + eventPort
 			key = member.Hostname + "." + org.Domain
 			field.GrpcOptions = GrpcOptionsSt {
 				SslTargetNameOverride: member.Hostname + "." + org.Domain,
@@ -457,7 +457,7 @@ func getOrderMap(netCfg public.DeployNetConfig,p GenerateParaSt)(error,map[strin
 			}
 			orderKey := member.Hostname
 			orderPort := k8s.GetNodePort(svMap,orderKey,orderKey)
-			field.URL = cluster.PublicIp + ":" + orderPort
+			field.URL = cluster.InterIp + ":" + orderPort
 			field.TLSCACerts = TLSCACertsSt {
 				Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config/ordererOrganizations/" + org.Domain + "/tlsca/tlsca." + org.Domain + "-cert.pem",
 			}

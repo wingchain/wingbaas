@@ -4,6 +4,7 @@ package api
 import (
 	"os"
 	"time"
+	"strings"
 	"net/http"
 	"encoding/json"
 	"github.com/labstack/echo/v4"
@@ -15,7 +16,20 @@ import (
 	"github.com/wingbaas/platformsrv/sdk/sdkfabric"
 	"github.com/wingbaas/platformsrv/settings/fabric/public"
 ) 
+
+func checkOrg(org string,peers []string)bool {
+	for _,peer := range peers {
+		if strings.Contains(peer,org) {
+			return true
+		}
+	}
+	return false
+}
+
 func callCCV2(c echo.Context,cfg public.DeployPara,d FabricCCCallPara) error { 
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	// locker := getChainOpLocker(d.BlockChainId) 
 	// locker.Lock()
 	// defer locker.Unlock()
@@ -61,6 +75,18 @@ func callCCV2(c echo.Context,cfg public.DeployPara,d FabricCCCallPara) error {
 	var updatePara deployfabric.PathToolsDeploymentPara 
 	updatePara.LogLevel = "debug"
 	args := []string{"sh","-c"}
+	var peerAddr string
+	for _,org := range cfg.DeployNetCfg.PeerOrgs {
+		if checkOrg(org.Name,d.Peers) {
+			for _,spec :=  range org.Specs {
+				tmpPeerAddr :=  " --peerAddresses  " + spec.Hostname + ":7051 --tlsRootCertFiles /cert/crypto-config/peerOrganizations/"
+				tmpPeerAddr = tmpPeerAddr + org.Domain + "/peers/"
+				tmpPeerAddr = tmpPeerAddr + spec.Hostname + "." + org.Domain + "/tls/ca.crt"
+				peerAddr = peerAddr + tmpPeerAddr
+				break
+			}
+		}
+	}
 	for _,org := range cfg.DeployNetCfg.PeerOrgs {
 		if org.Name == d.OrgName {
 			updatePara.ToolsImage = toolsImage
@@ -88,6 +114,7 @@ func callCCV2(c echo.Context,cfg public.DeployPara,d FabricCCCallPara) error {
 	exeCmd = exeCmd + " --tls --cafile " + orderCaFile
 	exeCmd = exeCmd + " -C " + d.ChannelId
 	exeCmd = exeCmd + " -n " + d.ChainCodeId
+	exeCmd = exeCmd + peerAddr
 	exeCmd = exeCmd + " -c " + argStr
 	exeCmd = exeCmd + " > " + outFile + " 2>&1"
 	cmd := "cp -a /var/data/. /cert;"
@@ -178,6 +205,9 @@ func callCCV2(c echo.Context,cfg public.DeployPara,d FabricCCCallPara) error {
 }
 
 func ccQueryV2(c echo.Context,cfg public.DeployPara,d FabricCCQueryPara) error { 
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	// locker := getChainOpLocker(d.BlockChainId)
 	// locker.Lock()
 	// defer locker.Unlock()
@@ -271,6 +301,9 @@ func ccQueryV2(c echo.Context,cfg public.DeployPara,d FabricCCQueryPara) error {
 }
 
 func ccQueryInstatialV2(c echo.Context,cfg public.DeployPara,d FabricInstantialCCPara) error { 
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
 	// locker := getChainOpLocker(d.BlockChainId)
 	// locker.Lock()
 	// defer locker.Unlock()

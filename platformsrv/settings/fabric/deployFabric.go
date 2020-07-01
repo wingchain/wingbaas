@@ -84,7 +84,7 @@ func DeployFabric(p public.DeployPara,chainName string,chainType string)(string,
 	sdkCfg.NamespaceId = chainName 
 	sdkCfg.BlockId = blockId
 	sdkfabric.GenerateOrgCfg(p.DeployNetCfg,sdkCfg) 
-	time.Sleep(30*time.Second)
+	time.Sleep(60*time.Second)
 	return blockId,nil  
 }
 

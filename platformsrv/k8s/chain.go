@@ -9,6 +9,7 @@ import (
 )
 
 type Chain struct {
+	AllianceId	    string  `json:"AllianceId,omitempty"`
 	BlockChainId 	string 	`json:"BlockChainId"`
 	BlockChainName  string 	`json:"BlockChainName"`
 	BlockChainType  string 	`json:"BlockChainType"`
@@ -17,7 +18,7 @@ type Chain struct {
 	Status			int		`json:"Status"`
 }
 
-const (
+const ( 
 	CHAIN_FILE  			string = "chain.json" 
 	CHAIN_STATUS_FREE   	int = 0
 	CHAIN_STATUS_ORGADD 	int = 1
@@ -87,11 +88,10 @@ func GetChains(clusterId string)([]Chain,error) {
 			logger.Errorf("GetChains: load chain list file error,%v", err)
 			return nil,fmt.Errorf("%v", err)
 		}
-	}else {
-		logger.Debug("GetChains: not find chain list file")
-		return nil,fmt.Errorf("%s", "GetChains:not find chain list file")
 	}
-}
+	logger.Debug("GetChains: not find chain list file")
+	return nil,fmt.Errorf("%s", "GetChains:not find chain list file")
+}  
 
 func GetChain(chainId string,clusterId string) (*Chain,error) { 
 	chains,err := GetChains(clusterId)
@@ -122,6 +122,33 @@ func GetChainByName(chainName string,clusterId string) (*Chain,error) {
 	logger.Debug("GetChainByName: chain name not exsist %s",chainName)
 	return nil,nil
 }
+
+func GetChainById(blockChainId string)(*Chain,error) {
+	cfgPath := utils.BAAS_CFG.BlockNetCfgBasePath + CHAIN_FILE
+	exsist,_ := utils.PathExists(cfgPath)
+	if exsist {
+		var chains []Chain
+		bytes,err := utils.LoadFile(cfgPath) 
+		if err == nil {
+			err = json.Unmarshal(bytes,&chains)
+			if err != nil {
+				logger.Errorf("GetChainById: unmarshal chains error,%v", err)
+				return nil,fmt.Errorf("%v", err)
+			}
+			for _,c := range chains {
+				if c.BlockChainId == blockChainId {
+					return &c,nil
+				}
+			}
+			return nil,fmt.Errorf("not find this chain")
+		}else {
+			logger.Errorf("GetChains: load chain list file error,%v", err)
+			return nil,fmt.Errorf("%v", err)
+		}
+	}
+	logger.Debug("GetChains: not find chain list file")
+	return nil,fmt.Errorf("%s", "GetChains:not find chain list file")
+}  
 
 func DeleteChain(chain Chain) error {
 	cfgPath := utils.BAAS_CFG.BlockNetCfgBasePath + CHAIN_FILE

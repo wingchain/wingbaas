@@ -8,8 +8,212 @@
     "data": json obj //data object       
 }
 ``` 
+## user register                    
+URL：http://ip:port//api/v1/register      
+METHOD：POST   
+RETURN：json object           
 
-## upload already exsist kuberntes cluster cert or key file into wingbaas                
+example:        
+request:http://localhost:9001/api/v1/register      
+request parameter:       
+```json
+{
+	"Mail": "testuser@163.com", 
+    "Password": "password123456", 
+    "VerifyCode": "123456"
+}
+``` 
+API RETURN:                  
+{
+    "code": 0,
+    "message": "success", 
+    "data": null
+}
+```    
+
+## user login                    
+URL：http://ip:port//api/v1/login      
+METHOD：POST   
+RETURN：json object           
+
+example:        
+request:http://localhost:9001/api/v1/login      
+request parameter:       
+```json
+{
+	"Mail": "testuser@163.com", 
+    "Password": "password123456"
+}
+``` 
+API RETURN:                  
+{
+    "code": 0,
+    "message": "success", 
+    "data": null
+}
+```    
+
+## create alliance                   
+URL：http://ip:port//api/v1/createalliance      
+METHOD：POST   
+RETURN：json object           
+
+example:        
+request:http://localhost:9001/api/v1/createalliance      
+request parameter:       
+```json
+{
+	"Name": "食品联盟",
+	"Describe": "食品行业联盟",
+	"Creator": "testuser@163.com"
+}
+``` 
+API RETURN:                  
+{
+    "code": 0,
+    "message": "success",
+    "data": "5bGiWNF0ycI7eTbH" //alliance id     
+}
+```    
+## get alliance list                    
+URL：http://ip:port/api/v1/alliances              
+METHOD：GET        
+INPUT PARA:         
+RETURN：json object              
+example:          
+request:http://localhost:9001/api/v1/alliances              
+API RETURN：                      
+```json     
+{
+    "code": 0,
+    "message": "success",
+    "data": [
+        {
+            "Id": "5bGiWNF0ycI7eTbH",
+            "Name": "食品联盟",
+            "Describe": "食品行业联盟",
+            "Creator": "testuser@163.com"
+        }
+    ]
+}
+```    
+
+## get alliance by id                    
+URL：http://ip:port/api/v1/:allianceid/alliance              
+METHOD：GET        
+INPUT PARA:         
+RETURN：json object              
+example:          
+request:http://localhost:9001/api/v1/5bGiWNF0ycI7eTbH/alliance                 
+API RETURN：                      
+```json     
+{
+    "code": 0,
+    "message": "success",
+    "data": {
+        "Id": "5bGiWNF0ycI7eTbH",
+        "Name": "食品联盟",
+        "Describe": "食品行业联盟",
+        "Creator": "testuser@163.com"
+    }
+}
+```    
+## user add to alliance                   
+URL：http://ip:port//api/v1/useraddalliance      
+METHOD：POST   
+RETURN：json object           
+
+example:        
+request:http://localhost:9001/api/v1/useraddalliance      
+request parameter:       
+```json
+{
+	"Mail": "testuser2@163.com",
+	"Alliance":{
+		 "Id": "5bGiWNF0ycI7eTbH",
+         "Name": "食品联盟",
+         "Describe": "食品行业联盟",
+         "Creator": "testuser@163.com" 
+	}
+}
+``` 
+API RETURN:                  
+{
+    "code": 0,
+    "message": "success",
+    "data": null
+}
+```    
+
+## get user joined alliances                      
+URL：http://ip:port/api/v1/:usermail/joinedalliances              
+METHOD：GET        
+INPUT PARA:         
+RETURN：json object              
+example:          
+request:http://localhost:9001/api/v1/testuser1@163.com/joinedalliances                 
+API RETURN：                      
+```json     
+{
+    "code": 0,
+    "message": "success",
+    "data": [
+        {
+            "Id": "dKKW2DZlbAnd4n5x",
+            "Name": "食品联盟",
+            "Describe": "食品行业联盟",
+            "Creator": "testuser@163.com"
+        }
+    ]
+}
+```    
+
+## get user created alliances                      
+URL：http://ip:port/api/v1/:usermail/createdalliances                 
+METHOD：GET        
+INPUT PARA:         
+RETURN：json object              
+example:          
+request:http://localhost:9001/api/v1/testuser@163.com/createdalliances                 
+API RETURN：                      
+```json     
+{
+    "code": 0,
+    "message": "success",
+    "data": [
+        {
+            "Id": "dKKW2DZlbAnd4n5x",
+            "Name": "食品联盟",
+            "Describe": "食品行业联盟",
+            "Creator": "testuser@163.com"
+        }
+    ]
+}
+```    
+
+## user delete alliance                   
+URL：http://ip:port//api/v1/deleteAlliance      
+METHOD：POST   
+RETURN：json object           
+
+example:        
+request:http://localhost:9001/api/v1/deleteAlliance      
+request parameter:       
+```json
+{
+	"Mail": "testuser2@163.com",
+	"AllianceId": "kdikdkkdik"
+}
+``` 
+API RETURN:                  
+{
+    "code": 0,
+    "message": "success",
+    "data": null
+}
+```    
+
+## upload already exsist kuberntes cluster cert or key file into wingbaas                 
 URL：http://ip:port//api/v1/upLoadKeyFile      
 METHOD：POST(formdata)     
 RETURN：json object           
@@ -36,9 +240,11 @@ request:http://localhost:9001/api/v1/addcluster
 request parameter:       
 ```json
 {
+	"AllianceId": "oZXdf4olZ3nMOXGA",
 	"ClusterId": "test-cluster1", 
     "ApiUrl": "https://kubernetes:6443", 
     "HostDomain": "kubernetes",
+	"InterIp": "172.16.254.33",
     "PublicIp": "106.75.51.138",
     "Cert": "hEU9HNb6Mb3JJ8fR",//file id
     "Key": "hNl4075WtUIvbAKz"//file id
@@ -52,6 +258,59 @@ API RETURN:
     "data": null
 }
 ```    
+
+## get alliance created clusters                       
+URL：http://ip:port/api/v1/:allianceid/allianceclusters                 
+METHOD：GET        
+INPUT PARA:         
+RETURN：json object              
+example:          
+request:http://localhost:9001/api/v1/oZXdf4olZ3nMOXGA/allianceclusters                      
+API RETURN：                      
+```json     
+{
+    "code": 0,
+    "message": "success",
+    "data": [
+        {
+            "AllianceId": "oZXdf4olZ3nMOXGA",
+            "ClusterId": "test-cluster1",
+            "ApiUrl": "https://kubernetes:6443",
+            "HostDomain": "kubernetes",
+            "PublicIp": "106.75.51.138",
+            "Cert": "Eol658oR9Q5fHP8g",
+            "Key": "00STWLq5DqReXukG"
+        }
+    ]
+}
+```    
+
+## get alliance created blockchains                           
+URL：http://ip:port/api/v1/:allianceid/alliancechains                      
+METHOD：GET        
+INPUT PARA:         
+RETURN：json object              
+example:          
+request:http://localhost:9001/api/v1/oZXdf4olZ3nMOXGA/alliancechains                       
+API RETURN：                      
+```json     
+{
+    "code": 0,
+    "message": "success",
+    "data": [
+        {
+            "AllianceId": "QlVwTJjMA3r90TMA",
+            "BlockChainId": "0dXFptQ0qEqsZg7eqzUp9dReCKLuIH1Q",
+            "BlockChainName": "test-chainnetwork11",
+            "BlockChainType": "fabric",
+            "ClusterId": "test-cluster1",
+            "Version": "1.3.0",
+            "Status": 0
+        }
+    ]
+}
+```    
+
 
 ## get cluster list                    
 URL：http://ip:port/api/v1/clusters              
@@ -153,6 +412,7 @@ request:http://localhost:9001/api/v1/deploy
 request parameter:       
 ```json
 {
+	"AllianceId": "QlVwTJjMA3r90TMA",
 	"BlockChainName": "test-chainnetwork11",  
 	"BlockChainType": "fabric", 
 	"DeployCfg":{ 
@@ -559,6 +819,34 @@ request parameter:
 	"ChainCodeVersion": "1.0",
 	"EndorsePolicy": "AND('Org1MSP.member','Org2MSP.member')",
 	"InitArgs":["init","a","200","b","200"]
+}
+``` 
+API RETURN:                  
+```json     
+{
+    "code": 0,
+    "message": "success",    
+    "data": null    
+}
+```     
+
+## upgrade chaincode                              
+URL：http://ip:port/api/v1/orgupgradecc                         
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/orgupgradecc                             
+request parameter:            
+```json    
+{
+	"BlockChainId": "FVCZFbOddroBZbKGvsCgzX4yktITr8kS",
+	"OrgName": "Org1",
+	"ChannelId": "baaschannel",
+	"ChainCodeId": "cctest",
+	"ChainCodeVersion": "100", 
+	"ChaincodeSeq": "2",
+	"EndorsePolicy": "AND('Org1MSP.member','Org2MSP.member','Org3MSP.member')",
+	"InitArgs":["init","a1","300","b1","300"]
 }
 ``` 
 API RETURN:                  
