@@ -134,7 +134,7 @@ func GetChainById(blockChainId string)(*Chain,error) {
 			if err != nil {
 				logger.Errorf("GetChainById: unmarshal chains error,%v", err)
 				return nil,fmt.Errorf("%v", err)
-			}
+			} 
 			for _,c := range chains {
 				if c.BlockChainId == blockChainId {
 					return &c,nil
@@ -170,7 +170,8 @@ func DeleteChain(chain Chain) error {
 	}
 	for _,c := range chains {
 		if c.BlockChainName != chain.BlockChainName {
-			newChains = append(newChains,c)  
+			tmpChain := c
+			newChains = append(newChains,tmpChain)  
 		}
 	}
 	bytes, err := json.Marshal(newChains)

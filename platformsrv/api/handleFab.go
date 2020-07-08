@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"io/ioutil"
 	"github.com/labstack/echo/v4"
-	"github.com/wingbaas/platformsrv/thread"
+	"github.com/wingbaas/platformsrv/fabquery"
 	"github.com/wingbaas/platformsrv/logger"
 	"github.com/wingbaas/platformsrv/utils"
 	"github.com/wingbaas/platformsrv/settings/fabric"
@@ -354,7 +354,7 @@ func chaincodeQuery(c echo.Context) error {
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,qr) 
 	return c.JSON(http.StatusOK,ret)
 }
-
+/*
 func queryInstatialCC(c echo.Context) error {
 	logger.Debug("queryInstatialCC")
 	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
@@ -383,7 +383,35 @@ func queryInstatialCC(c echo.Context) error {
 		return ccQueryInstatialV2(c,cfg,d) 
 	}
 	qr,err := fabric.OrgQueryInstantiateCC(d.BlockChainId,d.OrgName,d.ChannelId)
-	if err != nil {
+	if err != nil { 
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,qr) 
+	return c.JSON(http.StatusOK,ret)
+}
+*/
+
+func queryInstatialCC(c echo.Context) error {
+	logger.Debug("queryInstatialCC")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	var d FabricInstantialCCPara 
+    err = json.Unmarshal(result, &d)
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	qr,err := fabric.GetCCRecord(d.BlockChainId,d.OrgName,d.ChannelId)
+	if err != nil { 
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
 		return c.JSON(http.StatusOK,ret)
 	}
@@ -671,7 +699,7 @@ func queryBlockTx(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret)
 	}
-	qr,err := thread.GetBlockTx(d.BlockChainId,d.OrgName,d.ChannelId)
+	qr,err := fabquery.GetBlockTx(d.BlockChainId,d.OrgName,d.ChannelId)
 	if err != nil {
 		msg := "orgCommitCC: not find this chain"
 		ret := getApiRet(CODE_ERROR_EXE,msg,nil)

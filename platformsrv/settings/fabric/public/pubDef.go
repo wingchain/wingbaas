@@ -61,9 +61,10 @@ type ChannelList struct {
 }
 
 type ChannelTxSt struct {
-	ChainnnelId string `json:"ChainnnelId"`
-	Height      uint64 `json:"Height"`
-	TxCount     uint64 `json:"TxCount"`
+	BlockChainId    string `json:"BlockChainId"`
+	ChainnnelId     string `json:"ChainnnelId"`
+	Height      	uint64 `json:"Height"`
+	TxCount     	uint64 `json:"TxCount"`
 }
 
 type TxRecordSt struct {
@@ -71,4 +72,23 @@ type TxRecordSt struct {
 	ChTx []ChannelTxSt  `json:"ChTx"` 
 }
 
+type CCSt struct {
+	BlockChainId    string `json:"BlockChainId"`
+	BlockChainName  string `json:"BlockChainName"`
+	CCName			string `json:"CCName"`
+	CCVersion		string `json:"CCVersion"`
+	CreateTime		string `json:"CreateTime"`
+	UpdateTime		string `json:"UpdateTime"`
+}
+
+type ChannelCCSt struct {
+	ChainnnelId     string `json:"ChainnnelId"`
+	CCRecord	    []CCSt `json:"CCRecord"`
+}
+
+type CCRecordSt struct {
+	BlockChainId   string `json:"BlockChainId"`
+	BlockChainName string `json:"BlockChainName"`
+	ChCC []ChannelCCSt  `json:"ChCC"`
+}
 

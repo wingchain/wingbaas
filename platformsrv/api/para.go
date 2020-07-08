@@ -289,7 +289,7 @@ func getResultInstatialObj(fileName string) (interface{},error) {
 			Version string `json:"version"`
 		} `json:"chaincode_definitions"`
 	}
-	type InstatialCCSt struct {
+	type InstatialCCSt struct { 
 		Name string `json:"name"`
 		Version string `json:"version"`
 		Path string `json:"path,omitempty"`

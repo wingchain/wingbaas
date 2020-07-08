@@ -353,3 +353,19 @@ func getBlockchainCfg(c echo.Context) error {
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,cfg)
 	return c.JSON(http.StatusOK,ret) 
 } 
+
+func getBlockChain(c echo.Context) error {
+	logger.Debug("getBlockChain")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
+	blockchainId := c.Param("blockchainid")
+	chain,err := k8s.GetChainById(blockchainId)
+	if err != nil {
+		msg := "not find this chain"
+		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,*chain)
+	return c.JSON(http.StatusOK,ret) 
+} 

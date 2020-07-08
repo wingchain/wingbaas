@@ -50,8 +50,11 @@ func Start(port string) {
 	r.POST("/api/v1/deletealliance",deleteAlliance)  
 	r.GET("/api/v1/:allianceid/allianceclusters",getAllianceClusters)  
 	r.GET("/api/v1/:allianceid/alliancechains",getAllianceChains) 
-	r.GET("/api/v1/:blockchainid/cfg",getBlockchainCfg)   
+	r.GET("/api/v1/:blockchainid/cfg",getBlockchainCfg)    
 	r.POST("/api/v1/blocktx",queryBlockTx)   
+	r.GET("/api/v1/:blockchainid/blockchain",getBlockChain) 
+	r.GET("/api/v1/:allianceid/users",getUsersByAllianceId)
+	r.POST("/api/v1/deleteallianceuser",deleteAllianceUser)  
 
 	//options
 
@@ -97,6 +100,9 @@ func Start(port string) {
 	r.OPTIONS("/api/v1/:allianceid/alliancechains",getAllianceChains) 
 	r.OPTIONS("/api/v1/:blockchainid/cfg",getBlockchainCfg) 
 	r.OPTIONS("/api/v1/blocktx",queryBlockTx) 
+	r.OPTIONS("/api/v1/:blockchainid/blockchain",getBlockChain)
+	r.OPTIONS("/api/v1/:allianceid/users",getUsersByAllianceId)
+	r.OPTIONS("/api/v1/deleteallianceuser",deleteAllianceUser)
 
 	// Start server
 	logger.Debug("start wing baas api server") 

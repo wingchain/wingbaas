@@ -191,6 +191,62 @@ API RETURN：
 }
 ```    
 
+## get users by alliance id                           
+URL：http://ip:port/api/v1/:allianceid/users                 
+METHOD：GET        
+INPUT PARA:         
+RETURN：json object              
+example:          
+request:http://localhost:9001/api/v1//FEWnQZAVNOBvQYRK/users                       
+API RETURN：                      
+```json     
+{
+    "code": 0,
+    "message": "success",
+    "data": [
+        {
+            "Mail": "testuser@163.com",
+            "Password": "password123456",
+            "VerifyCode": "123456",
+            "Alliances": [
+                {
+                    "Id": "FEWnQZAVNOBvQYRK",
+                    "Name": "食品联盟",
+                    "Describe": "食品行业联盟",
+                    "Creator": "testuser@163.com"
+                }
+            ]
+        },
+        {
+            "Mail": "testuser1@163.com",
+            "Password": "password123456",
+            "VerifyCode": "123456",
+            "Alliances": [
+                {
+                    "Id": "FEWnQZAVNOBvQYRK",
+                    "Name": "食品联盟",
+                    "Describe": "食品行业联盟",
+                    "Creator": "testuser@163.com"
+                }
+            ]
+        },
+        {
+            "Mail": "testuser2@163.com",
+            "Password": "password123456",
+            "VerifyCode": "123456",
+            "Alliances": [
+                {
+                    "Id": "FEWnQZAVNOBvQYRK",
+                    "Name": "食品联盟",
+                    "Describe": "食品行业联盟",
+                    "Creator": "testuser@163.com"
+                }
+            ]
+        }
+    ]
+}
+```    
+
 ## user delete alliance                   
 URL：http://ip:port//api/v1/deleteAlliance      
 METHOD：POST   
@@ -198,6 +254,28 @@ RETURN：json object
 
 example:        
 request:http://localhost:9001/api/v1/deleteAlliance      
+request parameter:       
+```json
+{
+	"Mail": "testuser2@163.com",
+	"AllianceId": "kdikdkkdik"
+}
+``` 
+API RETURN:                  
+{
+    "code": 0,
+    "message": "success",
+    "data": null
+}
+```    
+
+## delete alliance user                       
+URL：http://ip:port//api/v1/deleteallianceuser       
+METHOD：POST   
+RETURN：json object           
+
+example:        
+request:http://localhost:9001/api/v1/deleteallianceuser         
 request parameter:       
 ```json
 {
@@ -945,6 +1023,19 @@ API RETURN (fabric v1.x):
             }
         ]
     }
+}
+or   
+{
+    "code": 0,
+    "message": "success",
+    "data": [
+        {
+            "CCName": "cctest",
+            "CCVersion": "10",
+            "CreateTime": "2020-07-04 09:28:08",
+            "UpdateTime": "2020-07-04 09:28:08"
+        }
+    ]
 }
 ```         
 
@@ -2651,4 +2742,56 @@ API RETURN:
     }
 }
 ```          
+
+## query block hight and total tx by blockchain id and channel id                                                
+URL：http://ip:port/api/v1/blocktx                                          
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/blocktx                                                       
+request parameter:            
+```json    
+{
+	"BlockChainId": "1m4MJ3U0avy8VLWkQeXCtgN8M3384TAd",
+	"OrgName": "Org1",
+	"ChannelId": "mychannel"
+}
+``` 
+API RETURN:                  
+```json     
+{
+    "code": 0,
+    "message": "success",
+    "data": {
+        "BlockChainId": "1m4MJ3U0avy8VLWkQeXCtgN8M3384TAd",
+        "ChainnnelId": "mychannel",
+        "Height": 2,
+        "TxCount": 1
+    }
+}
+```         
+
+## get blockchain by id                    
+URL：http://ip:port/api/v1/:blockchainid/blockchain              
+METHOD：GET        
+INPUT PARA:         
+RETURN：json object              
+example:          
+request:http://localhost:9001/api/v1/1m4MJ3U0avy8VLWkQeXCtgN8M3384TAd/blockchain                 
+API RETURN：                      
+```json     
+{
+    "code": 0,
+    "message": "success",
+    "data": {
+        "AllianceId": "5bGiWNF0ycI7eTbH",
+        "BlockChainId": "1m4MJ3U0avy8VLWkQeXCtgN8M3384TAd",
+        "BlockChainName": "test-network",
+        "BlockChainType": "fabric",
+		"ClusterId": "test-cluster1",
+        "Version": "v1",
+        "Status": 0
+    }
+}
+```     
 

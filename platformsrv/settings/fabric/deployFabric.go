@@ -482,6 +482,7 @@ func OrgDeployChaiCode(chainId,orgName,channelId,ChainCodeID,ChaincodeVersion,En
 	if err != nil {
 		return fmt.Errorf("OrgDeployChaiCode: instatiate cc failed,org=%s\n", orgName)
 	}
+	RecordCC(chainId,channelId,ChainCodeID,ChaincodeVersion,"deploy")
 	logger.Debug("OrgDeployChaiCode success")
 	return nil
 }
@@ -593,6 +594,7 @@ func OrgInstantialChaiCode(chainId,orgName,channelId,ChainCodeID,ChaincodeVersio
 	if err != nil {
 		return fmt.Errorf("OrgInstantialChaiCode: instatiate cc failed,org=%s\n", orgName)
 	}
+	RecordCC(chainId,channelId,ChainCodeID,ChaincodeVersion,"deploy")
 	logger.Debug("OrgInstantialChaiCode success") 
 	return nil
 }
@@ -653,6 +655,7 @@ func OrgUpgradeChaiCode(chainId,orgName,channelId,ChainCodeID,ChaincodeVersion,e
 	if err != nil {
 		return fmt.Errorf("OrgUpgradeChaiCode: UpgradeCC cc failed,org=%s\n", orgName)
 	}
+	RecordCC(chainId,channelId,ChainCodeID,ChaincodeVersion,"update")
 	logger.Debug("OrgUpgradeChaiCode success") 
 	return nil
 }
