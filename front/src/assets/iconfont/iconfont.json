@@ -1,0 +1,37 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "58723029",
+      "name": "联盟管理",
+      "font_class": "lianmengguanli",
+      "unicode": "e686",
+      "unicode_decimal": 59014
+    },
+    {
+      "icon_id": "58723030",
+      "name": "合约管理",
+      "font_class": "heyueguanli",
+      "unicode": "e687",
+      "unicode_decimal": 59015
+    },
+    {
+      "icon_id": "58723031",
+      "name": "集群管理",
+      "font_class": "jiqunguanli",
+      "unicode": "e688",
+      "unicode_decimal": 59016
+    },
+    {
+      "icon_id": "58723032",
+      "name": "区块链管理",
+      "font_class": "qukuailianguanli",
+      "unicode": "e689",
+      "unicode_decimal": 59017
+    }
+  ]
+}
