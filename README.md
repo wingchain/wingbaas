@@ -1,5 +1,5 @@
 # wingbaas
-Blockchain as a service
+Blockchain as a service ce
 
 # clone project
 git clone https://github.com/wingchain/wingbaas.git
