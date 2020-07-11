@@ -6,7 +6,7 @@ git clone https://github.com/wingchain/wingbaas.git
 
 # platformsrv build and run prerequest 
 1, install golang ,version >=1.14.2
-2, config GOPATH enviroment
+2, config GOROOT and GOPATH enviroment
 3, clone project to $GOPATH/src/github.com
 4, install nfs client
 nfs搭建
