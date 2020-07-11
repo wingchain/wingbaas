@@ -251,7 +251,15 @@ func GetUserJoinedAlliances(mail string)([]Alliance,error) {
 			}
 			for _,u := range users { 
 				if u.Mail == mail { 
-					return u.Alliances,nil
+					//return u.Alliances,nil
+					var as []Alliance
+					for _,a := range u.Alliances {
+						tmpAlliance := a
+						if tmpAlliance.Creator != mail {
+							as = append(as,tmpAlliance)
+						}
+					}
+					return as,nil
 				}
 			}
 			logger.Errorf("GetUserJoinedAlliances: not find user")
