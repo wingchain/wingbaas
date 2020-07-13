@@ -110,7 +110,7 @@ type HostList struct {
  
 func GetHostList(clusterId string)(*HostList,error) {
 	logger.Debug("GetHostList")
-	cluster,err := GetCluster(clusterId) 
+	cluster,err := GetCluster(clusterId)  
 	if err != nil {
 		logger.Errorf("GetHostList: get clusters error,%v", err)
 		return nil,fmt.Errorf("%v", err)

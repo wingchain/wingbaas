@@ -100,7 +100,7 @@ func addCluster(c echo.Context) error {
 	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
 	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
 	c.Response().Header().Set("content-type", "application/json")
-	var cluster k8s.Cluster
+	var cluster k8s.Cluster 
 	result, err := ioutil.ReadAll(c.Request().Body) 
     if err != nil {
 		msg := "read request body error"
@@ -140,6 +140,22 @@ func getClusters(c echo.Context) error {
 	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
 	c.Response().Header().Set("content-type", "application/json")
 	obj,err := k8s.GetClusters()
+	if err!= nil {
+		msg := err.Error()
+        ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,obj)
+	return c.JSON(http.StatusOK,ret)
+}
+
+func getUserClusters(c echo.Context) error {
+	logger.Debug("getUserClusters")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
+	user := c.Param("usermail")
+	obj,err := k8s.GetClustersByUser(user)
 	if err!= nil {
 		msg := err.Error()
         ret := getApiRet(CODE_ERROR_EXE,msg,nil)

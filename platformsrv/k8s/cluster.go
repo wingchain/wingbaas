@@ -10,6 +10,7 @@ import (
 
 type Cluster struct {
 	AllianceId	 string `json:"AllianceId,omitempty"` 
+	Creator      string `json:"Creator,omitempty"`  
 	ClusterId    string `json:"ClusterId"`
 	ApiUrl       string `json:"ApiUrl"`
 	HostDomain   string `json:"HostDomain"`
@@ -80,6 +81,35 @@ func GetClusters()([]Cluster,error) {
 	}
 	logger.Errorf("GetClusters: load cluster config error")
 	return nil,fmt.Errorf("GetClusters: load cluster config error")
+}
+
+func GetClustersByUser(user string)([]Cluster,error) {
+	cfgPath := utils.BAAS_CFG.ClusterCfgPath  + CLUSTER_CFG_FILE
+	exsist,_ := utils.PathExists(cfgPath)
+	var clusters []Cluster
+	if exsist {
+		bytes,err := utils.LoadFile(cfgPath)
+		if err == nil {
+			err = json.Unmarshal(bytes,&clusters)
+			if err != nil {
+				logger.Errorf("GetClustersByUser: unmarshal clusters error,%v", err)
+				return nil,fmt.Errorf("%v", err)
+			}
+			var cas []Cluster
+			for _,c := range clusters {
+				tmpCluster := c
+				if tmpCluster.Creator == user {
+					cas = append(cas,tmpCluster)
+				}
+			}
+			return cas,nil
+		}else {
+			logger.Errorf("GetClustersByUser: load cluster config error,%v", err)
+			return nil,fmt.Errorf("%v", err)
+		}
+	}
+	logger.Errorf("GetClustersByUser: load cluster config error")
+	return nil,fmt.Errorf("GetClustersByUser: load cluster config error")
 }
 
 func GetCluster(clusterId string) (*Cluster,error) {
