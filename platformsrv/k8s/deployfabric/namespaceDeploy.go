@@ -97,7 +97,7 @@ func DeleteNamespace(clusterId string,namespaceId string)([]byte,error) {
 	err = json.Unmarshal(bytes, &result)
 	if err != nil { 
 		logger.Errorf("DeleteNamespace: delete result err,%v", err)
-		return nil,fmt.Errorf("DeleteNamespace: delete result err,%v", err)
+		//return nil,fmt.Errorf("DeleteNamespace: delete result err,%v", err)
 	}
 	return nil,nil
 }

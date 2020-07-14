@@ -121,7 +121,8 @@ func (cfg *BaasCfg) CfgPathInit() error {
 		cmd2 = "sudo chmod 0666 /etc/hosts"
 		logger.Debug("os type=",runtime.GOOS)
 	}else if runtime.GOOS == "linux" {
-		cmd = "mount -o nolock -t nfs " + cfg.NfsInternalAddr + ":" + cfg.NfsBasePath + " " + cfg.NfsLocalRootDir 
+		//cmd = "mount -o nolock -t nfs " + cfg.NfsInternalAddr + ":" + cfg.NfsBasePath + " " + cfg.NfsLocalRootDir 
+		cmd = "mount -o nolock -t nfs " + cfg.NfsExternalAddr + ":" + cfg.NfsBasePath + " " + cfg.NfsLocalRootDir 
 		cmd2 = "chmod 0666 /etc/hosts"
 		logger.Debug("os type=",runtime.GOOS)
 	}else {

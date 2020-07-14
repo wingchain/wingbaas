@@ -35,6 +35,14 @@
             "peer": "registry.wingbaas.cn:5000/fabric-peer:2.1",
             "baseos": "registry.wingbaas.cn:5000/fabric-baseos:2.1",
             "tools": "registry.wingbaas.cn:5000/fabric-tools:2.1"
+        },
+        "2.2":{
+            "ca": "registry.wingbaas.cn:5000/fabric-ca:1.4",
+            "ccenv": "registry.wingbaas.cn:5000/fabric-ccenv:2.2",
+            "orderer": "registry.wingbaas.cn:5000/fabric-orderer:2.2",
+            "peer": "registry.wingbaas.cn:5000/fabric-peer:2.2",
+            "baseos": "registry.wingbaas.cn:5000/fabric-baseos:2.2",
+            "tools": "registry.wingbaas.cn:5000/fabric-tools:2.2"
         }
     },
     "wingchain":{
