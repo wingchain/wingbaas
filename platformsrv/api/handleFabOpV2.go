@@ -146,7 +146,7 @@ func callCCV2(c echo.Context,cfg public.DeployPara,d FabricCCCallPara) error {
 	logger.Debug("invoke result=") 
 	logger.Debug(callResult)
 	//check the init result end
-	os.Remove(parseFile)
+	os.Remove(parseFile) 
 	rObj,err := fabric.OrgQueryBlockChain(d.BlockChainId,updatePara.OrgName,d.ChannelId)
 	if err != nil {
 		msg := "callCCV2 get chain height failed"

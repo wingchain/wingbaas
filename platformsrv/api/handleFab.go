@@ -238,11 +238,14 @@ func orgDeployCC(c echo.Context) error {
 	if strings.HasPrefix(cfg.Version,"2.") {
 		return orgDeployCCV2(c,cfg,d)
 	}
-	err = fabric.OrgDeployChaiCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.ChainCodeVersion,d.EndorsePolicy,d.InitArgs)
-	if err != nil {
-        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
-		return c.JSON(http.StatusOK,ret)
-	}
+	// err = fabric.OrgDeployChaiCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.ChainCodeVersion,d.EndorsePolicy,d.InitArgs)
+	// if err != nil {
+    //     ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+	// 	return c.JSON(http.StatusOK,ret)
+	// } 
+	
+	go fabric.OrgDeployChaiCodeRoutine(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.ChainCodeVersion,d.EndorsePolicy,d.InitArgs) 
+
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil)
 	return c.JSON(http.StatusOK,ret)
 }
@@ -274,11 +277,14 @@ func orgUpgradeCC(c echo.Context) error {
 	if strings.HasPrefix(cfg.Version,"2.") {
 		return orgUpgradeCCV2(c,cfg,d)
 	}
-	err = fabric.OrgUpgradeChaiCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.ChainCodeVersion,d.EndorsePolicy,d.InitArgs)
-	if err != nil {
-        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil) 
-		return c.JSON(http.StatusOK,ret)
-	}
+	// err = fabric.OrgUpgradeChaiCode(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.ChainCodeVersion,d.EndorsePolicy,d.InitArgs)
+	// if err != nil {
+    //     ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil) 
+	// 	return c.JSON(http.StatusOK,ret)
+	// }
+	
+	go fabric.OrgUpgradeChaiCodeRoutine(d.BlockChainId,d.OrgName,d.ChannelId,d.ChainCodeId,d.ChainCodeVersion,d.EndorsePolicy,d.InitArgs)
+
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil) 
 	return c.JSON(http.StatusOK,ret) 
 }
@@ -711,4 +717,104 @@ func queryBlockTx(c echo.Context) error {
 	}
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,qr)  
 	return c.JSON(http.StatusOK,ret) 
+}
+
+func queryBlockAndTx(c echo.Context) error {
+	logger.Debug("queryBlockAndTx")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	type ReqPara struct {
+		Start uint64 `json:"Start"`
+		End uint64 `json:"End"`
+		BlockChainId string `json:"BlockChainId"`
+		OrgName string `json:"OrgName"`
+		ChannelId string `json:"ChannelId"` 
+	}
+	var d ReqPara 
+    err = json.Unmarshal(result, &d) 
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	qr,err := fabquery.GetBlockAndTxList(d.Start,d.End,d.BlockChainId,d.OrgName,d.ChannelId)
+	if err != nil { 
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,qr) 
+	return c.JSON(http.StatusOK,ret)
+}
+
+func queryTxFromDb(c echo.Context) error {
+	logger.Debug("queryTxFromDb")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	type ReqPara struct {
+		BlockChainId string `json:"BlockChainId"`
+		OrgName string `json:"OrgName"`
+		ChannelId string `json:"ChannelId"` 
+		TxId string `json:"TxId"`
+	}
+	var d ReqPara 
+    err = json.Unmarshal(result, &d) 
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	qr,err := fabquery.GetTxInfo(d.TxId)
+	if err != nil { 
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,qr) 
+	return c.JSON(http.StatusOK,ret)
+}
+
+func searchFromDb(c echo.Context) error {
+	logger.Debug("searchFromDb")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	type ReqPara struct {
+		BlockChainId string `json:"BlockChainId"`
+		OrgName string `json:"OrgName"`
+		ChannelId string `json:"ChannelId"` 
+		Key string `json:"Key"`
+	}
+	var d ReqPara 
+    err = json.Unmarshal(result, &d) 
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	qr,err := fabquery.GetSearchResult(d.Key)
+	if err != nil { 
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,qr) 
+	return c.JSON(http.StatusOK,ret)
 }

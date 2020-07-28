@@ -166,7 +166,7 @@ func orgDeployCCV2(c echo.Context,cfg public.DeployPara,d FabricDeployCCPara) er
 		return c.JSON(http.StatusOK,ret)
 	}
 	chain.Status = k8s.CHAIN_STATUS_DEPLOYCC
-	err := k8s.UpdateChainStatus(*chain)
+	err := k8s.UpdateChainStatus(*chain) 
 	if err != nil {
 		msg := "orgDeployCCV2: set chain status error"
 		ret := getApiRet(CODE_ERROR_EXE,msg,nil)

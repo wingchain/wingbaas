@@ -3,6 +3,7 @@ package k8s
 
 import (
 	"fmt"
+	"os"
 	"encoding/json"
 	"github.com/wingbaas/platformsrv/logger"
 	"github.com/wingbaas/platformsrv/utils"
@@ -79,8 +80,8 @@ func GetClusters()([]Cluster,error) {
 			return nil,fmt.Errorf("%v", err)
 		}
 	}
-	logger.Errorf("GetClusters: load cluster config error")
-	return nil,fmt.Errorf("GetClusters: load cluster config error")
+	logger.Errorf("GetClusters: cluster config not exsist")
+	return nil,fmt.Errorf("GetClusters: cluster config not exsist")
 }
 
 func GetClustersByUser(user string)([]Cluster,error) {
@@ -108,8 +109,8 @@ func GetClustersByUser(user string)([]Cluster,error) {
 			return nil,fmt.Errorf("%v", err)
 		}
 	}
-	logger.Errorf("GetClustersByUser: load cluster config error")
-	return nil,fmt.Errorf("GetClustersByUser: load cluster config error")
+	logger.Errorf("GetClustersByUser: cluster config not exsist")
+	return nil,fmt.Errorf("GetClustersByUser: cluster config not exsist")
 }
 
 func GetCluster(clusterId string) (*Cluster,error) {
@@ -124,4 +125,60 @@ func GetCluster(clusterId string) (*Cluster,error) {
 		}
 	}
 	return nil,nil
+}
+
+func DeleteCluster(clusterId string,creator string)error {
+	cfgPath := utils.BAAS_CFG.ClusterCfgPath  + CLUSTER_CFG_FILE
+	exsist,_ := utils.PathExists(cfgPath)
+	var clusters []Cluster
+	if exsist {
+		bytes,err := utils.LoadFile(cfgPath)
+		if err == nil {
+			err = json.Unmarshal(bytes,&clusters)
+			if err != nil {
+				logger.Errorf("DeleteCluster: unmarshal clusters error,%v", err)
+				return fmt.Errorf("%v", err)
+			}
+			var cas []Cluster
+			for _,c := range clusters {
+				var tmpCluster Cluster
+				tmpCluster = c
+				if tmpCluster.ClusterId == clusterId {
+					if tmpCluster.Creator != creator {
+						logger.Errorf("DeleteCluster: user is not cluster creator")
+						return fmt.Errorf("DeleteCluster: user is not cluster creator")
+					}
+					chs,_ := GetChains(clusterId)
+					if chs != nil {
+						if len(chs) > 0{
+							logger.Errorf("DeleteCluster: this cluster has blockchain,please delete blockchain first")
+							return fmt.Errorf("DeleteCluster: this cluster has blockchain,please delete blockchain first")
+						}
+					}
+					key := utils.BAAS_CFG.ClusterPkiBasePath + tmpCluster.Key
+					cert := utils.BAAS_CFG.ClusterPkiBasePath + tmpCluster.Cert
+					os.RemoveAll(key)
+					os.RemoveAll(cert) 
+				}else{
+					cas = append(cas,tmpCluster)
+				}
+			}
+			bytes, err := json.Marshal(cas)
+			if err != nil {
+				logger.Errorf("DeleteCluster: marshal clusters error,%v", err)
+				return fmt.Errorf("%v", err)
+			}
+			err = utils.WriteFile(cfgPath,string(bytes))
+			if err != nil {
+				logger.Errorf("DeleteCluster: Write cluster config file error,%v", err)
+				return fmt.Errorf("%v", err)
+			}
+			return nil
+		}else {
+			logger.Errorf("DeleteCluster: load cluster config error,%v", err)
+			return fmt.Errorf("%v", err)
+		}
+	}
+	logger.Errorf("DeleteCluster: cluster config not exsist")
+	return fmt.Errorf("DeleteCluster: cluster config not exsist")
 }

@@ -16,7 +16,22 @@ import (
 	"github.com/wingbaas/platformsrv/sdk/sdkfabric"
 )
 
-func DeployFabric(p public.DeployPara,chainName string,chainType string)(string,error) {
+func DeployFabricRoutine(p public.DeployPara,chainName string,chainType string,blockId string) {
+	var chain k8s.Chain
+	chain.BlockChainName = chainName
+	_,err := DeployFabric(p,chainName,chainType,blockId)
+	if err != nil {
+		chain.Status = k8s.CHAIN_STATUS_CREAT_ERROR
+	}else{
+		chain.Status = k8s.CHAIN_STATUS_FREE
+	}
+	err = k8s.UpdateChainStatus(chain) 
+	if err != nil {
+		logger.Errorf("DeployFabric:UpdateChainStatus error")
+	}
+}
+
+func DeployFabric(p public.DeployPara,chainName string,chainType string,blockId string)(string,error) {
 	if p.DeployType != public.SOLO_FABRIC && p.DeployType != public.KAFKA_FABRIC && p.DeployType != public.RAFT_FABRIC {
 		logger.Errorf("DeployFabric: unsupported deploy type")
 		return "",fmt.Errorf("DeployFabric: unsupported deploy type")
@@ -25,7 +40,7 @@ func DeployFabric(p public.DeployPara,chainName string,chainType string)(string,
 		logger.Errorf("DeployFabric: unsupported crypto type")
 		return "",fmt.Errorf("DeployFabric: unsupported crypto type")
 	}
-	blockId := utils.GenerateRandomString(32)
+	//blockId := utils.GenerateRandomString(32) 
 	bytes, err := json.Marshal(p.DeployNetCfg) 
 	if err != nil {
 		logger.Errorf("DeployFabric: Marshal deploy net config error")
@@ -422,6 +437,18 @@ func OrgJoinChannel(chainId string,orgName string,channelId string) error {
 	return nil
 }
 
+func OrgDeployChaiCodeRoutine(chainId,orgName,channelId,ChainCodeID,ChaincodeVersion,EndorsePolicy string,initArgs []string){
+	var status uint64
+	RecordCC(chainId,channelId,ChainCodeID,ChaincodeVersion,"deploy",public.CC_DEPLOY_ING)
+	err := OrgDeployChaiCode(chainId,orgName,channelId,ChainCodeID,ChaincodeVersion,EndorsePolicy,initArgs)
+	if err != nil {
+		status = public.CC_DEPLOY_FAILED
+	}else{
+		status = public.CC_DEPLOY_OK
+	}
+	RecordCC(chainId,channelId,ChainCodeID,ChaincodeVersion,"deploy",status) 
+}
+
 func OrgDeployChaiCode(chainId,orgName,channelId,ChainCodeID,ChaincodeVersion,EndorsePolicy string,initArgs []string) error {
 	rootPath,err := utils.GetProcessRunRoot()
 	if err != nil {
@@ -482,7 +509,7 @@ func OrgDeployChaiCode(chainId,orgName,channelId,ChainCodeID,ChaincodeVersion,En
 	if err != nil {
 		return fmt.Errorf("OrgDeployChaiCode: instatiate cc failed,org=%s\n", orgName)
 	}
-	RecordCC(chainId,channelId,ChainCodeID,ChaincodeVersion,"deploy")
+	//RecordCC(chainId,channelId,ChainCodeID,ChaincodeVersion,"deploy")
 	logger.Debug("OrgDeployChaiCode success")
 	return nil
 }
@@ -594,9 +621,21 @@ func OrgInstantialChaiCode(chainId,orgName,channelId,ChainCodeID,ChaincodeVersio
 	if err != nil {
 		return fmt.Errorf("OrgInstantialChaiCode: instatiate cc failed,org=%s\n", orgName)
 	}
-	RecordCC(chainId,channelId,ChainCodeID,ChaincodeVersion,"deploy")
+	RecordCC(chainId,channelId,ChainCodeID,ChaincodeVersion,"deploy",public.CC_DEPLOY_OK)
 	logger.Debug("OrgInstantialChaiCode success") 
 	return nil
+}
+
+func OrgUpgradeChaiCodeRoutine(chainId,orgName,channelId,ChainCodeID,ChaincodeVersion,EndorsePolicy string,initArgs []string){
+	var status uint64
+	RecordCC(chainId,channelId,ChainCodeID,ChaincodeVersion,"update",public.CC_DEPLOY_ING)
+	err := OrgUpgradeChaiCode(chainId,orgName,channelId,ChainCodeID,ChaincodeVersion,EndorsePolicy,initArgs)
+	if err != nil {
+		status = public.CC_DEPLOY_FAILED
+	}else{
+		status = public.CC_DEPLOY_OK
+	}
+	RecordCC(chainId,channelId,ChainCodeID,ChaincodeVersion,"update",status) 
 }
 
 func OrgUpgradeChaiCode(chainId,orgName,channelId,ChainCodeID,ChaincodeVersion,endorsePolicy string,initArgs []string) error {
@@ -655,7 +694,7 @@ func OrgUpgradeChaiCode(chainId,orgName,channelId,ChainCodeID,ChaincodeVersion,e
 	if err != nil {
 		return fmt.Errorf("OrgUpgradeChaiCode: UpgradeCC cc failed,org=%s\n", orgName)
 	}
-	RecordCC(chainId,channelId,ChainCodeID,ChaincodeVersion,"update")
+	//RecordCC(chainId,channelId,ChainCodeID,ChaincodeVersion,"update",public.CC_DEPLOY_OK)
 	logger.Debug("OrgUpgradeChaiCode success") 
 	return nil
 }

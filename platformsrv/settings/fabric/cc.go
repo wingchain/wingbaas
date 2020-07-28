@@ -11,7 +11,7 @@ import (
 	"github.com/wingbaas/platformsrv/settings/fabric/public"
 )
 
-func RecordCC(blockChainId string,channelId string,ccName string,ccVersion string,flag string) error {
+func RecordCC(blockChainId string,channelId string,ccName string,ccVersion string,flag string,status uint64) error {
 	logger.Debug("RecordCC")
 	var ccRecord []public.CCRecordSt 
 	rdFile := utils.BAAS_CFG.BlockNetCfgBasePath + "cc.json"
@@ -34,7 +34,8 @@ func RecordCC(blockChainId string,channelId string,ccName string,ccVersion strin
 	cc.BlockChainId = blockChainId
 	cc.BlockChainName = chain.BlockChainName
 	cc.CCName = ccName
-	cc.CCVersion = ccVersion
+	cc.CCVersion = ccVersion 
+	cc.Status = status 
 	if flag == "deploy" {
 		cc.CreateTime = nowTime
 		cc.UpdateTime = nowTime
@@ -57,6 +58,7 @@ func RecordCC(blockChainId string,channelId string,ccName string,ccVersion strin
 						if s.CCName == ccName {
 							//ccRecord[n].ChCC[k].CCRecord[m].CCName = ccName
 							ccRecord[n].ChCC[k].CCRecord[m].CCVersion = ccVersion
+							ccRecord[n].ChCC[k].CCRecord[m].Status = status
 							if flag == "deploy" {
 								ccRecord[n].ChCC[k].CCRecord[m].CreateTime = nowTime
 								ccRecord[n].ChCC[k].CCRecord[m].UpdateTime = nowTime

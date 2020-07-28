@@ -37,7 +37,7 @@ var BAAS_CFG *BaasCfg = nil
 var BLOCK_CFG_MAP map[string]interface{}
 
 func GetProcessRunRoot() (string,error) {
-	root,err := filepath.Abs(filepath.Dir(os.Args[0]))
+	root,err := filepath.Abs(filepath.Dir(os.Args[0])) 
 	if err != nil {
 		logger.Errorf("GetProcessRunRoot: get process run root dir error,%v",err)
 		return "",fmt.Errorf("GetProcessRunRoot: get process run root dir error,%v",err)
@@ -121,8 +121,8 @@ func (cfg *BaasCfg) CfgPathInit() error {
 		cmd2 = "sudo chmod 0666 /etc/hosts"
 		logger.Debug("os type=",runtime.GOOS)
 	}else if runtime.GOOS == "linux" {
-		//cmd = "mount -o nolock -t nfs " + cfg.NfsInternalAddr + ":" + cfg.NfsBasePath + " " + cfg.NfsLocalRootDir 
-		cmd = "mount -o nolock -t nfs " + cfg.NfsExternalAddr + ":" + cfg.NfsBasePath + " " + cfg.NfsLocalRootDir 
+		//cmd = "mount -o nolock -t nfs " + cfg.NfsInternalAddr + ":" + cfg.NfsBasePath + " " + cfg.NfsLocalRootDir //mount nfs to platform server run dir,local net
+		cmd = "mount -o nolock -t nfs " + cfg.NfsExternalAddr + ":" + cfg.NfsBasePath + " " + cfg.NfsLocalRootDir //mount nfs to platform server run dir,not local net
 		cmd2 = "chmod 0666 /etc/hosts"
 		logger.Debug("os type=",runtime.GOOS)
 	}else {

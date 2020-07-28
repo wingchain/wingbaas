@@ -9,7 +9,7 @@
 }
 ``` 
 ## user register                    
-URL：http://ip:port//api/v1/register      
+URL：http://ip:port/api/v1/register      
 METHOD：POST   
 RETURN：json object           
 
@@ -32,7 +32,7 @@ API RETURN:
 ```    
 
 ## user login                    
-URL：http://ip:port//api/v1/login      
+URL：http://ip:port/api/v1/login      
 METHOD：POST   
 RETURN：json object           
 
@@ -54,7 +54,7 @@ API RETURN:
 ```    
 
 ## create alliance                   
-URL：http://ip:port//api/v1/createalliance      
+URL：http://ip:port/api/v1/createalliance      
 METHOD：POST   
 RETURN：json object           
 
@@ -119,7 +119,7 @@ API RETURN：
 }
 ```    
 ## user add to alliance                   
-URL：http://ip:port//api/v1/useraddalliance      
+URL：http://ip:port/api/v1/useraddalliance      
 METHOD：POST   
 RETURN：json object           
 
@@ -197,7 +197,7 @@ METHOD：GET
 INPUT PARA:         
 RETURN：json object              
 example:          
-request:http://localhost:9001/api/v1//FEWnQZAVNOBvQYRK/users                       
+request:http://localhost:9001/api/v1/FEWnQZAVNOBvQYRK/users                       
 API RETURN：                      
 ```json     
 {
@@ -248,7 +248,7 @@ API RETURN：
 ```    
 
 ## user delete alliance                   
-URL：http://ip:port//api/v1/deleteAlliance      
+URL：http://ip:port/api/v1/deleteAlliance      
 METHOD：POST   
 RETURN：json object           
 
@@ -270,7 +270,7 @@ API RETURN:
 ```    
 
 ## delete alliance user                       
-URL：http://ip:port//api/v1/deleteallianceuser       
+URL：http://ip:port/api/v1/deleteallianceuser       
 METHOD：POST   
 RETURN：json object           
 
@@ -292,7 +292,7 @@ API RETURN:
 ```    
 
 ## upload already exsist kuberntes cluster cert or key file into wingbaas                 
-URL：http://ip:port//api/v1/upLoadKeyFile      
+URL：http://ip:port/api/v1/upLoadKeyFile      
 METHOD：POST(formdata)     
 RETURN：json object           
 
@@ -309,7 +309,7 @@ API RETURN:
 ```      
  
 ## add already exsist kuberntes cluster into wingbaas                
-URL：http://ip:port//api/v1/addcluster      
+URL：http://ip:port/api/v1/addcluster      
 METHOD：POST   
 RETURN：json object           
 
@@ -333,6 +333,28 @@ API RETURN:
 {
     "code": 0,
     "message": "cluster add success",
+    "data": null
+}
+```    
+
+## user delete cluster                      
+URL：http://ip:port/api/v1/deletecluster      
+METHOD：POST   
+RETURN：json object           
+
+example:        
+request:http://localhost:9001/api/v1/deletecluster      
+request parameter:       
+```json
+{
+	"Creator": "testuser@163.com",
+	"ClusterId": "kdikdkkdik"
+}
+``` 
+API RETURN:                  
+{
+    "code": 0,
+    "message": "success",
     "data": null
 }
 ```    
@@ -386,6 +408,30 @@ API RETURN：
             "Status": 0
         }
     ]
+}
+```    
+
+## get chain by chian id                       
+URL：http://ip:port/api/v1/:blockchainid/blockchain              
+METHOD：GET        
+INPUT PARA:         
+RETURN：json object              
+example:          
+request:http://localhost:9001/api/v1/NitnGgWzSs7zAX6ktXQRbVtCHaYnFDCc/blockchain                 
+API RETURN：                      
+```json     
+{
+    "code": 0,
+    "message": "success",
+    "data": {
+        "AllianceId": "QlVwTJjMA3r90TMA",
+        "BlockChainId": "NitnGgWzSs7zAX6ktXQRbVtCHaYnFDCc",
+        "BlockChainName": "test-chainnetwork11",
+        "BlockChainType": "fabric",
+        "ClusterId": "test-cluster1",
+        "Version": "1.3.0",
+        "Status": 101//0:创建成功,101:创建中,102:创建失败
+    }
 }
 ```    
 
@@ -1033,7 +1079,8 @@ or
             "CCName": "cctest",
             "CCVersion": "10",
             "CreateTime": "2020-07-04 09:28:08",
-            "UpdateTime": "2020-07-04 09:28:08"
+			"UpdateTime": "2020-07-04 09:28:08",
+			"Status": 0:success,101:deploying,102:deploy failed
         }
     ]
 }
@@ -1689,7 +1736,7 @@ request parameter:
 {
 	"BlockChainId": "1m4MJ3U0avy8VLWkQeXCtgN8M3384TAd",
 	"OrgName": "Org1",
-	"ChannelId": "mychannel",
+	"ChannelId": "mychannel", 
 	"BlockId": 2
 }
 ``` 
@@ -2795,3 +2842,85 @@ API RETURN：
 }
 ```     
 
+## query block and tx in this block                                                    
+URL：http://ip:port/api/v1/queryblocktx                                          
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/queryblocktx                                                       
+request parameter:            
+```json    
+{
+	"Start": 0,
+	"End": 3,
+	"BlockChainId": "4HBA0t8aBGLPw9yXkc7FEz7ZqH9tCV0G",
+	"OrgName": "Org1",
+	"ChannelId": "baaschannel"
+}
+``` 
+API RETURN:                  
+```json     
+{
+    "code": 0,
+    "message": "success",
+    "data": [
+        {
+            "BlockId": 1,
+            "BlockHash": "peRdcWp5sKSdUXU7JhH4vD8Uu6WghNu7yI9+wkwvlCs=",
+            "PreHash": "uvXcGRBtnYN+O/MXwYSGEZknsMWQeZCTwPHn9ZKxNog=",
+            "Timestamp": "2006-01-02 15:04:05",
+            "Txs": [
+                {
+                    "TxId": "f61c9653b318f4b4d78b5ce6782341e159cff67358528f8ab336dc5040dd9be4",
+                    "Timestamp": "2006-01-02 15:04:05",
+                    "Signature": "MEUCIQDKHuF2gGEvcevbshpKVuFsFpBHrwwMsn2i3B/zJuKHOgIgKKcL+7EygQowKU1SJ6H72VDVaAnVmcsSugm9i5V1mwU=",
+                    "BlockId": 1
+                }
+            ]
+        },
+        {
+            "BlockId": 2,
+            "BlockHash": "9iJMOqH85FojoWQPEcL+Q/WYOFyrXPDtdSXq9baAPl8=",
+            "PreHash": "yq80LDrGdrSocsshZx6/E/m5aMYbqFTtlLqhg2zUYso=",
+            "Timestamp": "2006-01-02 15:04:05",
+            "Txs": [
+                {
+                    "TxId": "4a0ec826f1d58747db8a0912fd182beb809b0d36017cf354d39fc3fda6c012d3",
+                    "Timestamp": "2006-01-02 15:04:05",
+                    "Signature": "MEUCIQDW4MygQ+OD8CmNIUP96Zkxd7jQmv5zyt6/apHLfPksYAIge6QUgHO5bLuYvECRY2PO1SBQSTB+r2LlTk50tR7pJi8=",
+                    "BlockId": 2
+                }
+            ]
+        }
+    ]
+}
+```       
+
+## query tx from db                                                        
+URL：http://ip:port/api/v1/querytx                                          
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/querytx                                                       
+request parameter:            
+```json    
+{
+	"TxId": "f61c9653b318f4b4d78b5ce6782341e159cff67358528f8ab336dc5040dd9be4",
+	"BlockChainId": "4HBA0t8aBGLPw9yXkc7FEz7ZqH9tCV0G",
+	"OrgName": "Org1",
+	"ChannelId": "baaschannel"
+}
+``` 
+API RETURN:               
+```json     
+{
+    "code": 0,
+    "message": "success",
+    "data": {
+        "TxId": "f61c9653b318f4b4d78b5ce6782341e159cff67358528f8ab336dc5040dd9be4",
+        "Timestamp": "2020-07-28 11:02:45",
+        "Signature": "MEUCIQDKHuF2gGEvcevbshpKVuFsFpBHrwwMsn2i3B/zJuKHOgIgKKcL+7EygQowKU1SJ6H72VDVaAnVmcsSugm9i5V1mwU=",
+        "BlockId": 1
+    }
+}
+```       

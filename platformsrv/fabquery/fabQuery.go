@@ -4,6 +4,7 @@ package fabquery
 import (
 	"time"
 	"fmt"
+	"strconv"
 	"encoding/json"
 	"github.com/wingbaas/platformsrv/logger"
 	"github.com/wingbaas/platformsrv/utils"
@@ -11,7 +12,28 @@ import (
 	"github.com/wingbaas/platformsrv/sdk/sdkfabric"
 	"github.com/wingbaas/platformsrv/settings/fabric"
 	"github.com/wingbaas/platformsrv/settings/fabric/public"
+	"github.com/wingbaas/platformsrv/db"
 )
+
+type TxMainInfo struct {
+	TxId 		string 		          `json:"TxId"`
+	Timestamp   string				  `json:"Timestamp"`
+	Signature	[]byte 		          `json:"Signature"`
+	BlockId      uint64			      `json:"BlockId"`
+}
+
+type BlockMainInfo struct {
+	BlockId      uint64			      `json:"BlockId"`
+	BlockHash    []byte			      `json:"BlockHash"`
+	PreHash      []byte			      `json:"PreHash"`
+	Timestamp   string				  `json:"Timestamp"`
+	Txs          []TxMainInfo		  `json:"Txs"`
+}
+
+func TimeTransfer(t int64)string {
+	timeTemplate := "2006-01-02 15:04:05"
+	return time.Unix(t, 0).Format(timeTemplate) 
+}
 
 func TotalTxQueryRoutine() {
 	logger.Debug("start TotalTxQueryRoutine......")
@@ -140,11 +162,11 @@ func getBlockTxCount(start uint64,end uint64,blockChainId string,orgName string,
 			logger.Errorf("getBlockTxCount: query block tx error,blockid=%d",i)
 			continue
 		}
-		var blockInfo sdkfabric.Block
+		var blockInfo sdkfabric.Block 
 		bytes,_ := json.Marshal(qr)
 		err = json.Unmarshal(bytes,&blockInfo)
 		if err != nil {
-			logger.Errorf("TotalTxQueryRoutine: query block tx unmarshal error,blockid=%d",i)
+			logger.Errorf("getBlockTxCount: query block tx unmarshal error,blockid=%d",i)
 			continue
 		}
 		total = total + uint64(len(blockInfo.Transactions))
@@ -259,3 +281,116 @@ func GetBlockTx(blockChainId string,orgName string,channelId string) (interface{
 	logger.Debug("GetBlockTx: not find")
 	return nil,nil
 }
+
+func GetBlockAndTxList(start uint64,end uint64,blockChainId string,orgName string,channelId string)(interface{},error){
+	if start >= end {
+		return nil,fmt.Errorf("GetBlockAndTxList: start >= end error")
+	}
+	if start <0 || end <0 {
+		return nil,fmt.Errorf("GetBlockAndTxList: start or end error")
+	}
+	if (end - start) >10 {
+		return nil,fmt.Errorf("GetBlockAndTxList: end and start gap must <= 10")
+	}
+	qr,err := fabric.OrgQueryBlockChain(blockChainId,orgName,channelId)
+	if err != nil { 
+		logger.Errorf("GetBlockAndTxList: query block height error,channel="+channelId)
+		return nil,fmt.Errorf("GetBlockAndTxList: query block height error,channel="+channelId)
+	}
+	bytes,_ := json.Marshal(qr)
+	var qInfo sdkfabric.ChainInfo
+	err = json.Unmarshal(bytes,&qInfo)
+	if err != nil {
+		logger.Errorf("GetBlockAndTxList: query result unmarshal error,channel="+channelId)
+		return nil,fmt.Errorf("GetBlockAndTxList: query result unmarshal error,channel="+channelId)
+	}
+	if end > qInfo.Height {
+		logger.Errorf("GetBlockAndTxList: end error")
+		return nil,fmt.Errorf("GetBlockAndTxList:end error")
+	}
+	var blocks []BlockMainInfo
+	for i:= (start + 1);i<end;i++ {
+		var block BlockMainInfo
+		strIndex := strconv.FormatInt(int64(i),10)
+		blockBytes,err := db.GetData(db.DB_BLOCK_PATH,[]byte(strIndex))
+		if blockBytes != nil && len(blockBytes) > 0 {
+			err = json.Unmarshal(blockBytes,&block)
+		}
+		if err != nil {
+			qr,err := fabric.OrgQueryBlockById(blockChainId,orgName,channelId,i)
+			if err != nil {
+				logger.Errorf("GetBlockAndTxList: query block tx error,blockid=%d",i)
+				continue
+			}
+			var blockInfo sdkfabric.Block 
+			bytes,_ := json.Marshal(qr)
+			err = json.Unmarshal(bytes,&blockInfo)
+			if err != nil {
+				logger.Errorf("GetBlockAndTxList: query block tx unmarshal error,blockid=%d",i)
+				continue
+			}	
+			block.BlockId = blockInfo.Header.Number
+			block.BlockHash = blockInfo.Header.DataHash
+			block.PreHash = blockInfo.Header.PreviousHash
+			txCount := len(blockInfo.Transactions) 
+			block.Timestamp = TimeTransfer(blockInfo.Transactions[txCount-1].ChannelHeader.Timestamp.Seconds)
+			for _,tx := range blockInfo.Transactions {
+				var tmpTx TxMainInfo
+				tmpTx.TxId = tx.ChannelHeader.TxID
+				tmpTx.Signature = tx.Signature
+				tmpTx.Timestamp = TimeTransfer(tx.ChannelHeader.Timestamp.Seconds)
+				tmpTx.BlockId = block.BlockId
+				block.Txs = append(block.Txs,tmpTx)
+
+				bytes,_ = json.Marshal(tmpTx)
+				err = db.PutData(db.DB_TX_PATH,[]byte(tmpTx.TxId),bytes)
+				if err != nil{
+					logger.Errorf("GetBlockAndTxList: write tx to db error,txid=")
+					logger.Debug(tmpTx.TxId)
+				}
+			}
+			bytes,_ = json.Marshal(block)
+			err = db.PutData(db.DB_BLOCK_PATH,[]byte(strIndex),bytes)
+			if err != nil{
+				logger.Errorf("GetBlockAndTxList: write block to db error,blockid=%d",i)
+			}
+		}
+		blocks = append(blocks,block)
+	}  
+	return blocks,nil
+}
+
+func GetTxInfo(txHash string)(interface{},error) {
+	var tx TxMainInfo
+	bytes,err := db.GetData(db.DB_TX_PATH,[]byte(txHash))
+	if bytes != nil && len(bytes) > 0 {
+		err = json.Unmarshal(bytes,&tx)
+	}
+	if err != nil {
+		logger.Errorf("GetTxInfo: query tx hash error")
+		return nil,fmt.Errorf("GetTxInfo: query tx hash error")
+	}
+	return tx,nil  
+}
+
+func GetSearchResult(key string)(interface{},error) {
+	var tx TxMainInfo
+	bytes,err := db.GetData(db.DB_TX_PATH,[]byte(key))
+	if bytes != nil && len(bytes) > 0 {
+		err = json.Unmarshal(bytes,&tx)
+	}
+	if err == nil {
+		return tx,nil
+	}
+	var block BlockMainInfo
+	bytes,err = db.GetData(db.DB_BLOCK_PATH,[]byte(key))
+	if bytes != nil && len(bytes) > 0 {
+		err = json.Unmarshal(bytes,&block)
+	}
+	if err == nil {
+		return block,nil 
+	}
+	return nil,nil 
+}
+
+

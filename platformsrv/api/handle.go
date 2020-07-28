@@ -42,6 +42,11 @@ type Delete struct{
 	BlockChainName	string  `json:"BlockChainName"`
 }
 
+type ClusterDelete struct{
+	ClusterId 		string  `json:"ClusterId"` 
+	Creator			string  `json:"Creator"`
+}
+
 /* All interface of platformSrv return struct */
 type ApiRet struct {
 	Code    int         `json:"code"`    //error code, 0 if success
@@ -133,6 +138,33 @@ func addCluster(c echo.Context) error {
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil)
 	return c.JSON(http.StatusOK,ret) 
 } 
+
+func deleteCluster(c echo.Context) error { 
+	logger.Debug("deleteCluster")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	var d ClusterDelete
+    err = json.Unmarshal(result, &d)
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	err = k8s.DeleteCluster(d.ClusterId,d.Creator) 
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil) 
+	return c.JSON(http.StatusOK,ret)
+}
 
 func getClusters(c echo.Context) error {
 	logger.Debug("getClusters")
@@ -252,12 +284,14 @@ func deployBlockChain(c echo.Context) error {
         	ret := getApiRet(CODE_ERROR_EXE,msg,nil)
 			return c.JSON(http.StatusOK,ret)
 		}
-		blockId,err = fabric.DeployFabric(cfg,d.BlockChainName,d.BlockChainType)
+		blockId = utils.GenerateRandomString(32)
+		go fabric.DeployFabricRoutine(cfg,d.BlockChainName,d.BlockChainType,blockId)
+		//blockId,err = fabric.DeployFabric(cfg,d.BlockChainName,d.BlockChainType)
 		clusterId = cfg.ClusterId
-		if err != nil {
-			ret := getApiRet(CODE_ERROR_BODY,err.Error(),nil)
-			return c.JSON(http.StatusOK,ret)
-		}
+		// if err != nil {
+		// 	ret := getApiRet(CODE_ERROR_BODY,err.Error(),nil)
+		// 	return c.JSON(http.StatusOK,ret)
+		// }
 	}else if d.BlockChainType == "wingchain" {
 		msg := "wingchain unsupported temporary!"
         ret := getApiRet(CODE_SUCCESS,msg,nil)
@@ -274,14 +308,15 @@ func deployBlockChain(c echo.Context) error {
 	chain.BlockChainType = d.BlockChainType
 	chain.ClusterId = clusterId
 	chain.Version = version
-	chain.Status = k8s.CHAIN_STATUS_FREE
+	chain.Status = k8s.CHAIN_STATUS_CREATEING 
+	//chain.Status = k8s.CHAIN_STATUS_FREE
 	err = k8s.AddChain(chain)
 	if err != nil {
 		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
 		return c.JSON(http.StatusOK,ret)
 	}
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,chain)
-	return c.JSON(http.StatusOK,ret) 
+	return c.JSON(http.StatusOK,ret)  
 }
 
 func getChains(c echo.Context) error {
@@ -336,20 +371,27 @@ func deleteBlockChain(c echo.Context) error {
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
 		return c.JSON(http.StatusOK,ret)
-	}
-	ch,_ := k8s.GetChainByName(d.BlockChainName,d.ClusterId) 
-	if ch != nil {
-		time.Sleep(60*time.Second)
-		k8s.DeleteChain(*ch)
-		certPath := utils.BAAS_CFG.BlockNetCfgBasePath + ch.BlockChainId
-		nfsPath :=  utils.BAAS_CFG.NfsLocalRootDir + ch.BlockChainId
-		cfgFile := utils.BAAS_CFG.BlockNetCfgBasePath + "/" + ch.BlockChainId + ".json"
-		keyPath := utils.BAAS_CFG.KeyStorePath + ch.BlockChainId 
-		os.RemoveAll(certPath)
-		os.RemoveAll(nfsPath)
-		os.Remove(cfgFile) 
-		os.Remove(keyPath)
-	}
+	} 
+	go func() {
+		ch,_ := k8s.GetChainByName(d.BlockChainName,d.ClusterId) 
+		if ch != nil {
+			ch.Status = k8s.CHAIN_STATUS_DELETING
+			err = k8s.UpdateChainStatus(*ch)
+			if err != nil {
+				logger.Errorf("deleteBlockChain:UpdateChainStatus error")
+			}
+			time.Sleep(90*time.Second)
+			k8s.DeleteChain(*ch)
+			certPath := utils.BAAS_CFG.BlockNetCfgBasePath + ch.BlockChainId
+			nfsPath :=  utils.BAAS_CFG.NfsLocalRootDir + ch.BlockChainId
+			cfgFile := utils.BAAS_CFG.BlockNetCfgBasePath + "/" + ch.BlockChainId + ".json"
+			keyPath := utils.BAAS_CFG.KeyStorePath + ch.BlockChainId 
+			os.RemoveAll(certPath)
+			os.RemoveAll(nfsPath)
+			os.Remove(cfgFile) 
+			os.Remove(keyPath)
+		}
+	}()  
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil) 
 	return c.JSON(http.StatusOK,ret)
 }

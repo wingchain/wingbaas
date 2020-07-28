@@ -16,7 +16,7 @@ type Block struct {
 	BlockCreatorSignature *SignatureMetadata  `json:"block_creator_signature,omitempty"`
 	LastConfigBlockNumber *LastConfigMetadata `json:"last_config_block_number,omitempty"`
 	TransactionFilter     []uint8             `json:"transaction_filter,omitempty"`
-	OrdererKafkaMetadata  *OrdererMetadata    `json:"orderer_kafka_metadata,omitempty"`
+	OrdererKafkaMetadata  *OrdererMetadata    `json:"orderer_kafka_metadata,omitempty"` 
 }
 
 // SignatureMetadata SignatureMetadata in json format

@@ -9,6 +9,9 @@ const (
 	RAFT_FABRIC     				string = "RAFT_FABRIC"
 	ZOOK_COUNT      				int    = 3
 	KAFKA_COUNT     				int    = 4 
+	CC_DEPLOY_OK                    uint64 = 0
+	CC_DEPLOY_ING                   uint64 = 101 
+	CC_DEPLOY_FAILED                uint64 = 102
 )
 
 type NodeSpec struct {
@@ -79,6 +82,7 @@ type CCSt struct {
 	CCVersion		string `json:"CCVersion"`
 	CreateTime		string `json:"CreateTime"`
 	UpdateTime		string `json:"UpdateTime"`
+	Status          uint64 `json:Status` //0:success,101:deploying,102:deploy failed
 }
 
 type ChannelCCSt struct {

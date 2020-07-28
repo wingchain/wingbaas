@@ -7,6 +7,7 @@ import (
 	"github.com/wingbaas/platformsrv/logger"
 	"github.com/wingbaas/platformsrv/utils"
 	"github.com/wingbaas/platformsrv/api"
+	//"github.com/wingbaas/platformsrv/db"
 )
 
 func main() {
@@ -38,6 +39,12 @@ func main() {
 		logger.Errorf("baas blockchain config init error, server exit!")
 		return
 	}
+	
+	// db.PutData([]byte("key1"),[]byte("value1"))
+	// data,_ := db.GetData([]byte("key1"))
+	// logger.Debug("get data=")
+	// logger.Debug(string(data))
+
 	logger.Debug("start wing baas server")
 	api.Start(utils.BAAS_CFG.SrvPort)
 	logger.Debug("wingbaas server exit!") 
