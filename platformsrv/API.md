@@ -2924,3 +2924,164 @@ API RETURN:
     }
 }
 ```       
+
+## search block or tx from db                                                        
+URL：http://ip:port/api/v1/search                                          
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/search                                                       
+request parameter:            
+```json    
+{
+	"Key": "1",
+	"BlockChainId": "4HBA0t8aBGLPw9yXkc7FEz7ZqH9tCV0G",
+	"OrgName": "Org1",
+	"ChannelId": "baaschannel"
+}
+``` 
+API RETURN:               
+```json     
+{
+    "code": 0,
+    "message": "success",
+    "data": {
+        "BlockId": 1,
+        "BlockHash": "peRdcWp5sKSdUXU7JhH4vD8Uu6WghNu7yI9+wkwvlCs=",
+        "PreHash": "uvXcGRBtnYN+O/MXwYSGEZknsMWQeZCTwPHn9ZKxNog=",
+        "Timestamp": "2020-07-28 11:02:45",
+        "Txs": [
+            {
+                "TxId": "f61c9653b318f4b4d78b5ce6782341e159cff67358528f8ab336dc5040dd9be4",
+                "Timestamp": "2020-07-28 11:02:45",
+                "Signature": "MEUCIQDKHuF2gGEvcevbshpKVuFsFpBHrwwMsn2i3B/zJuKHOgIgKKcL+7EygQowKU1SJ6H72VDVaAnVmcsSugm9i5V1mwU=",
+                "BlockId": 1
+            }
+        ]
+    }
+}
+```       
+
+request parameter:            
+```json    
+{
+	"Key": "f61c9653b318f4b4d78b5ce6782341e159cff67358528f8ab336dc5040dd9be4",
+	"BlockChainId": "4HBA0t8aBGLPw9yXkc7FEz7ZqH9tCV0G",
+	"OrgName": "Org1",
+	"ChannelId": "baaschannel"
+}
+``` 
+API RETURN:               
+```json     
+{
+    "code": 0,
+    "message": "success",
+    "data": {
+        "TxId": "f61c9653b318f4b4d78b5ce6782341e159cff67358528f8ab336dc5040dd9be4",
+        "Timestamp": "2020-07-28 11:02:45",
+        "Signature": "MEUCIQDKHuF2gGEvcevbshpKVuFsFpBHrwwMsn2i3B/zJuKHOgIgKKcL+7EygQowKU1SJ6H72VDVaAnVmcsSugm9i5V1mwU=",
+        "BlockId": 1
+    }
+}
+```       
+
+## search pass tx by day                                                         
+URL：http://ip:port/api/v1/querypasstx                                          
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/querypasstx                                                       
+request parameter:            
+```json    
+{
+	"BlockChainId": "4HBA0t8aBGLPw9yXkc7FEz7ZqH9tCV0G",
+	"OrgName": "Org1",
+	"ChannelId": "baaschannel",
+	"Day": -1 //only -1 ~ -14,pass 14 day tx
+}
+``` 
+API RETURN:               
+```json     
+{
+    "code": 0,
+    "message": "success",
+    "data": [
+		{
+        "TxId": "f61c9653b318f4b4d78b5ce6782341e159cff67358528f8ab336dc5040dd9be4",
+        "Timestamp": "2020-07-28 11:02:45",
+        "Signature": "MEUCIQDKHuF2gGEvcevbshpKVuFsFpBHrwwMsn2i3B/zJuKHOgIgKKcL+7EygQowKU1SJ6H72VDVaAnVmcsSugm9i5V1mwU=",
+        "BlockId": 1
+    	}
+	]
+}
+```       
+
+## search sure day tx by start and end time                                                            
+URL：http://ip:port/api/v1/querydaytx                                          
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/querydaytx                                                       
+request parameter:            
+```json    
+{
+	"BlockChainId": "4HBA0t8aBGLPw9yXkc7FEz7ZqH9tCV0G",
+	"OrgName": "Org1",
+	"ChannelId": "baaschannel",
+	"StartTime": "2006-01-02 00:00:00",
+	"EndTime": "2006-01-02 23:59:59"
+}
+``` 
+API RETURN:               
+```json     
+{
+    "code": 0,
+    "message": "success",
+    "data": [
+		{
+        "TxId": "f61c9653b318f4b4d78b5ce6782341e159cff67358528f8ab336dc5040dd9be4",
+        "Timestamp": "2020-07-28 11:02:45",
+        "Signature": "MEUCIQDKHuF2gGEvcevbshpKVuFsFpBHrwwMsn2i3B/zJuKHOgIgKKcL+7EygQowKU1SJ6H72VDVaAnVmcsSugm9i5V1mwU=",
+        "BlockId": 1
+    	}
+	]
+}
+```       
+
+## search every day tx by start and days                                                            
+URL：http://ip:port/api/v1/queryeverydaytx                                          
+METHOD：POST   
+RETURN：json object           
+example:        
+request:http://localhost:9001/api/v1/queryeverydaytx                                                       
+request parameter:            
+```json    
+{
+	"StartTime": "2020-07-30 00:00:00",
+	"Days": 1, //1 ~ 14
+	"BlockChainId": "brEMt2bNgFKKNrJy6Q9I3aseamaskpVY",
+	"OrgName": "Org",
+	"ChannelId": "mychannel"
+}
+``` 
+API RETURN:               
+```json     
+{
+    "code": 0,
+    "message": "success",
+	"data": {
+		"Txs":[
+			{
+        		"TimeStamp": "2020-07-30 00:00:00",
+       			 "TxCount": 14
+			},
+			{
+        		"TimeStamp": "2020-07-31 00:00:00",
+        		"TxCount": 9
+    		}
+		],
+		"Max":14,
+		"Min":9
+	}
+}
+```       

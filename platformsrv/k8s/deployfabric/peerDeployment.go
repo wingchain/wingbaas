@@ -153,6 +153,7 @@ func CreatePeerDeployment(clusterId string,node string,namespaceId string,chainI
 								{
 									Name: "CORE_PEER_MSPCONFIGPATH",
 									Value: "/cert/crypto-config/peerOrganizations/" + p.PeerDomain + "/peers/" + p.RawPeerName + "."  + p.PeerDomain + "/msp", 
+									//Value: "/cert/crypto-config/peerOrganizations/" + p.PeerDomain + "/users/Admin@"  + p.PeerDomain + "/msp",
 								},
 								{
 									Name: "CORE_PEER_LOCALMSPID",

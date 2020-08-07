@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"io/ioutil"
 	"github.com/labstack/echo/v4"
+	"github.com/wingbaas/platformsrv/k8s"
 	"github.com/wingbaas/platformsrv/fabquery"
 	"github.com/wingbaas/platformsrv/logger"
 	"github.com/wingbaas/platformsrv/utils"
@@ -17,7 +18,7 @@ import (
 	"github.com/wingbaas/platformsrv/settings/fabric/public"
 )
 
-func orgCreateChannel(c echo.Context) error {
+func orgCreateChannel(c echo.Context) error { 
 	logger.Debug("orgCreateChannel")
 	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
 	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
@@ -39,6 +40,11 @@ func orgCreateChannel(c echo.Context) error {
         msg := "body json Unmarshal err"
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
+	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
 	}
 	err = fabric.OrgCreateChannel(d.BlockChainId,d.OrgName,d.ChannelId)
 	if err != nil {
@@ -72,6 +78,16 @@ func orgJoinChannel(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	// err = fabric.ChannelCheck(d.BlockChainId,d.ChannelId,d.OrgName)
+	// if err != nil {
+	// 	ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+	// 	return c.JSON(http.StatusOK,ret)
+	// }
 	err = fabric.OrgJoinChannel(d.BlockChainId,d.OrgName,d.ChannelId)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
@@ -87,6 +103,11 @@ func upChainCode(c echo.Context) error {
 	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
 	c.Response().Header().Set("content-type", "application/json")
 	chainId := c.FormValue("BlockChainId")
+	err := k8s.CheckChainStatus(chainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
 	ccId := c.FormValue("ChainCodeId")
 	ccVersion := c.FormValue("ChainCodeVersion")
 	cfg,err := sdkfabric.LoadChainCfg(chainId)
@@ -154,6 +175,16 @@ func singleOrgDeployCC(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = fabric.ChannelCheck(d.BlockChainId,d.ChannelId,d.OrgName)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
 	cfg,err := sdkfabric.LoadChainCfg(d.BlockChainId)
 	if err != nil {
 		msg := "singleOrgDeployCC: not find this chain"
@@ -189,6 +220,16 @@ func orgInstantialCC(c echo.Context) error {
         msg := "body json Unmarshal err"
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
+	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = fabric.ChannelCheck(d.BlockChainId,d.ChannelId,d.OrgName)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
 	}
 	cfg,err := sdkfabric.LoadChainCfg(d.BlockChainId)
 	if err != nil {
@@ -229,6 +270,11 @@ func orgDeployCC(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
 	cfg,err := sdkfabric.LoadChainCfg(d.BlockChainId)
 	if err != nil {
 		msg := "orgDeployCC: not find this chain"
@@ -267,6 +313,16 @@ func orgUpgradeCC(c echo.Context) error {
         msg := "body json Unmarshal err"
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
+	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = fabric.ChannelCheck(d.BlockChainId,d.ChannelId,d.OrgName)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
 	}
 	cfg,err := sdkfabric.LoadChainCfg(d.BlockChainId)
 	if err != nil {
@@ -307,6 +363,16 @@ func chaincodeCall(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = fabric.ChannelCheck(d.BlockChainId,d.ChannelId,d.OrgName)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
 	cfg,err := sdkfabric.LoadChainCfg(d.BlockChainId)
 	if err != nil {
 		msg := "fabric chaincodeCall: not find this chain"
@@ -342,6 +408,16 @@ func chaincodeQuery(c echo.Context) error {
         msg := "body json Unmarshal err"
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
+	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = fabric.ChannelCheck(d.BlockChainId,d.ChannelId,d.OrgName)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
 	}
 	// cfg,err := sdkfabric.LoadChainCfg(d.BlockChainId)
 	// if err != nil {
@@ -416,6 +492,16 @@ func queryInstatialCC(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = fabric.ChannelCheck(d.BlockChainId,d.ChannelId,d.OrgName)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
 	qr,err := fabric.GetCCRecord(d.BlockChainId,d.OrgName,d.ChannelId)
 	if err != nil { 
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
@@ -448,6 +534,16 @@ func queryInstalledCC(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = fabric.ChannelCheck(d.BlockChainId,d.ChannelId,d.OrgName)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
 	qr,err := fabric.OrgQueryInstalledCC(d.BlockChainId,d.OrgName,d.ChannelId)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
@@ -478,6 +574,11 @@ func queryChannel(c echo.Context) error {
         msg := "body json Unmarshal err"
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
+	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
 	}
 	qr,err := fabric.OrgQueryChannel(d.BlockChainId,d.OrgName)
 	if err != nil {
@@ -512,6 +613,16 @@ func queryTxInfo(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = fabric.ChannelCheck(d.BlockChainId,d.ChannelId,d.OrgName)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
 	qr,err := fabric.OrgQueryTxById(d.BlockChainId,d.OrgName,d.ChannelId,d.TxId)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
@@ -545,6 +656,16 @@ func queryBlockInfo(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = fabric.ChannelCheck(d.BlockChainId,d.ChannelId,d.OrgName)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
 	qr,err := fabric.OrgQueryBlockById(d.BlockChainId,d.OrgName,d.ChannelId,d.BlockId)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil) 
@@ -577,6 +698,16 @@ func queryBlock(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = fabric.ChannelCheck(d.BlockChainId,d.ChannelId,d.OrgName)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
 	qr,err := fabric.OrgQueryBlockChain(d.BlockChainId,d.OrgName,d.ChannelId)
 	if err != nil { 
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
@@ -604,6 +735,11 @@ func addOrg(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
 	err = fabric.ChainAddOrg(d.BlockChainId,d)
 	if err != nil {
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
@@ -630,6 +766,16 @@ func orgApproveCC(c echo.Context) error {
         msg := "body json Unmarshal err"
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
+	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = fabric.ChannelCheck(d.BlockChainId,d.ChannelId,d.OrgName)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
 	}
 	cfg,err := sdkfabric.LoadChainCfg(d.BlockChainId)
 	if err != nil {
@@ -662,6 +808,16 @@ func orgCommitCC(c echo.Context) error {
         msg := "body json Unmarshal err"
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
+	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = fabric.ChannelCheck(d.BlockChainId,d.ChannelId,d.OrgName)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
 	}
 	cfg,err := sdkfabric.LoadChainCfg(d.BlockChainId)
 	if err != nil {
@@ -700,9 +856,21 @@ func queryBlockTx(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
+	logger.Debug("queryBlockTx: para=")
+	logger.Debug(d)
 	if d.BlockChainId == "" || d.ChannelId == "" {
 		msg := "parameter err"
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = fabric.ChannelCheck(d.BlockChainId,d.ChannelId,d.OrgName)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
 		return c.JSON(http.StatusOK,ret)
 	}
 	qr,err := fabquery.GetBlockTx(d.BlockChainId,d.OrgName,d.ChannelId)
@@ -744,6 +912,21 @@ func queryBlockAndTx(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
+	if d.BlockChainId == "" || d.ChannelId == "" || d.OrgName == "" || d.Start >= d.End {
+		msg := "parameter err"
+        ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = fabric.ChannelCheck(d.BlockChainId,d.ChannelId,d.OrgName)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
 	qr,err := fabquery.GetBlockAndTxList(d.Start,d.End,d.BlockChainId,d.OrgName,d.ChannelId)
 	if err != nil { 
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
@@ -777,7 +960,22 @@ func queryTxFromDb(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
-	qr,err := fabquery.GetTxInfo(d.TxId)
+	if d.BlockChainId == "" || d.ChannelId == "" || d.OrgName == "" || d.TxId == "" {
+		msg := "parameter err"
+        ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = fabric.ChannelCheck(d.BlockChainId,d.ChannelId,d.OrgName)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	qr,err := fabquery.GetTxInfo(d.BlockChainId,d.TxId)
 	if err != nil { 
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
 		return c.JSON(http.StatusOK,ret)
@@ -810,11 +1008,172 @@ func searchFromDb(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret) 
 	}
-	qr,err := fabquery.GetSearchResult(d.Key)
+	if d.BlockChainId == "" || d.ChannelId == "" || d.OrgName == "" || d.Key == "" {
+		msg := "parameter err"
+        ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = fabric.ChannelCheck(d.BlockChainId,d.ChannelId,d.OrgName)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	qr,err := fabquery.GetSearchResult(d.BlockChainId,d.Key)
 	if err != nil { 
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
 		return c.JSON(http.StatusOK,ret)
 	}
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,qr) 
+	return c.JSON(http.StatusOK,ret)
+}
+
+func queryPassTx(c echo.Context) error {
+	logger.Debug("queryPassTx")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	type ReqPara struct {
+		BlockChainId string `json:"BlockChainId"`
+		OrgName string `json:"OrgName"`
+		ChannelId string `json:"ChannelId"`  
+		Day int `json:"Day"`
+	}
+	var d ReqPara 
+    err = json.Unmarshal(result, &d) 
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	if d.BlockChainId == "" || d.ChannelId == "" || d.OrgName == "" || d.Day >= 0 || d.Day < -14 {
+		msg := "parameter err"
+        ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = fabric.ChannelCheck(d.BlockChainId,d.ChannelId,d.OrgName)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	qr,err := fabquery.GetPassDayTxCount(d.BlockChainId,d.OrgName,d.ChannelId,d.Day)
+	if err != nil { 
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,qr) 
+	return c.JSON(http.StatusOK,ret)
+}
+
+func queryDayTx(c echo.Context) error {
+	logger.Debug("queryDayTx")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	type ReqPara struct {
+		BlockChainId string `json:"BlockChainId"`
+		OrgName string `json:"OrgName"`
+		ChannelId string `json:"ChannelId"`  
+		StartTime string `json:"StartTime"`
+		EndTime string `json:"EndTime"`
+	}
+	var d ReqPara 
+    err = json.Unmarshal(result, &d) 
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	if d.BlockChainId == "" || d.ChannelId == "" || d.OrgName == "" || d.StartTime == "" || d.EndTime == ""{
+		msg := "parameter err"
+        ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = fabric.ChannelCheck(d.BlockChainId,d.ChannelId,d.OrgName)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	qr,err := fabquery.GetDayTxCount(d.StartTime,d.EndTime,d.BlockChainId,d.OrgName,d.ChannelId)
+	if err != nil { 
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,qr)  
+	return c.JSON(http.StatusOK,ret)
+}
+
+func queryEveryDayTx(c echo.Context) error {
+	logger.Debug("queryEveryDayTx")
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	c.Response().Header().Set("content-type", "application/json")
+	result, err := ioutil.ReadAll(c.Request().Body)
+    if err != nil {
+		msg := "read request body error"
+		ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	type ReqPara struct {
+		BlockChainId string `json:"BlockChainId"`
+		OrgName string `json:"OrgName"`
+		ChannelId string `json:"ChannelId"`  
+		StartTime string `json:"StartTime"`
+		Days int `json:"Days"`
+	}
+	var d ReqPara 
+    err = json.Unmarshal(result, &d) 
+    if err != nil {
+        msg := "body json Unmarshal err"
+        ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
+		return c.JSON(http.StatusOK,ret) 
+	}
+	if d.BlockChainId == "" || d.ChannelId == "" || d.OrgName == "" || d.StartTime == "" || d.Days <= 0 || d.Days > 14{
+		msg := "parameter err"
+        ret := getApiRet(CODE_ERROR_BODY,msg,nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = k8s.CheckChainStatus(d.BlockChainId)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	err = fabric.ChannelCheck(d.BlockChainId,d.ChannelId,d.OrgName)
+	if err != nil {
+		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	qr,err := fabquery.GetEveryDayTxCount(d.StartTime,d.Days,d.BlockChainId,d.OrgName,d.ChannelId)
+	if err != nil { 
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+		return c.JSON(http.StatusOK,ret)
+	}
+	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,qr)  
 	return c.JSON(http.StatusOK,ret)
 }

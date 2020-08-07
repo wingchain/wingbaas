@@ -123,7 +123,8 @@ func addCluster(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_EXE,msg,nil)
 		return c.JSON(http.StatusOK,ret)
 	}
-	bl := sdkfabric.AddHosts(cluster.HostDomain,cluster.PublicIp)
+	//bl := sdkfabric.AddHosts(cluster.HostDomain,cluster.PublicIp)
+	bl := sdkfabric.AddHosts(cluster.HostDomain,cluster.InterIp)
 	if !bl {
 		msg := "add cluster domain to /etc/hosts failed"
         ret := getApiRet(CODE_ERROR_EXE,msg,nil)
@@ -247,6 +248,7 @@ func deployBlockChain(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret)
 	}
+	var chain k8s.Chain
 	var blockId string
 	var clusterId string
 	var version string
@@ -284,10 +286,24 @@ func deployBlockChain(c echo.Context) error {
         	ret := getApiRet(CODE_ERROR_EXE,msg,nil)
 			return c.JSON(http.StatusOK,ret)
 		}
-		blockId = utils.GenerateRandomString(32)
-		go fabric.DeployFabricRoutine(cfg,d.BlockChainName,d.BlockChainType,blockId)
-		//blockId,err = fabric.DeployFabric(cfg,d.BlockChainName,d.BlockChainType)
 		clusterId = cfg.ClusterId
+		blockId = utils.GenerateRandomString(32)
+
+		chain.AllianceId = d.AllianceId
+		chain.BlockChainId = blockId
+		chain.BlockChainName = d.BlockChainName
+		chain.BlockChainType = d.BlockChainType
+		chain.ClusterId = clusterId
+		chain.Version = version
+		chain.Status = k8s.CHAIN_STATUS_CREATEING 
+		err = k8s.AddChain(chain)
+		if err != nil {
+			ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+			return c.JSON(http.StatusOK,ret)
+		}
+
+		go fabric.DeployFabricRoutine(cfg,d.BlockChainName,d.BlockChainType,blockId)
+		//blockId,err = fabric.DeployFabric(cfg,d.BlockChainName,d.BlockChainType)	
 		// if err != nil {
 		// 	ret := getApiRet(CODE_ERROR_BODY,err.Error(),nil)
 		// 	return c.JSON(http.StatusOK,ret)
@@ -301,20 +317,20 @@ func deployBlockChain(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_EXE,msg,nil)
 		return c.JSON(http.StatusOK,ret)
 	}
-	var chain k8s.Chain
-	chain.AllianceId = d.AllianceId
-	chain.BlockChainId = blockId
-	chain.BlockChainName = d.BlockChainName
-	chain.BlockChainType = d.BlockChainType
-	chain.ClusterId = clusterId
-	chain.Version = version
-	chain.Status = k8s.CHAIN_STATUS_CREATEING 
-	//chain.Status = k8s.CHAIN_STATUS_FREE
-	err = k8s.AddChain(chain)
-	if err != nil {
-		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
-		return c.JSON(http.StatusOK,ret)
-	}
+	
+	// chain.AllianceId = d.AllianceId
+	// chain.BlockChainId = blockId
+	// chain.BlockChainName = d.BlockChainName
+	// chain.BlockChainType = d.BlockChainType
+	// chain.ClusterId = clusterId
+	// chain.Version = version
+	// chain.Status = k8s.CHAIN_STATUS_CREATEING 
+	// //chain.Status = k8s.CHAIN_STATUS_FREE
+	// err = k8s.AddChain(chain)
+	// if err != nil {
+	// 	ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
+	// 	return c.JSON(http.StatusOK,ret)
+	// }
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,chain)
 	return c.JSON(http.StatusOK,ret)  
 }
@@ -380,16 +396,19 @@ func deleteBlockChain(c echo.Context) error {
 			if err != nil {
 				logger.Errorf("deleteBlockChain:UpdateChainStatus error")
 			}
-			time.Sleep(90*time.Second)
+			time.Sleep(60*time.Second)
 			k8s.DeleteChain(*ch)
+			root,_ := utils.GetProcessRunRoot()
 			certPath := utils.BAAS_CFG.BlockNetCfgBasePath + ch.BlockChainId
 			nfsPath :=  utils.BAAS_CFG.NfsLocalRootDir + ch.BlockChainId
 			cfgFile := utils.BAAS_CFG.BlockNetCfgBasePath + "/" + ch.BlockChainId + ".json"
 			keyPath := utils.BAAS_CFG.KeyStorePath + ch.BlockChainId 
-			os.RemoveAll(certPath)
+			dbPath := root + "/data/" + ch.BlockChainId
+			os.RemoveAll(certPath) 
 			os.RemoveAll(nfsPath)
-			os.Remove(cfgFile) 
-			os.Remove(keyPath)
+			os.RemoveAll(cfgFile) 
+			os.RemoveAll(keyPath)
+			os.RemoveAll(dbPath)
 		}
 	}()  
 	ret := getApiRet(CODE_SUCCESS,MSG_SUCCESS,nil) 

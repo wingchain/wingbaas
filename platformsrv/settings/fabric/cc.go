@@ -125,3 +125,33 @@ func GetCCRecord(blockChainId string,orgName string,channelId string) (interface
 	logger.Debug("GetCCRecord: not find")
 	return nil,nil
 }
+
+func CheckCCRecord(blockChainId string,orgName string,channelId string) error {
+	var ccRecord []public.CCRecordSt
+	rdFile := utils.BAAS_CFG.BlockNetCfgBasePath + "cc.json"
+	bl,_ := utils.PathExists(rdFile)
+	if bl {
+		bytes := utils.ReadFileBytes(rdFile)
+		err := json.Unmarshal(bytes,&ccRecord)
+		if err != nil {
+			logger.Errorf("CheckCCRecord: unmarshal ccRecord failed")
+			return fmt.Errorf("CheckCCRecord: unmarshal ccRecord failed")
+		}
+	} 
+	for n,r := range ccRecord {
+		if r.BlockChainId == blockChainId { 
+			for k,c := range r.ChCC {
+				if c.ChainnnelId == channelId {
+					//return ccRecord[n].ChCC[k].CCRecord,nil 
+					for _,cr := range ccRecord[n].ChCC[k].CCRecord {
+						if cr.Status == public.CC_DEPLOY_OK {
+							return nil
+						}
+					}
+				}
+			}
+		}
+	}
+	logger.Debug("CheckCCRecord: not deploy successed cc")
+	return fmt.Errorf("CheckCCRecord: not deploy successed cc") 
+}

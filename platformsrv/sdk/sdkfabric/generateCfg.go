@@ -29,7 +29,7 @@ func GenerateOrgCfg(netCfg public.DeployNetConfig,p GenerateParaSt)(string,error
 		orgCfg.KafkaDeployNode = netCfg.KafkaDeployNode
 		orgCfg.ZookeeperDeployNode = netCfg.ZookeeperDeployNode
 		orgCfg.PeerOrgs = append(orgCfg.PeerOrgs,org)
-		_,err := GenerateCfg(orgCfg,p)
+		_,err := GenerateCfg(orgCfg,p) 
 		if err != nil {
 			logger.Errorf("GenerateOrgCfg failed,org=%s",org.Name)
 			return "",fmt.Errorf("GenerateOrgCfg failed,org=%s",org.Name)
@@ -102,9 +102,9 @@ func GenerateAllCfg(netCfg public.DeployNetConfig,p GenerateParaSt)(string,error
 				Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config" ,
 			},
 			CredentialStore: CredentialStoreSt {
-				Path: utils.BAAS_CFG.KeyStorePath + p.BlockId + "/credentialstore/" + firstOrg.Name,
+				Path: utils.BAAS_CFG.KeyStorePath + p.BlockId + "/userpem/",
 				CryptoStore: CryptoStoreSt {
-					Path: utils.BAAS_CFG.KeyStorePath + p.BlockId + "/cryptostore/" + firstOrg.Name, 
+					Path: utils.BAAS_CFG.KeyStorePath + p.BlockId + "/userkey/", 
 				}, 
 			},
 			BCCSP: BCCSPSt {
@@ -228,9 +228,9 @@ func GenerateCfg(netCfg public.DeployNetConfig,p GenerateParaSt)(string,error) {
 				Path: utils.BAAS_CFG.BlockNetCfgBasePath + p.BlockId + "/crypto-config" ,
 			},
 			CredentialStore: CredentialStoreSt {
-				Path: utils.BAAS_CFG.KeyStorePath + p.BlockId + "/credentialstore/" + firstOrg.Name,
+				Path: utils.BAAS_CFG.KeyStorePath + p.BlockId + "/userpem/",
 				CryptoStore: CryptoStoreSt {
-					Path: utils.BAAS_CFG.KeyStorePath + p.BlockId + "/cryptostore/" + firstOrg.Name, 
+					Path: utils.BAAS_CFG.KeyStorePath + p.BlockId + "/userkey/", 
 				}, 
 			},
 			BCCSP: BCCSPSt {

@@ -93,7 +93,6 @@ func DeployFabric(p public.DeployPara,chainName string,chainType string,blockId 
 		logger.Errorf("DeployFabric: write block config error")
 		return "",fmt.Errorf("DeployFabric: write block config error") 
 	}
-	//GenerateChannelTx(blockCertPath,"wingchaincase")
 	var sdkCfg sdkfabric.GenerateParaSt
 	sdkCfg.ClusterId = p.ClusterId
 	sdkCfg.NamespaceId = chainName 
@@ -134,6 +133,7 @@ func DeployComponets(p public.DeployPara,chainName string,chainId string,chainTy
 			return "",fmt.Errorf("DeployComponets: CreateCaService error=%s caName=%s",err.Error(),caName)
 		}	
 	}
+	time.Sleep(5 * time.Second)
 	if consensusType == public.KAFKA_FABRIC {
 		//deploy zookeeper
 		zkImage,err := utils.GetBlockImage(chainType,p.Version,"zookeeper") 
@@ -154,6 +154,7 @@ func DeployComponets(p public.DeployPara,chainName string,chainId string,chainTy
 				return "",fmt.Errorf("DeployComponets: CreateZookeeperService error=%s zkName=%s",err.Error(),zkName)
 			}
 		} 
+		time.Sleep(5 * time.Second)
 		//deploy kafka
 		kafkaImage,err := utils.GetBlockImage(chainType,p.Version,"kafka")
 		if err != nil {
@@ -173,6 +174,7 @@ func DeployComponets(p public.DeployPara,chainName string,chainId string,chainTy
 				return "",fmt.Errorf("DeployComponets: CreateKafkaService error=%s kafkaName=%s",err.Error(),kafkaName)
 			}
 		}
+		time.Sleep(5 * time.Second)
 	}
 	//deploy order
 	orderImage,err := utils.GetBlockImage(chainType,p.Version,"orderer")
@@ -200,6 +202,7 @@ func DeployComponets(p public.DeployPara,chainName string,chainId string,chainTy
 			} 
 		}
 	}
+	time.Sleep(5 * time.Second)
 	//deploy peer
 	peerImage,err := utils.GetBlockImage(chainType,p.Version,"peer")
 	if err != nil {
@@ -386,13 +389,13 @@ func OrgCreateChannel(chainId string,orgName string,channelId string) error {
 		ChannelID: channelId, 
 		ChannelConfig: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/channel-artifacts/" + channelId + ".tx",
 	}
-	err = fSetup.Initialize()
+	err = fSetup.Initialize(chainId)
 	if err != nil {
 		return fmt.Errorf("OrgCreateChannel: init SDK error: %s\n", err)
 	}
 	defer fSetup.CloseSDK() 
 
-	err = fSetup.CreateChannel(chSetup)
+	err = fSetup.CreateChannel(chSetup) 
 	if err != nil {
 		return fmt.Errorf("OrgCreateChannel: create channel error: %s\n", err)
 	}
@@ -423,7 +426,7 @@ func OrgJoinChannel(chainId string,orgName string,channelId string) error {
 		ChannelID: channelId, 
 		ChannelConfig: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/channel-artifacts/" + channelId + ".tx",
 	}
-	err = fSetup.Initialize()
+	err = fSetup.Initialize(chainId)
 	if err != nil {
 		return fmt.Errorf("OrgJoinChannel: init SDK failed: org=%s  err=%s\n", orgName,err)
 	}
@@ -471,6 +474,7 @@ func OrgDeployChaiCode(chainId,orgName,channelId,ChainCodeID,ChaincodeVersion,En
 		OrgName:   orgName, 
 		ChannelId: channelId,
 		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
+		//ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config.yaml", 
 	}
 	for _,org := range obj.DeployNetCfg.PeerOrgs {
 		if org.Name == orgName {
@@ -495,15 +499,15 @@ func OrgDeployChaiCode(chainId,orgName,channelId,ChainCodeID,ChaincodeVersion,En
 	}
 	ccSetup.InitArgs = append(ccSetup.InitArgs,initArgs...)
 
-	err = fSetup.Initialize()
+	err = fSetup.Initialize(chainId)
 	if err != nil {
 		return fmt.Errorf("OrgDeployChaiCode:init SDK failed: org=%s  err=%s\n", orgName,err)
 	}
 	defer fSetup.CloseSDK() 
-	err = fSetup.InstallCC(ccSetup)
+	err = fSetup.InstallCC(ccSetup) 
 	if err != nil {
 		return fmt.Errorf("OrgDeployChaiCode: install cc failed,org=%s\n", orgName)
-	}
+	} 
 	time.Sleep(3*time.Second) 
 	err = fSetup.InstantiateCC(chSetup,ccSetup) 
 	if err != nil {
@@ -552,7 +556,7 @@ func SingleOrgInstallChaiCode(chainId string,orgName string,channelId string,Cha
 		ChaincodePath:   	ChainCodeID + ChaincodeVersion,
 		ChaincodeVersion:	ChaincodeVersion, 
 	}
-	err = fSetup.Initialize()
+	err = fSetup.Initialize(chainId) 
 	if err != nil {
 		return fmt.Errorf("NewOrgInstallChaiCode:init SDK failed: org=%s  err=%s\n", orgName,err)
 	}
@@ -612,7 +616,7 @@ func OrgInstantialChaiCode(chainId,orgName,channelId,ChainCodeID,ChaincodeVersio
 	}
 	ccSetup.InitArgs = append(ccSetup.InitArgs,initArgs...)
 
-	err = fSetup.Initialize()
+	err = fSetup.Initialize(chainId)
 	if err != nil {
 		return fmt.Errorf("OrgInstantialChaiCode:init SDK failed: org=%s  err=%s\n", orgName,err)
 	}
@@ -685,7 +689,7 @@ func OrgUpgradeChaiCode(chainId,orgName,channelId,ChainCodeID,ChaincodeVersion,e
 	}
 	ccSetup.InitArgs = append(ccSetup.InitArgs,initArgs...)
 
-	err = fSetup.Initialize()
+	err = fSetup.Initialize(chainId)
 	if err != nil {
 		return fmt.Errorf("OrgUpgradeChaiCode:init SDK failed: org=%s  err=%s\n", orgName,err)
 	}

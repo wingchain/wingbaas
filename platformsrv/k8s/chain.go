@@ -247,3 +247,34 @@ func UpdateChainStatus(chain Chain) error {
 	}
 	return nil
 }
+
+func CheckChainStatus(chainId string) error {
+	cfgPath := utils.BAAS_CFG.BlockNetCfgBasePath + CHAIN_FILE
+	exsist,_ := utils.PathExists(cfgPath)
+	if exsist {
+		var chains []Chain
+		bytes,err := utils.LoadFile(cfgPath) 
+		if err == nil {
+			err = json.Unmarshal(bytes,&chains)
+			if err != nil {
+				logger.Errorf("CheckChainStatus: unmarshal chains error,%v", err)
+				return fmt.Errorf("%v", err)
+			} 
+			for _,c := range chains {
+				if c.BlockChainId == chainId {
+					if c.Status == CHAIN_STATUS_CREATEING || c.Status == CHAIN_STATUS_CREAT_ERROR || c.Status == CHAIN_STATUS_DELETING {
+						logger.Errorf("CheckChainStatus: chain status exception,status=%d,  chainid=%s", c.Status,chainId)
+						return fmt.Errorf("CheckChainStatus: chain status exception,status=%d,  chainid=%s", c.Status,chainId)
+					}
+					return nil 
+				}
+			}
+			return fmt.Errorf("CheckChainStatus:not find this chain")
+		}else {
+			logger.Errorf("CheckChainStatus: load chain list file error,%v", err)
+			return fmt.Errorf("%v", err)
+		}
+	}
+	logger.Debug("CheckChainStatus: not find chain list file")
+	return fmt.Errorf("%s", "CheckChainStatus:not find chain list file")
+}

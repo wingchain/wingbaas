@@ -93,12 +93,12 @@ func ChainAddOrg(chainId string,p public.AddOrgConfig) error {
 		msg = "ChainAddOrg: unmarshal channel list failed"
 		logger.Errorf(msg)
 		return fmt.Errorf(msg)
-	}
+	} 
 	if len(chList.Channels) < 1 {
 		msg = "ChainAddOrg: at least exsist one channel,add org failed"
 		logger.Errorf(msg)
 		return fmt.Errorf(msg)
-	}
+	} 
 	for _,org := range p.PeerOrgs {
 		var txCnf genesisconfig.TopLevel
 		var tmpOrg genesisconfig.Organization

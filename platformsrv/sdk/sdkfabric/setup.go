@@ -4,7 +4,10 @@ package sdkfabric
 import (
 	"fmt"
 	"strings"
+	"time"
+	"os"
 	"github.com/wingbaas/platformsrv/logger"
+	"github.com/wingbaas/platformsrv/utils"
 	"github.com/hyperledger/fabric-sdk-go/pkg/client/channel"
 	mspclient "github.com/hyperledger/fabric-sdk-go/pkg/client/msp"
 	"github.com/hyperledger/fabric-sdk-go/pkg/client/resmgmt"
@@ -54,10 +57,15 @@ type UserClient struct {
 }
 
 // Initialize reads the configuration file and sets up the client, chain and event hub
-func (setup *FabricSetup) Initialize() error { 
+func (setup *FabricSetup) Initialize(chainId string) error { 
 	if setup.initialized {
 		logger.Debug("sdk already inited")
 		return nil
+	} 
+	adminUserPem := utils.BAAS_CFG.KeyStorePath + chainId + "/userpem/admin@" + setup.OrgName + "MSP-cert.pem"
+	bl,_ := utils.PathExists(adminUserPem)
+	if bl {
+		os.RemoveAll(adminUserPem)
 	}
 	// Initialize the SDK with the configuration file
 	sdk, err := fabsdk.New(config.FromFile(setup.ConfigFile))
@@ -76,6 +84,31 @@ func (setup *FabricSetup) Initialize() error {
 	logger.Debug("rc client create success")
 	setup.initialized = true
 	logger.Debug("sdk init success")
+	return nil
+} 
+
+func (setup *FabricSetup) Initialize2() error { 
+	if setup.initialized {
+		logger.Debug("Initialize2:sdk already inited")
+		return nil
+	}
+	// Initialize the SDK with the configuration file
+	sdk, err := fabsdk.New(config.FromFile(setup.ConfigFile))
+	if err != nil {
+		logger.Errorf("Initialize2:failed to create SDK,err=%v",err)
+		return fmt.Errorf("Initialize2:failed to create SDK,err=%v",err) 
+	}
+	setup.Sdk = sdk
+	// resourceManagerClientContext := setup.Sdk.Context(fabsdk.WithUser(setup.OrgAdmin),fabsdk.WithOrg(setup.OrgName))
+	// resMgmtClient, err := resmgmt.New(resourceManagerClientContext)  
+	// if err != nil {
+	// 	logger.Errorf("Initialize2:failed to create channel management client from Admin identity,err=%v",err) 
+	// 	return fmt.Errorf("Initialize2:failed to create channel management client from Admin identity,err=%v",err)
+	// }
+	// setup.netAdmin = resMgmtClient 
+	// logger.Debug("Initialize2:rc client create success")
+	setup.initialized = true
+	logger.Debug("Initialize2:sdk init success")
 	return nil
 } 
 
@@ -98,6 +131,7 @@ func (setup *FabricSetup) CreateChannel(ch ChannnelSetup) error {
 		logger.Errorf("failed to save channel,err=%v",err)
 		return fmt.Errorf("failed to save channel,err=%v",err)
 	}
+	time.Sleep(5*time.Second)
 	logger.Debug("Channel created success")
 	return nil
 }
@@ -108,6 +142,7 @@ func  (setup *FabricSetup)JoinChannel(ch ChannnelSetup)error {
 		logger.Errorf("failed to make admin join channel,err=%v",err)
 		return fmt.Errorf("failed to make admin join channel,err=%v",err)
 	}
+	time.Sleep(5*time.Second)
 	logger.Debug("join Channel success")
 	return nil
 }
@@ -204,6 +239,7 @@ func (setup *FabricSetup) genPolicy(p string) (*common.SignaturePolicyEnvelope, 
 }
 
 func (setup *FabricSetup) CloseSDK() {
+	setup.initialized = false
 	setup.Sdk.Close() 
 }
 

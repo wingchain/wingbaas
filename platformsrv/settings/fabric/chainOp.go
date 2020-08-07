@@ -3,17 +3,31 @@ package fabric
 
 import (
 	"fmt"
+	"sync"
 	"encoding/json"
 	"github.com/wingbaas/platformsrv/logger"
 	"github.com/wingbaas/platformsrv/utils"
 	"github.com/wingbaas/platformsrv/sdk/sdkfabric"
+	"github.com/wingbaas/platformsrv/settings/fabric/public"
 )
 
 const (
-	CHANNEL_DEFAULT_USER 	string = "chuser"
+	//CHANNEL_DEFAULT_USER 	string = "chuser"
+	CHANNEL_DEFAULT_USER1 	string = "chuser1"
+	CHANNEL_DEFAULT_USER2 	string = "chuser2"
+	CHANNEL_DEFAULT_USER3 	string = "chuser3"
+	CHANNEL_DEFAULT_USER4 	string = "chuser4"
+	CHANNEL_DEFAULT_USER5 	string = "chuser5"
 	USER_DEFAULT_SECRET 	string = "mysecret"
-	USER_DEFAULT_TYPE 		string = "user"
+	USER_DEFAULT_TYPE 		string = "user" 
 )
+
+//user locker
+var userLocker1 sync.Mutex 
+var userLocker2 sync.Mutex 
+var userLocker3 sync.Mutex 
+var userLocker4 sync.Mutex 
+var userLocker5 sync.Mutex 
 
 func OrgInvokeChainCode(chainId,orgName,channelId,ChainCodeID string,args []string,peers []string) (interface{},error) {
 	if len(args)<2 {
@@ -51,7 +65,7 @@ func OrgInvokeChainCode(chainId,orgName,channelId,ChainCodeID string,args []stri
 	// 	}
 	// } 
 	fSetup.Peers = append(fSetup.Peers,peers...) 
-	err = fSetup.Initialize()
+	err = fSetup.Initialize2()
 	if err != nil {
 		return nil,fmt.Errorf("OrgInovkeChainCode:init SDK failed: org=%s  err=%s\n", orgName,err)
 	}
@@ -61,12 +75,13 @@ func OrgInvokeChainCode(chainId,orgName,channelId,ChainCodeID string,args []stri
 	if err != nil {
 		return nil,fmt.Errorf("OrgInovkeChainCode: set ca failed: org=%s\n", orgName,)
 	}
-
-	_,err = fSetup.GetRegisteredUser(CHANNEL_DEFAULT_USER,orgName,USER_DEFAULT_SECRET,USER_DEFAULT_TYPE)
+	userLocker1.Lock()
+	defer userLocker1.Unlock()
+	_,err = fSetup.GetRegisteredUser(CHANNEL_DEFAULT_USER1,orgName,USER_DEFAULT_SECRET,USER_DEFAULT_TYPE) 
 	if err != nil {
 		return nil,fmt.Errorf("OrgInovkeChainCode: GetRegisteredUser failed: org=%s\n", orgName)
 	} 
-	_,err = fSetup.GetUserClient(channelId,CHANNEL_DEFAULT_USER,orgName)
+	_,err = fSetup.GetUserClient(channelId,CHANNEL_DEFAULT_USER1,orgName)
 	if err != nil {
 		return nil,fmt.Errorf("OrgInovkeChainCode: GetUserClient failed: org=%s\n", orgName)
 	}
@@ -128,7 +143,7 @@ func OrgQueryChainCode(chainId string,orgName string,channelId string,ChainCodeI
 			break
 		}
 	}
-	err = fSetup.Initialize() 
+	err = fSetup.Initialize2()  
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryChainCode:init SDK failed: org=%s  err=%s\n", orgName,err)
 	}
@@ -138,12 +153,13 @@ func OrgQueryChainCode(chainId string,orgName string,channelId string,ChainCodeI
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryChainCode: set ca failed: org=%s\n", orgName,)
 	}
-
-	_,err = fSetup.GetRegisteredUser(CHANNEL_DEFAULT_USER,orgName,USER_DEFAULT_SECRET,USER_DEFAULT_TYPE)
+	userLocker2.Lock()
+	defer userLocker2.Unlock()
+	_,err = fSetup.GetRegisteredUser(CHANNEL_DEFAULT_USER2,orgName,USER_DEFAULT_SECRET,USER_DEFAULT_TYPE)
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryChainCode: GetRegisteredUser failed: org=%s\n", orgName)
 	} 
-	_,err = fSetup.GetUserClient(channelId,CHANNEL_DEFAULT_USER,orgName)
+	_,err = fSetup.GetUserClient(channelId,CHANNEL_DEFAULT_USER2,orgName)
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryChainCode: GetUserClient failed: org=%s\n", orgName)
 	}
@@ -170,13 +186,14 @@ func OrgQueryBlockChain(chainId string,orgName string,channelId string)  (interf
 			break
 		}
 	} 
+	logger.Debugf("OrgQueryBlockChain: chainid=%s  orgname=%s chainnel=%s",chainId,orgName,channelId)
 	fSetup := sdkfabric.FabricSetup{ 
 		OrdererID: orderId,
 		OrgAdmin:  "Admin",
 		OrgName:   orgName, 
 		ChannelId: channelId,
-		//ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
-		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config.yaml",
+		ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config-" + orgName + ".yaml",
+		//ConfigFile: utils.BAAS_CFG.BlockNetCfgBasePath + chainId + "/network-config.yaml",
 	}
 	var peer string
 	for _,org := range obj.DeployNetCfg.PeerOrgs {
@@ -188,30 +205,31 @@ func OrgQueryBlockChain(chainId string,orgName string,channelId string)  (interf
 			break
 		}
 	}
-	err = fSetup.Initialize() 
+	err = fSetup.Initialize2() 
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryBlockChain:init SDK failed: org=%s  err=%s\n", orgName,err)
 	}
 	defer fSetup.CloseSDK() 
 
-	err = fSetup.SetupCA(orgName)
+	err = fSetup.SetupCA(orgName) 
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryBlockChain: set ca failed: org=%s\n", orgName,)
 	}
-
-	_,err = fSetup.GetRegisteredUser(CHANNEL_DEFAULT_USER,orgName,USER_DEFAULT_SECRET,USER_DEFAULT_TYPE)
+	userLocker3.Lock()
+	defer userLocker3.Unlock()
+	_,err = fSetup.GetRegisteredUser(CHANNEL_DEFAULT_USER3,orgName,USER_DEFAULT_SECRET,USER_DEFAULT_TYPE) 
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryBlockChain: GetRegisteredUser failed: org=%s\n", orgName)
 	} 
-	_,err = fSetup.GetUserClient(channelId,CHANNEL_DEFAULT_USER,orgName)
+	_,err = fSetup.GetUserClient(channelId,CHANNEL_DEFAULT_USER3,orgName)
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryBlockChain: GetUserClient failed: org=%s\n", orgName)
 	}
-	bci,err := fSetup.QueryChainInfo(CHANNEL_DEFAULT_USER,peer)  
+	bci,err := fSetup.QueryChainInfo(CHANNEL_DEFAULT_USER3,peer)  
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryChainCode: query chain info failed: org=%s\n", orgName)
 	}
-	return bci,nil
+	return bci,nil 
 }
 
 func OrgQueryBlockById(chainId string,orgName string,channelId string,blockId uint64)  (interface{},error) {
@@ -244,7 +262,7 @@ func OrgQueryBlockById(chainId string,orgName string,channelId string,blockId ui
 			break
 		}
 	}
-	err = fSetup.Initialize()
+	err = fSetup.Initialize2()
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryBlockById:init SDK failed: org=%s  err=%s\n", orgName,err)
 	}
@@ -254,16 +272,17 @@ func OrgQueryBlockById(chainId string,orgName string,channelId string,blockId ui
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryBlockById: set ca failed: org=%s\n", orgName,)
 	}
-
-	_,err = fSetup.GetRegisteredUser(CHANNEL_DEFAULT_USER,orgName,USER_DEFAULT_SECRET,USER_DEFAULT_TYPE)
+	userLocker4.Lock()
+	defer userLocker4.Unlock()
+	_,err = fSetup.GetRegisteredUser(CHANNEL_DEFAULT_USER4,orgName,USER_DEFAULT_SECRET,USER_DEFAULT_TYPE)
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryBlockById: GetRegisteredUser failed: org=%s\n", orgName)
 	} 
-	_,err = fSetup.GetUserClient(channelId,CHANNEL_DEFAULT_USER,orgName)
+	_,err = fSetup.GetUserClient(channelId,CHANNEL_DEFAULT_USER4,orgName)
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryBlockById: GetUserClient failed: org=%s\n", orgName)
 	}
-	tx,err := fSetup.QueryBlockById(CHANNEL_DEFAULT_USER,blockId,peer)
+	tx,err := fSetup.QueryBlockById(CHANNEL_DEFAULT_USER4,blockId,peer)
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryBlockById: query block info failed: org=%s\n", orgName)
 	}
@@ -300,7 +319,7 @@ func OrgQueryTxById(chainId string,orgName string,channelId string,txId string) 
 			break
 		}
 	}
-	err = fSetup.Initialize() 
+	err = fSetup.Initialize2() 
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryTxById:init SDK failed: org=%s  err=%s\n", orgName,err)
 	}
@@ -310,16 +329,17 @@ func OrgQueryTxById(chainId string,orgName string,channelId string,txId string) 
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryTxById: set ca failed: org=%s\n", orgName,)
 	}
-
-	_,err = fSetup.GetRegisteredUser(CHANNEL_DEFAULT_USER,orgName,USER_DEFAULT_SECRET,USER_DEFAULT_TYPE)
+	userLocker5.Lock()
+	defer userLocker5.Unlock()
+	_,err = fSetup.GetRegisteredUser(CHANNEL_DEFAULT_USER5,orgName,USER_DEFAULT_SECRET,USER_DEFAULT_TYPE)
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryTxById: GetRegisteredUser failed: org=%s\n", orgName)
 	} 
-	_,err = fSetup.GetUserClient(channelId,CHANNEL_DEFAULT_USER,orgName)
+	_,err = fSetup.GetUserClient(channelId,CHANNEL_DEFAULT_USER5,orgName)
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryTxById: GetUserClient failed: org=%s\n", orgName)
 	}
-	tx,err := fSetup.QueryTransactionByID(CHANNEL_DEFAULT_USER,txId,peer)   
+	tx,err := fSetup.QueryTransactionByID(CHANNEL_DEFAULT_USER5,txId,peer)   
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryTxById: query tx info failed: org=%s\n", orgName)
 	}
@@ -355,7 +375,7 @@ func OrgQueryChannel(chainId string,orgName string)  (interface{},error) {
 			break
 		}
 	}
-	err = fSetup.Initialize() 
+	err = fSetup.Initialize(chainId) 
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryChannel:init SDK failed: org=%s  err=%s\n", orgName,err)
 	}
@@ -397,7 +417,7 @@ func OrgQueryInstalledCC(chainId string,orgName string,channelId string)  (inter
 			break
 		}
 	}
-	err = fSetup.Initialize() 
+	err = fSetup.Initialize(chainId) 
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryInstalledCC:init SDK failed: org=%s  err=%s\n", orgName,err)
 	}
@@ -439,7 +459,7 @@ func OrgQueryInstantiateCC(chainId string,orgName string,channelId string)  (int
 			break
 		}
 	}
-	err = fSetup.Initialize() 
+	err = fSetup.Initialize(chainId) 
 	if err != nil {
 		return nil,fmt.Errorf("OrgQueryInstantiateCC:init SDK failed: org=%s  err=%s\n", orgName,err)
 	}
@@ -449,4 +469,41 @@ func OrgQueryInstantiateCC(chainId string,orgName string,channelId string)  (int
 		return nil,fmt.Errorf("OrgQueryInstantiateCC: query failed: org=%s\n", orgName)
 	}
 	return ccs,nil  
+}
+
+func ChannelCheck(chainId string,channelId string,orgName string)error{
+	var msg string
+	// err := CheckCCRecord(chainId,orgName,channelId)
+	// if err != nil {
+	// 	msg = "ChannelCheck: no deploy cc in this channel,channelid=" + channelId
+	// 	logger.Errorf(msg)
+	// 	return fmt.Errorf(msg)
+	// }
+	chObj,err := OrgQueryChannel(chainId,orgName)
+	if err != nil {
+		msg = "ChannelCheck: get channel list obj failed"
+		logger.Errorf(msg)
+		return fmt.Errorf(msg)
+	}
+	var chList public.ChannelList 
+	chBytes,_ := json.Marshal(chObj)
+	err = json.Unmarshal(chBytes,&chList)
+	if err != nil {
+		msg = "ChannelCheck: unmarshal channel list obj failed"
+		logger.Errorf(msg)
+		return fmt.Errorf(msg)
+	} 
+	if len(chList.Channels) < 1 {
+		msg = "ChannelCheck: channel list null"
+		logger.Errorf(msg)
+		return fmt.Errorf(msg)
+	} 
+	for _,ch := range chList.Channels {
+		if ch.ChannelID == channelId {
+			return nil
+		}
+	}
+	msg = "ChannelCheck: channel not find,channelId=" + channelId 
+	logger.Errorf(msg)
+	return fmt.Errorf(msg)
 }

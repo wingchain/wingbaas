@@ -17,8 +17,8 @@ var fileLocker sync.Mutex //file locker
 
 func LoadFile(fileName string) ([]byte, error) {
 	fileLocker.Lock()
+	defer fileLocker.Unlock()
 	bytes, err := ioutil.ReadFile(fileName) //read file
-	fileLocker.Unlock()
 	if err != nil {
 		logger.Errorf("LoadFile: read file error,%v", err)
 		return nil, fmt.Errorf("%v", err) 
@@ -28,8 +28,8 @@ func LoadFile(fileName string) ([]byte, error) {
 
 func ReadFileBytes(fileName string) []byte {
 	fileLocker.Lock()
+	defer fileLocker.Unlock()
 	bytes, err := ioutil.ReadFile(fileName) //read file
-	fileLocker.Unlock()
 	if err != nil {
 		logger.Errorf("ReadFileBytes: read file error,%v", err)
 		return nil

@@ -22,8 +22,8 @@ func LoadChainCfg(chainId string) (public.DeployPara, error) {
 	fileName := utils.BAAS_CFG.BlockNetCfgBasePath + chainId + ".json"
 	var obj public.DeployPara
 	cfgFileLocker.Lock()
+	defer cfgFileLocker.Unlock()
 	bytes, err := ioutil.ReadFile(fileName) //read file
-	cfgFileLocker.Unlock()
 	if err != nil {
 		logger.Errorf("LoadChainCfg: read cfg file error,%s", err) 
 		return obj, fmt.Errorf("%v", err) 
@@ -97,6 +97,7 @@ func ReWriteFileLine(filePath string,content []string)bool {
 	return true
 }
 
+/*
 func AddHosts(hostName string, ip string) bool {
 	fileLocker.Lock()
 	bl, text := ReadFileLine("/etc/hosts")
@@ -110,6 +111,8 @@ func AddHosts(hostName string, ip string) bool {
 	for i := 0; i < len(text); i++ {
 		hosts := string([]byte(text[i])[strings.LastIndex(text[i], " ")+1:])
 		if strings.Contains(hosts,hostName) {
+			logger.Debugf("AddHosts: hostName already exsist,hostname=%s",hosts)
+			logger.Debugf("AddHosts: want add hostname=%s",hostName)
 			exits = true
 			break
 		}
@@ -125,4 +128,42 @@ func AddHosts(hostName string, ip string) bool {
 	}
 	return bl
 }
+*/
 
+func AddHosts(hostName string, ip string) bool {
+	fileLocker.Lock()
+	bl, text := ReadFileLine("/etc/hosts")
+	fileLocker.Unlock()
+	if !bl {
+		logger.Errorf("AddHosts:Read file Failed")
+		return false
+	}
+	exits := false
+	newHost := ip + " " + hostName + "\n"
+	var newText []string
+	for i := 0; i < len(text); i++ {
+		hosts := string([]byte(text[i])[strings.LastIndex(text[i], " ")+1:])
+		if strings.Contains(hosts,hostName) {
+			logger.Debugf("AddHosts: hostName already exsist,hostname=%s",hosts)
+			logger.Debugf("AddHosts: want add hostname=%s",newHost)
+			if !exits {
+				logger.Debugf("AddHosts: write hostname=%s",newHost)
+				newText = append(newText,newHost)
+				exits = true
+				continue
+			}
+		}
+		newText = append(newText,text[i])
+	}
+	if !exits {
+		logger.Debugf("AddHosts: add new host hostname=%s",newHost)
+		newText = append(newText,newHost)
+	}
+	fileLocker.Lock()
+	bl = ReWriteFileLine("/etc/hosts", newText)
+	fileLocker.Unlock()
+	if !bl {
+		logger.Errorf("AddHosts:Write file Failed")
+	}
+	return bl
+}

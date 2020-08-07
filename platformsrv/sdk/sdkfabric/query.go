@@ -74,7 +74,7 @@ func (setup *FabricSetup) QueryTransactionByID(userName string,txId string, peer
 //Query blockchain info
 func (setup *FabricSetup) QueryChainInfo(usrName string,peer string) (interface{},error) { 
 	channelContext := setup.Sdk.ChannelContext(setup.ChannelId,fabsdk.WithUser(usrName),fabsdk.WithOrg(setup.OrgName))
-	client,err := ledger.New(channelContext)
+	client,err := ledger.New(channelContext) 
 	if err != nil {
 		logger.Errorf("QueryChainInfo: Failed to create new ledger client: %s", err)
 		return nil,fmt.Errorf("QueryChainInfo: Failed to create new ledger client")

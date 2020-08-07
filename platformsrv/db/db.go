@@ -9,8 +9,8 @@ import(
 )
 
 const (
-	DB_BLOCK_PATH string = "/data/block.db"
-	DB_TX_PATH string = "/data/tx.db" 
+	// DB_BLOCK_PATH string = "/data/block.db"
+	// DB_TX_PATH string = "/data/tx.db" 
 )
 
 func PutData(dbSubPath string,key []byte,value []byte) error { 
