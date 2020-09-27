@@ -873,12 +873,18 @@ func queryBlockTx(c echo.Context) error {
 		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
 		return c.JSON(http.StatusOK,ret)
 	}
-	qr,err := fabquery.GetBlockTx(d.BlockChainId,d.OrgName,d.ChannelId)
-	if err != nil {
-		msg := "orgCommitCC: not find this chain"
-		ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+	// qr,err := fabquery.GetBlockTx(d.BlockChainId,d.OrgName,d.ChannelId)
+	// if err != nil {
+	// 	msg := "orgCommitCC: not find this chain"
+	// 	ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+	// 	return c.JSON(http.StatusOK,ret)
+	// } 
+	qr,err := fabric.OrgQueryBlockChain(d.BlockChainId,d.OrgName,d.ChannelId)
+	if err != nil { 
+        ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
 		return c.JSON(http.StatusOK,ret)
 	}
+
 	if err != nil { 
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
 		return c.JSON(http.StatusOK,ret)
@@ -1169,7 +1175,8 @@ func queryEveryDayTx(c echo.Context) error {
 		ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
 		return c.JSON(http.StatusOK,ret)
 	}
-	qr,err := fabquery.GetEveryDayTxCount(d.StartTime,d.Days,d.BlockChainId,d.OrgName,d.ChannelId)
+	//qr,err := fabquery.GetEveryDayTxCount(d.StartTime,d.Days,d.BlockChainId,d.OrgName,d.ChannelId)
+	qr,err := fabquery.GetEveryDayTxCountMulRoutine(d.StartTime,d.Days,d.BlockChainId,d.OrgName,d.ChannelId)
 	if err != nil { 
         ret := getApiRet(CODE_ERROR_EXE,err.Error(),nil)
 		return c.JSON(http.StatusOK,ret)

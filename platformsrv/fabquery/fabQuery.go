@@ -292,7 +292,7 @@ func GetBlockTx(blockChainId string,orgName string,channelId string) (interface{
 		}
 	}
 	logger.Debug("GetBlockTx: not find")
-	return nil,nil
+	return nil,nil 
 }
 
 func GetBlockAndTxList(start uint64,end uint64,blockChainId string,orgName string,channelId string)(interface{},error){
@@ -609,7 +609,7 @@ func GetEveryDayTxCount(start string,days int,blockChainId string,orgName string
 		logger.Errorf("GetEveryDayTxCount: start time must < now time")
 		return nil,fmt.Errorf("GetEveryDayTxCount: start time must < now time")
 	}
-	end := ((TimeReverseStamp(start)).AddDate(0, 0, days)).Unix()
+	end := ((TimeReverseStamp(start)).AddDate(0, 0, days)).Unix() 
 	if end > time.Now().Unix() {
 		logger.Errorf("GetEveryDayTxCount: end time must < now time")
 		return nil,fmt.Errorf("GetEveryDayTxCount: end time must < now time")
@@ -630,7 +630,7 @@ func GetEveryDayTxCount(start string,days int,blockChainId string,orgName string
 	BLOCK_DB := "/data/" + blockChainId + "/block.db" 
 	var daysTx DayTxStatistic
 	var index uint64
-	daysTx.Min = 10000
+	daysTx.Min = 9000000
 	index = 1
 	for day := 0; day<=days; day++ {
 		startTime := ((TimeReverseStamp(start)).AddDate(0, 0, day)).Unix()
@@ -732,5 +732,178 @@ func GetEveryDayTxCount(start string,days int,blockChainId string,orgName string
 	}
 	return daysTx,nil 
 }
+
+func GetEveryDayTxCountMulRoutine(start string,days int,blockChainId string,orgName string,channelId string)(interface{},error) { 
+	if days > 30 || days < 1 {
+		logger.Errorf("GetEveryDayTxCountMulRoutine: days must >= 1 and <= 30")
+		return nil,fmt.Errorf("GetEveryDayTxCountMulRoutine: days must >= 1 and <= 30")
+	}
+	if TimeReverse(start) >= time.Now().Unix() {
+		logger.Errorf("GetEveryDayTxCountMulRoutine: start time must < now time")
+		return nil,fmt.Errorf("GetEveryDayTxCountMulRoutine: start time must < now time")
+	}
+	end := ((TimeReverseStamp(start)).AddDate(0, 0, days)).Unix() 
+	if end > time.Now().Unix() {
+		logger.Errorf("GetEveryDayTxCountMulRoutine: end time must < now time")
+		return nil,fmt.Errorf("GetEveryDayTxCountMulRoutine: end time must < now time")
+	}
+	qr,err := fabric.OrgQueryBlockChain(blockChainId,orgName,channelId)
+	if err != nil { 
+		logger.Errorf("GetEveryDayTxCountMulRoutine: query block height error,channel="+channelId)
+		return nil,fmt.Errorf("GetEveryDayTxCountMulRoutine: query block height error,channel="+channelId)
+	}
+	bytes,_ := json.Marshal(qr)
+	var qInfo sdkfabric.ChainInfo
+	err = json.Unmarshal(bytes,&qInfo)
+	if err != nil {
+		logger.Errorf("GetEveryDayTxCountMulRoutine: query result unmarshal error,channel="+channelId)
+		return nil,fmt.Errorf("GetEveryDayTxCountMulRoutine: query result unmarshal error,channel="+channelId)
+	}
+	var dayTxs []DayTx
+	var chs chan int
+	dayTxs = make([]DayTx,days+1)
+	chs = make(chan int,days+1)
+	for day := 0; day<=days; day++ {
+		startTime := ((TimeReverseStamp(start)).AddDate(0, 0, day)).Unix()
+		endTime := ((TimeReverseStamp(start)).AddDate(0, 0, day+1)).Unix()
+		go TxCountRoutine(startTime,endTime,blockChainId,orgName,channelId,qInfo.Height,day,dayTxs,chs)
+	}
+	result := 0
+	for i:=0;i<=days;i++ {
+		result += <-chs
+	}
+	logger.Debugf("GetEveryDayTxCountMulRoutine: thread end count=%d",result) 
+	var daysTx DayTxStatistic
+	daysTx.Max = 0
+	daysTx.Min = 9000000
+	daysTx.Txs = append(daysTx.Txs,dayTxs...)
+
+	for _,dt := range dayTxs {
+		if dt.TxCount > daysTx.Max {
+			daysTx.Max = dt.TxCount
+		}
+		if dt.TxCount < daysTx.Min {
+			daysTx.Min = dt.TxCount
+		}
+	}	
+	return daysTx,nil 
+}
+
+func TxCountRoutine(startTime int64,endTime int64,blockChainId string,orgName string,channelId string,blockHeight uint64,id int,m []DayTx,chs chan int){
+	var startIndex,endIndex uint64
+	var i uint64
+	var total int64
+	var dayTx DayTx
+	total = 0
+	endIndex = blockHeight - 1
+    if endIndex > 2 {
+		startIndex = uint64(endIndex/2)
+	}else{
+		startIndex = 1
+	}
+	TX_DB := "/data/" + blockChainId + "/tx.db"
+	BLOCK_DB := "/data/" + blockChainId + "/block.db" 
+	for true {
+		if startIndex<1 || endIndex<1 || startIndex >= endIndex {
+			logger.Debugf("TxCountRoutine circle break,startIndex=%d  endIndex=%d",startIndex,endIndex)
+			break
+		}
+		i = startIndex
+		var block BlockMainInfo
+		stop := false
+		strIndex := strconv.FormatInt(int64(i),10)
+		blockBytes,err := db.GetData(BLOCK_DB,[]byte(strIndex))
+		if blockBytes != nil && len(blockBytes) > 0 {
+			err = json.Unmarshal(blockBytes,&block)
+		}
+		if err != nil {
+			qr,err := fabric.OrgQueryBlockById(blockChainId,orgName,channelId,i)
+			if err != nil {
+				logger.Errorf("TxCountRoutine: query block tx error,blockid=%d",i)
+				continue
+			}
+			var blockInfo sdkfabric.Block 
+			bytes,_ := json.Marshal(qr)
+			err = json.Unmarshal(bytes,&blockInfo)
+			if err != nil {
+				logger.Errorf("TxCountRoutine: query block tx unmarshal error,blockid=%d",i) 
+				continue
+			}	
+			block.BlockId = blockInfo.Header.Number
+			block.BlockHash = blockInfo.Header.DataHash
+			block.PreHash = blockInfo.Header.PreviousHash
+			txCount := len(blockInfo.Transactions) 
+			block.Timestamp = TimeTransfer(blockInfo.Transactions[txCount-1].ChannelHeader.Timestamp.Seconds)
+			for _,tx := range blockInfo.Transactions {
+				var tmpTx TxMainInfo
+				tmpTx.TxId = tx.ChannelHeader.TxID
+				tmpTx.Signature = tx.Signature
+				tmpTx.Timestamp = TimeTransfer(tx.ChannelHeader.Timestamp.Seconds)
+				tmpTx.BlockId = block.BlockId
+				block.Txs = append(block.Txs,tmpTx)
+				bytes,_ = json.Marshal(tmpTx)
+				err = db.PutData(TX_DB,[]byte(tmpTx.TxId),bytes)
+				if err != nil{
+					logger.Errorf("TxCountRoutine: write tx to db error,txid=")
+					logger.Debug(tmpTx.TxId)
+				}
+				// logger.Debug("query tx timestamp=")
+				// logger.Debug(tx.ChannelHeader.Timestamp.Seconds)
+				if tx.ChannelHeader.Timestamp.Seconds >= startTime &&  tx.ChannelHeader.Timestamp.Seconds <= endTime {
+					total++
+					stop = true
+				}else if tx.ChannelHeader.Timestamp.Seconds > endTime {
+					//logger.Debug("query tx stop")
+					startIndex = uint64((startIndex+1+endIndex)/2)
+					break
+				}else if tx.ChannelHeader.Timestamp.Seconds < startTime {
+					if startIndex >= 1 {
+						endIndex = startIndex - 1
+					}else{
+						endIndex = 0
+					}
+					startIndex = uint64((startIndex+endIndex)/2)
+					break
+				}
+			}
+			bytes,_ = json.Marshal(block)
+			err = db.PutData(BLOCK_DB,[]byte(strIndex),bytes)
+			if err != nil{
+				logger.Errorf("TxCountRoutine: write block to db error,blockid=%d",i) 
+			}
+		}else{
+			for _,tx := range block.Txs {
+				txTime := TimeReverse(tx.Timestamp)
+				// logger.Debug("query db tx timestamp=")
+				// logger.Debug(txTime)
+				if txTime >= startTime &&  txTime <= endTime {
+					total++
+					stop = true
+				}else if txTime > endTime {
+					//logger.Debug("query db tx stop")
+					startIndex = uint64((startIndex+1+endIndex)/2)
+					break
+				}else if txTime < startTime {
+					if startIndex >= 1 {
+						endIndex = startIndex - 1
+					}else{
+						endIndex = 0
+					}
+					startIndex = uint64((startIndex+endIndex)/2)
+					break
+				}
+			}
+		} 
+		//logger.Debugf("thread id=%d  startIndex=%d  endIndex=%d",id,startIndex,endIndex)
+		if stop {
+			logger.Debugf("TxCountRoutine circle break,find tx in block id=%d",i)
+			break
+		} 
+	}
+	dayTx.TimeStamp = TimeTransfer(startTime)
+	dayTx.TxCount = total	
+	m[id] = dayTx
+	chs <- 1
+} 
 
 

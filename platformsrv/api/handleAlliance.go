@@ -84,11 +84,21 @@ func creatAlliance(c echo.Context) error {
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret)
 	}
-	_,err = alliance.GetUsersByMail(a.Creator)
+	_,err = alliance.GetUsersByMail(a.Creator) 
 	if err != nil {
-        msg := err.Error()
-        ret := getApiRet(CODE_ERROR_EXE,msg,nil)
-		return c.JSON(http.StatusOK,ret) 
+        // msg := err.Error()
+        // ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+		// return c.JSON(http.StatusOK,ret) 
+
+		//user not exsist,new user
+		var user alliance.User
+		user.Mail = a.Creator 
+		err = alliance.AddUser(user)
+		if err != nil {
+       		msg := err.Error()
+        	ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+			return c.JSON(http.StatusOK,ret)
+    	} 
 	}
 	id,err := alliance.AppendAlliance(a) 
 	if err != nil {
@@ -159,6 +169,18 @@ func userAddAlliance(c echo.Context) error {
         msg := "body json Unmarshal err"
         ret := getApiRet(CODE_ERROR_MASHAL,msg,nil)
 		return c.JSON(http.StatusOK,ret)
+	}
+	//user not exsist,new user
+	_,err = alliance.GetUsersByMail(obj.Mail) 
+	if err != nil {
+		var user alliance.User
+		user.Mail = obj.Mail 
+		err = alliance.AddUser(user)
+		if err != nil {
+       		msg := err.Error()
+        	ret := getApiRet(CODE_ERROR_EXE,msg,nil)
+			return c.JSON(http.StatusOK,ret)
+    	} 
 	}
 	err = alliance.UserAddAlliance(obj.Mail,obj.Alliance)
 	if err != nil {

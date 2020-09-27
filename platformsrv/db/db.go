@@ -3,6 +3,7 @@ package db
 
 import(
 	"fmt"
+	"sync"
 	"github.com/wingbaas/platformsrv/logger"
 	"github.com/wingbaas/platformsrv/utils"
 	"github.com/syndtr/goleveldb/leveldb"
@@ -11,9 +12,13 @@ import(
 const (
 	// DB_BLOCK_PATH string = "/data/block.db"
 	// DB_TX_PATH string = "/data/tx.db" 
-)
+) 
+
+var fileLocker sync.Mutex //file locker
 
 func PutData(dbSubPath string,key []byte,value []byte) error { 
+	fileLocker.Lock()
+	defer fileLocker.Unlock()
 	root,_ := utils.GetProcessRunRoot()
 	dbPath := root + dbSubPath
 	db,err := leveldb.OpenFile(dbPath, nil)
@@ -31,6 +36,8 @@ func PutData(dbSubPath string,key []byte,value []byte) error {
 }
 
 func GetData(dbSubPath string,key []byte) ([]byte,error) {
+	fileLocker.Lock()
+	defer fileLocker.Unlock()
 	root,_ := utils.GetProcessRunRoot()
 	dbPath := root + dbSubPath
 	db,err := leveldb.OpenFile(dbPath, nil)
@@ -48,6 +55,8 @@ func GetData(dbSubPath string,key []byte) ([]byte,error) {
 }
 
 func DeleteData(dbSubPath string,key []byte) error {
+	fileLocker.Lock()
+	defer fileLocker.Unlock()
 	root,_ := utils.GetProcessRunRoot()
 	dbPath := root + dbSubPath
 	db,err := leveldb.OpenFile(dbPath, nil)

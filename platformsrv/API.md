@@ -2795,7 +2795,7 @@ URL：http://ip:port/api/v1/blocktx
 METHOD：POST   
 RETURN：json object           
 example:        
-request:http://localhost:9001/api/v1/blocktx                                                       
+request:http://localhost:9001/api/v1/blocktx                                                        
 request parameter:            
 ```json    
 {

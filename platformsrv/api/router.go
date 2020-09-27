@@ -49,7 +49,7 @@ func Start(port string) {
 
 	r.POST("/api/v1/register",userRegister) 
 	r.POST("/api/v1/login",userLogin) 
-	r.POST("/api/v1/createalliance",creatAlliance) 
+	r.POST("/api/v1/createalliance",creatAlliance)  
 	r.GET("/api/v1/alliances",getAlliance)
 	r.GET("/api/v1/:allianceid/alliance",getAllianceById)
 	r.POST("/api/v1/useraddalliance",userAddAlliance) 
@@ -59,7 +59,7 @@ func Start(port string) {
 	r.GET("/api/v1/:allianceid/allianceclusters",getAllianceClusters)  
 	r.GET("/api/v1/:allianceid/alliancechains",getAllianceChains) 
 	r.GET("/api/v1/:blockchainid/cfg",getBlockchainCfg)    
-	r.POST("/api/v1/blocktx",queryBlockTx)   
+	r.POST("/api/v1/blocktx",queryBlockTx)  
 	r.GET("/api/v1/:blockchainid/blockchain",getBlockChain) 
 	r.GET("/api/v1/:allianceid/users",getUsersByAllianceId)
 	r.POST("/api/v1/deleteallianceuser",deleteAllianceUser)  
